@@ -102,6 +102,15 @@ N3D.Matrix4.prototype = {
     ];
     return this;    
   },
+  multiplyVector4:function(v){
+    var m = this.m;
+    return new N3D.Vector4(
+      m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] * v.w,
+      m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] * v.w,
+      m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11] * v.w,
+      m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] * v.w  
+    );
+  },
   toString:function(){
     var m = this.m;
     return m[0].toFixed(4)+", "+m[1].toFixed(4)+", "+m[2].toFixed(4)+", "+m[3].toFixed(4) + "\n" +
@@ -179,4 +188,18 @@ N3D.Vector3.prototype = {
   toString:function(){
     return "N3D.Vector3("+this.x+","+this.y+","+this.z+")";
   } 
+};
+
+N3D.Vector4 = function(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+   
+  return this;
+};
+N3D.Vector4.prototype = {
+  toString:function(){
+    return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
+  }
 };
