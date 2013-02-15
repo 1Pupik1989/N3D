@@ -10,12 +10,9 @@ N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     ];
     return this; 
   }
-  this.m = [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1
-  ]; 
+  this.identity();
+
+  return this;
 };
 N3D.Matrix4.prototype = {
   constructor:N3D.Matrix4,
@@ -26,7 +23,6 @@ N3D.Matrix4.prototype = {
       0,0,1,0,
       0,0,0,1
     ];
-    return this;
   },
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
@@ -129,6 +125,15 @@ N3D.Matrix4.prototype = {
            m[8].toFixed(4)+", "+m[9].toFixed(4)+", "+m[10].toFixed(4)+", "+m[11].toFixed(4) + "\n" + 
            m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
   }
+};
+
+N3D.Matrix4.Identity = function(){
+  return new this(
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1  
+  );
 };
 
 N3D.Matrix4.Multiply = function(m,n){
