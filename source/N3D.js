@@ -1,7 +1,7 @@
 var N3D = {};
-N3D.Matrix4 = function(){
+N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(arguments.length == 16){
-    this.set.apply(this,arguments);
+    this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
   }else{
     this.identity();
   }
@@ -9,7 +9,12 @@ N3D.Matrix4 = function(){
 N3D.Matrix4.prototype = {
   constructor:N3D.Matrix4,
   identity:function(){ //identická matice
-    return this.set(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    return this.m = [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1
+    ];
   }, 
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
