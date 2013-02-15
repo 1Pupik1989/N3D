@@ -1,10 +1,33 @@
 var N3D = {};
 N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(arguments.length == 16){
-    this.set(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15);
-  }else{
-    this.identity();
+  if(arguments.length === 16){
+    /*var arr = {
+      0:n0,1:n1,2:n2,3:n3,
+      4:n4,5:n5,6:n6,7:n7,
+      8:n8,9:n9,10:n10,11:n11,
+      12:n12,13:n13,14:n14,15:n15
+    };*/
+    
+    
+    var arr = {
+      "0":n0,"1":n1,"2":n2,"3":n3,
+      "4":n4,"5":n5,"6":n6,"7":n7,
+      "8":n8,"9":n9,"10":n10,"11":n11,
+      "12":n12,"13":n13,"14":n14,"15":n15
+    };
+
+    /*var arr = [
+      n0,n1,n2,n3,
+      n4,n5,n6,n7,
+      n8,n9,n10,n11,
+      n12,n13,n14,n15
+    ]; */
+    this.m = arr;
+    
+    return this; 
   }
+  return N3D.Matrix4.Identity();
+
 };
 N3D.Matrix4.prototype = {
   constructor:N3D.Matrix4,
@@ -19,7 +42,6 @@ N3D.Matrix4.prototype = {
   },
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
-    return this;
   },
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
@@ -120,14 +142,21 @@ N3D.Matrix4.prototype = {
            m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
   }
 };
+N3D.Matrix4.Identity = function(){
+  return new this(
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1
+  );
+};
 
 N3D.Matrix4.Multiply = function(m,n){
   var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
       m4 = m.m[4], m5 = m.m[5], m6 = m.m[6], m7 = m.m[7],
       m8 = m.m[8], m9 = m.m[9], m10 = m.m[10], m11 = m.m[11],
-      m12 = m.m[12], m13 = m.m[13], m14 = m.m[14], m15 = m.m[15];
-      
-  var n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
+      m12 = m.m[12], m13 = m.m[13], m14 = m.m[14], m15 = m.m[15],
+      n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
       n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
       n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
       n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
