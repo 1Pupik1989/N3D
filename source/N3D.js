@@ -219,7 +219,7 @@ N3D.Vector4.prototype = {
   },
   normalize:function(){
     return Math.sqrt(this.dot());
-  }
+  },
   toString:function(){
     return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
