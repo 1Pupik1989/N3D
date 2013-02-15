@@ -10,12 +10,6 @@ N3D.Matrix4.prototype = {
   constructor:N3D.Matrix4,
   identity:function(){ //identická matice
     return this.set(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-  },
-  set:function(m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15){ //nastavení polí
-    this.m = [
-      m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
-    ];
-    return this;
   }, 
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
@@ -78,7 +72,7 @@ N3D.Matrix4.prototype = {
         n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
         n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
         
-    return this.set(
+    this.m = [
       m0*n0 + m1*n4 + m2*n8 + m3*n12,
       m0*n1 + m1*n5 + m2*n9 + m3*n13,
       m0*n2 + m1*n6 + m2*n10 + m3*n14,
@@ -98,7 +92,7 @@ N3D.Matrix4.prototype = {
       m12*n1 + m13*n5 + m14*n9 + m15*n13,
       m12*n2 + m13*n6 + m14*n10 + m15*n14,
       m12*n3 + m13*n7 + m14*n11 + m15*n15      
-    );
+    ];
   },
   multiplyVector4:function(v){
     var m = this.m;
