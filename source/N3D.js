@@ -133,7 +133,7 @@ N3D.Matrix4.setObject = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n
 };
 
 N3D.Matrix4.setter = (function(){
-  return N3D.Matrix4.setArray;
+  return N3D.Matrix4.setObject;
 })();
 
 N3D.Matrix4.Multiply = function(m,n){
