@@ -27,15 +27,14 @@ N3D.Matrix4.prototype = {
         n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
         n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12)
 
-    return m0*n0 + m1*n4 - m2*n8 + m3*n12;
+    return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
   },
   inverse:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
         m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15];
-        
-    var n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
         n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
         n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
         n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12);
@@ -45,7 +44,7 @@ N3D.Matrix4.prototype = {
     if(det == 0){ return false; }
     det = 1/det;
     
-    this.set(
+    return this.set(
       n0*det,
       -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
       (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
@@ -63,21 +62,18 @@ N3D.Matrix4.prototype = {
      -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
      (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
     );
-
-    return this;
   },
   multiply:function(n){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
         m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15];
-        
-    var n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
+        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+        n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
         n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
         n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
         n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
         
-    this.set(
+    return this.set(
       m0*n0 + m1*n4 + m2*n8 + m3*n12,
       m0*n1 + m1*n5 + m2*n9 + m3*n13,
       m0*n2 + m1*n6 + m2*n10 + m3*n14,
@@ -98,7 +94,6 @@ N3D.Matrix4.prototype = {
       m12*n2 + m13*n6 + m14*n10 + m15*n14,
       m12*n3 + m13*n7 + m14*n11 + m15*n15      
     );
-    return this;    
   },
   multiplyVector4:function(v){
     var m = this.m;
