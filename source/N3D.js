@@ -1,7 +1,7 @@
 var N3D = {};
 N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(arguments.length == 16){
-    this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
+    this.set(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15);
   }else{
     this.identity();
   }
@@ -9,13 +9,18 @@ N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
 N3D.Matrix4.prototype = {
   constructor:N3D.Matrix4,
   identity:function(){ //identická matice
-    return this.m = [
+    this.m = [
       1,0,0,0,
       0,1,0,0,
       0,0,1,0,
       0,0,0,1
     ];
-  }, 
+    return this;
+  },
+  set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+    this.m = this.constructor.setter(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15);
+    return this;
+  },
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
@@ -116,6 +121,20 @@ N3D.Matrix4.prototype = {
            m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
   }
 };
+N3D.Matrix4.setArray = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  return [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
+};
+N3D.Matrix4.setObject = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  return {
+    0:n0,1:n1,2:n2,3:n3,
+    4:n4,5:n5,6:n6,7:n7,
+    8:n8,9:n9,10:n10,11:n11,
+    12:n12,13:n13,14:n14,15:n15}
+};
+
+N3D.Matrix4.setter = (function(){
+  return N3D.Matrix4.setArray;
+})();
 
 N3D.Matrix4.Multiply = function(m,n){
   var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
