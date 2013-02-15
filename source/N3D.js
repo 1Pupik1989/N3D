@@ -18,7 +18,7 @@ N3D.Matrix4.prototype = {
     return this;
   },
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-    this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
+    this.m = arguments;
     return this;
   },
   determinant:function(){
@@ -34,10 +34,11 @@ N3D.Matrix4.prototype = {
     return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
   },
   inverse:function(){
-    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
-        m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
-        m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+    var m = this.m;
+    var m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
+        m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
+        m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
+        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
         n0,n4,n8,n12;
     
     n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13));
