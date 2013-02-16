@@ -55,7 +55,7 @@ Matrix4.prototype = {
         n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
         n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
         n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
-        det = (m0*n0 + m1*n4 - m2*n8 + m3*n12)/det;
+        det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
     
     this.m = [
       n0*det,
