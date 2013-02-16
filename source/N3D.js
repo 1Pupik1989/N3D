@@ -20,19 +20,19 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
 Matrix4.prototype = {
   constructor:Matrix4,
   setRight:function(x,y,z){
-    this.m[0] = x.x || x || 0;
-    this.m[4] = x.y || y || 0;
-    this.m[8] = x.z || z || 0;
+    this.m[0] = x.x || x;
+    this.m[4] = x.y || y;
+    this.m[8] = x.z || z;
   },
   setUp:function(x,y,z){
-    this.m[1] = x.x || x || 0;
-    this.m[5] = x.y || y || 0;
-    this.m[9] = x.z || z || 0;
+    this.m[1] = x.x || x;
+    this.m[5] = x.y || y;
+    this.m[9] = x.z || z;
   },
-  setForward.function(x,y,z){
-    this.m[2] = x.x || x || 0;
-    this.m[6] = x.y || y || 0;
-    this.m[10] = x.z || z || 0;
+  setForward:function(x,y,z){
+    this.m[2] = x.x || x;
+    this.m[6] = x.y || y;
+    this.m[10] = x.z || z ;
   },
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
