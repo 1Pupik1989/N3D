@@ -30,7 +30,7 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     0,0,0,1
   ];
   }
-  var proto = Matrix4.prototype;
+  var proto = func;
   return {
     m:arr,
     inverse:proto.inverse,
@@ -39,7 +39,7 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     multiplyVector4:proto.multiplyVector4
   };
 };
-Matrix4.prototype = {
+var func = {
   constructor:Matrix4,
   identity:function(){ //identická matice
     this.m = [
