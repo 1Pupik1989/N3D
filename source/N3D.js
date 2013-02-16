@@ -1,27 +1,24 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
-    this.set(
+    this.m = [
       n0,  n1,  n2,  n3,
       n4,  n5,  n6,  n7,
       n8,  n9,  n10, n11,
       n12, n13, n14, n15
-    );
+    ];
     return this; 
   }
-  this.identity();
+  this.m = [
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1
+  ]
 
   return this;
 };
 Matrix4.prototype = {
   constructor:Matrix4,
-  identity:function(){ //identická matice
-    this.m = [
-      1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1
-    ];
-  },
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
   },
