@@ -1,19 +1,16 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  this.m = [
-    n0 || 1,  n1 || 0,  n2 || 0,  n3 || 0,
-    n4 || 0,  n5 || 1,  n6 || 0,  n7 || 0,
-    n8 || 0,  n9 || 0,  n10 || 1, n11 || 0,
-    n12 || 0, n13 || 0, n14 || 0, n15 || 1
-  ];
-  return this; 
-  /*this.m = [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1
-  ];
+  if(n15){
+    this.set(
+      n0,  n1,  n2,  n3,
+      n4,  n5,  n6,  n7,
+      n8,  n9,  n10, n11,
+      n12, n13, n14, n15
+    );
+    return this; 
+  }
+  this.identity();
 
-  return this; */
+  return this;
 };
 Matrix4.prototype = {
   constructor:Matrix4,
