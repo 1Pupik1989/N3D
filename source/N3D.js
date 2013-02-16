@@ -50,16 +50,12 @@ Matrix4.prototype = {
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
         m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15];
         n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
         n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
         n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
-        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12);
-
-    var det = m0*n0 + m1*n4 - m2*n8 + m3*n12;
-    
-    if(det == 0){ return false; }
-    det = 1/det;
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
+        det = (m0*n0 + m1*n4 - m2*n8 + m3*n12)/det;
     
     this.m = [
       n0*det,
@@ -72,14 +68,14 @@ Matrix4.prototype = {
       (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det,
       n8*det,
       -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det,
-      (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det,
-      -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det,
-      -n12*det,
-      (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
-      -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
-      (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
+     (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det,
+     -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det,
+     -n12*det,
+     (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
+     -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
+     (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
     ];
-    
+
     return this;
   },
   multiply:function(n){
