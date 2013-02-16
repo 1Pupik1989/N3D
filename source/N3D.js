@@ -1,21 +1,19 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(n15){
-    this.m = [
-      n0,n1,n2,n3,
-      n4,n5,n6,n7,
-      n8,n9,n10,n11,
-      n12,n13,n14,n15
-    ];
-    return this; 
-  }
   this.m = [
+    n0 || 1,  n1 || 0,  n2 || 0,  n3 || 0,
+    n4 || 0,  n5 || 1,  n6 || 0,  n7 || 0,
+    n8 || 0,  n9 || 0,  n10 || 1, n11 || 0,
+    n12 || 0, n13 || 0, n14 || 0, n15 || 1
+  ];
+  return this; 
+  /*this.m = [
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
     0,0,0,1
   ];
 
-  return this;
+  return this; */
 };
 Matrix4.prototype = {
   constructor:Matrix4,
@@ -29,6 +27,11 @@ Matrix4.prototype = {
   },
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
+  },
+  setRight:function(x,y,z){
+    this.m[0] = x.x || x || 0;
+    this.m[4] = x.y || y || 0;
+    this.m[8] = x.z || z || 0;
   },
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
