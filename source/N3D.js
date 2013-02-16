@@ -1,5 +1,5 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  /*if(n15){
+  if(n15){
     this.m = [
       n0,n1,n2,n3,
       n4,n5,n6,n7,
@@ -13,33 +13,11 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     0,1,0,0,
     0,0,1,0,
     0,0,0,1
-  ]; */
-  if(n15){
-    var arr = [
-      n0,n1,n2,n3,
-      n4,n5,n6,n7,
-      n8,n9,n10,n11,
-      n12,n13,n14,n15
-    ];
-  }else{
-  
-  var arr = [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1
   ];
-  }
-  var proto = func;
-  return {
-    m:arr,
-    inverse:proto.inverse,
-    toString:proto.toString,
-    multiply:proto.multiply,
-    multiplyVector4:proto.multiplyVector4
-  };
+
+  return this;
 };
-var func = {
+Matrix4.prototype = {
   constructor:Matrix4,
   identity:function(){ //identická matice
     this.m = [
@@ -69,12 +47,10 @@ var func = {
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
         m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
         m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
-        n0,n4,n8,n12;
-    
-    n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13));
-    n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12);
-    n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12);
-    n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12);
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12);
 
     var det = m0*n0 + m1*n4 - m2*n8 + m3*n12;
     
