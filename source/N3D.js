@@ -1,24 +1,28 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  var m;
   if(n15){
-    this.m = [
+    m = [
       n0,  n1,  n2,  n3,
       n4,  n5,  n6,  n7,
       n8,  n9,  n10, n11,
       n12, n13, n14, n15
     ];
-    return this; 
+     
   }
-  this.m = [
+  m = [
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
     0,0,0,1
   ];
+  
+  this.m = m;
 
   return this;
 };
 Matrix4.prototype = {
   constructor:Matrix4,
+  type:"Object",
   set:function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
   },
@@ -54,7 +58,7 @@ Matrix4.prototype = {
     if(det == 0){ return false; }
     det = 1/det;
     
-    this.m = Array(
+    this.m = [
       n0*det,
       -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
       (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
@@ -71,8 +75,8 @@ Matrix4.prototype = {
       (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
       -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
       (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
-    );
-
+    ];
+    
     return this;
   },
   multiply:function(n){
@@ -126,7 +130,7 @@ Matrix4.prototype = {
 };
 
 Matrix4.Identity = function(){
-  return new this(
+  return new Matrix4(
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
@@ -166,7 +170,6 @@ Matrix4.Multiply = function(m,n){
     m12*n3 + m13*n7 + m14*n11 + m15*n15      
   );
 };
-
 
 function Vector3(x,y,z){
   this.x = x;
