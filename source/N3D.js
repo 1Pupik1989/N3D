@@ -252,7 +252,9 @@ Vector4.prototype = {
 };
 
 var N3D = {
-  Matrix4:Matrix4,
+  Matrix4:function(){
+    return Matrix4.apply(new Matrix4,arguments);
+  },
   Vector3:Vector3,
   Vector4:Vector4
 };
