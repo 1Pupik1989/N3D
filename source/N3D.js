@@ -1,7 +1,5 @@
-
-
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(n15){
+  /*if(n15){
     this.m = [
       n0,n1,n2,n3,
       n4,n5,n6,n7,
@@ -15,9 +13,31 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
     0,1,0,0,
     0,0,1,0,
     0,0,0,1
+  ]; */
+  if(n15){
+    var arr = [
+      n0,n1,n2,n3,
+      n4,n5,n6,n7,
+      n8,n9,n10,n11,
+      n12,n13,n14,n15
+    ];
+  }else{
+  
+  var arr = [
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1
   ];
-
-  return this;
+  }
+  var proto = Matrix4.prototype;
+  return {
+    m:arr,
+    inverse:proto.inverse,
+    toString:proto.toString,
+    multiply:proto.multiply,
+    multiplyVector4:proto.multiplyVector4
+  };
 };
 Matrix4.prototype = {
   constructor:Matrix4,
