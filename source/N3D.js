@@ -1,6 +1,6 @@
-var N3D = {};
 
-N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+
+function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
     this.m = [
       n0,n1,n2,n3,
@@ -19,8 +19,8 @@ N3D.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
 
   return this;
 };
-N3D.Matrix4.prototype = {
-  constructor:N3D.Matrix4,
+Matrix4.prototype = {
+  constructor:Matrix4,
   identity:function(){ //identická matice
     this.m = [
       1,0,0,0,
@@ -116,7 +116,7 @@ N3D.Matrix4.prototype = {
   },
   multiplyVector4:function(v){
     var m = this.m;
-    return new N3D.Vector4(
+    return new Vector4(
       m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] * v.w,
       m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] * v.w,
       m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11] * v.w,
@@ -132,7 +132,7 @@ N3D.Matrix4.prototype = {
   }
 };
 
-N3D.Matrix4.Identity = function(){
+Matrix4.Identity = function(){
   return new this(
     1,0,0,0,
     0,1,0,0,
@@ -141,7 +141,7 @@ N3D.Matrix4.Identity = function(){
   );
 };
 
-N3D.Matrix4.Multiply = function(m,n){
+Matrix4.Multiply = function(m,n){
   var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
       m4 = m.m[4], m5 = m.m[5], m6 = m.m[6], m7 = m.m[7],
       m8 = m.m[8], m9 = m.m[9], m10 = m.m[10], m11 = m.m[11],
@@ -175,15 +175,15 @@ N3D.Matrix4.Multiply = function(m,n){
 };
 
 
-N3D.Vector3 = function(x,y,z){
+function Vector3(x,y,z){
   this.x = x;
   this.y = y;
   this.z = z;
    
   return this;
 };
-N3D.Vector3.prototype = {
-  constructor:N3D.Vector3,
+Vector3.prototype = {
+  constructor:Vector3,
   add:function(v){
     this.x += v.x;
     this.y += v.y;
@@ -223,7 +223,7 @@ N3D.Vector3.prototype = {
   } 
 };
 
-N3D.Vector4 = function(x,y,z,w){
+function Vector4(x,y,z,w){
   this.x = x;
   this.y = y;
   this.z = z;
@@ -231,7 +231,8 @@ N3D.Vector4 = function(x,y,z,w){
    
   return this;
 };
-N3D.Vector4.prototype = {
+Vector4.prototype = {
+  constructor:Vector4,
   add:function(v){
     this.x += v.x;
     this.y += v.y;
@@ -273,4 +274,10 @@ N3D.Vector4.prototype = {
   toString:function(){
     return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
+};
+
+var N3D = {
+  Matrix4:Matrix4,
+  Vector3:Vector3,
+  Vector4:Vector4
 };
