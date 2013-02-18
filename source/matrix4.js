@@ -14,6 +14,7 @@ function Matrix4a(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
 };
 Matrix4a.prototype = {
   constructor:Matrix4a,
+  type:"Array",
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
@@ -158,6 +159,7 @@ function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   return this;
 };
 Matrix4o.prototype = {
+  type:"Object",
   inverse:function(){
     var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
         m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
@@ -200,7 +202,7 @@ Matrix4o.prototype = {
 
 
 
-Matrix4 = Matrix4a;
+var Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
 
 Matrix4.Identity = function(){
   return new Matrix4(
@@ -215,7 +217,7 @@ Matrix4.CreateRotationX = function(angle){ //pitch
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new this(
+  return new Matrix4(
     1,0,0,0,
     0,c,s,0,
     0,-s,c,0,
@@ -227,7 +229,7 @@ Matrix4.CreateRotationY = function(angle){ //heading (yaw)
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new this(
+  return new Matrix4(
     c,0,-s,0,
     0,1,0,0,
     s,0,c,0,
@@ -239,7 +241,7 @@ Matrix4.CreateRotationZ = function(angle){ //roll
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new this(
+  return new Matrix4(
     c,s,0,0,
     -s,c,0,0,
     0,0,1,0,
@@ -247,7 +249,7 @@ Matrix4.CreateRotationZ = function(angle){ //roll
   );   
 };
 Matrix4.CreateTranslation = function(x,y,z){ //roll
-  return new this(
+  return new Matrix4(
     1,0,0,x,
     0,1,0,y,
     0,0,1,z,
@@ -255,16 +257,10 @@ Matrix4.CreateTranslation = function(x,y,z){ //roll
   );   
 };
 Matrix4.CreateScale = function(x,y,z){ //roll
-  return new this(
+  return new Matrix4(
     x,0,0,0,
     0,y,0,0,
     0,0,z,0,
     0,0,0,1
   );   
 };
-/*
-Xx,Yx,Zx,0,
-Xy,Yy,Zy,0,
-Xz,Yz,Zz,0,
-0,0,0,1
-*/
