@@ -182,7 +182,7 @@ Matrix4o.prototype = {
     this.m12 = m12*n0 + m13*n4 + m14*n8 + m15*n12;
     this.m13 = m12*n1 + m13*n5 + m14*n9 + m15*n13;
     this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
-  }
+  },
   toString:function(){
     var m = this;
     return m.m0.toFixed(4)+", "+m.m1.toFixed(4)+", "+m.m2.toFixed(4)+", "+m.m3.toFixed(4) + "\n" +
