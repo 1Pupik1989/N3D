@@ -109,39 +109,6 @@ Matrix4a.prototype = {
   }
 };
 
-Matrix4a.Multiply = function(m,n){
-  var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
-      m4 = m.m[4], m5 = m.m[5], m6 = m.m[6], m7 = m.m[7],
-      m8 = m.m[8], m9 = m.m[9], m10 = m.m[10], m11 = m.m[11],
-      m12 = m.m[12], m13 = m.m[13], m14 = m.m[14], m15 = m.m[15],
-      n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
-      n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
-      n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
-      n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
-      
-  return new N3D.Matrix4(
-    m0*n0 + m1*n4 + m2*n8 + m3*n12,
-    m0*n1 + m1*n5 + m2*n9 + m3*n13,
-    m0*n2 + m1*n6 + m2*n10 + m3*n14,
-    m0*n3 + m1*n7 + m2*n11 + m3*n15,
-    
-    m4*n0 + m5*n4 + m6*n8 + m7*n12,
-    m4*n1 + m5*n5 + m6*n9 + m7*n13,
-    m4*n2 + m5*n6 + m6*n10 + m7*n14,
-    m4*n3 + m5*n7 + m6*n11 + m7*n15,
-    
-    m8*n0 + m9*n4 + m10*n8 + m11*n12,
-    m8*n1 + m9*n5 + m10*n9 + m11*n13,
-    m8*n2 + m9*n6 + m10*n10 + m11*n14,
-    m8*n3 + m9*n7 + m10*n11 + m11*n15,
-    
-    m12*n0 + m13*n4 + m14*n8 + m15*n12,
-    m12*n1 + m13*n5 + m14*n9 + m15*n13,
-    m12*n2 + m13*n6 + m14*n10 + m15*n14,
-    m12*n3 + m13*n7 + m14*n11 + m15*n15      
-  );
-};
-
 function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
     this.m0 = n0; this.m1 = n1; this.m2 = n2; this.m3 = n3;
@@ -190,6 +157,32 @@ Matrix4o.prototype = {
 
     return this;
   },
+  multiply:function(n){
+    var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
+    m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
+    m8 = this.m8, m9 = this.m9, m10 = this.m10, m11 = this.m11,
+    m12 = this.m12, m13 = this.m13, m14 = this.m14, m15 = this.m15,
+    n0 = n.m0, n1 = n.m1, n2 = n.m2, n3 = n.m3,
+    n4 = n.m4, n5 = n.m5, n6 = n.m6, n7 = n.m7,
+    n8 = n.m8, n9 = n.m9, n10 = n.m10, n11 = n.m11,
+    n12 = n.m12, n13 = n.m13, n14 = n.m14, n15 = n.m15;
+        
+    this.m0 = m0*n0 + m1*n4 + m2*n8 + m3*n12;
+    this.m1 = m0*n1 + m1*n5 + m2*n9 + m3*n13;
+    this.m2 = m0*n2 + m1*n6 + m2*n10 + m3*n14;
+    this.m3 = m0*n3 + m1*n7 + m2*n11 + m3*n15;
+    this.m4 = m4*n0 + m5*n4 + m6*n8 + m7*n12;
+    this.m5 = m4*n1 + m5*n5 + m6*n9 + m7*n13;
+    this.m6 = m4*n2 + m5*n6 + m6*n10 + m7*n14;
+    this.m7 = m4*n3 + m5*n7 + m6*n11 + m7*n15;
+    this.m8 = m8*n0 + m9*n4 + m10*n8 + m11*n12;
+    this.m9 = m8*n1 + m9*n5 + m10*n9 + m11*n13;
+    this.m10 = m8*n2 + m9*n6 + m10*n10 + m11*n14;
+    this.m11 = m8*n3 + m9*n7 + m10*n11 + m11*n15;
+    this.m12 = m12*n0 + m13*n4 + m14*n8 + m15*n12;
+    this.m13 = m12*n1 + m13*n5 + m14*n9 + m15*n13;
+    this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
+  }
   toString:function(){
     var m = this;
     return m.m0.toFixed(4)+", "+m.m1.toFixed(4)+", "+m.m2.toFixed(4)+", "+m.m3.toFixed(4) + "\n" +
