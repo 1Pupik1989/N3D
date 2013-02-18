@@ -183,6 +183,14 @@ Matrix4o.prototype = {
     this.m13 = m12*n1 + m13*n5 + m14*n9 + m15*n13;
     this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
   },
+  multiplyVector4:function(v){
+    return new Vector4(
+      this.m0 * v.x + this.m1 * v.y + this.m2 * v.z + this.m3 * v.w,
+      this.m4 * v.x + this.m5 * v.y + this.m6 * v.z + this.m7 * v.w,
+      this.m8 * v.x + this.m9 * v.y + this.m10 * v.z + this.m11 * v.w,
+      this.m12 * v.x + this.m13 * v.y + this.m14 * v.z + this.m15 * v.w  
+    );
+  },
   toString:function(){
     var m = this;
     return m.m0.toFixed(4)+", "+m.m1.toFixed(4)+", "+m.m2.toFixed(4)+", "+m.m3.toFixed(4) + "\n" +
