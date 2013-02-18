@@ -1,6 +1,6 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
-    this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15];
+    this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
     return this; 
   }
   this.m = [
@@ -37,7 +37,7 @@ Matrix4.prototype = {
         n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
         det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
     
-    this.m = [
+    this.m = ([
       n0*det,
       -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
       (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
@@ -54,7 +54,7 @@ Matrix4.prototype = {
      (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
      -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
      (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
-    ];
+    ]);
 
     return this;
   },
@@ -68,7 +68,7 @@ Matrix4.prototype = {
     n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
     n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
         
-    this.m = [
+    this.m = ([
       m0*n0 + m1*n4 + m2*n8 + m3*n12,
       m0*n1 + m1*n5 + m2*n9 + m3*n13,
       m0*n2 + m1*n6 + m2*n10 + m3*n14,
@@ -88,7 +88,7 @@ Matrix4.prototype = {
       m12*n1 + m13*n5 + m14*n9 + m15*n13,
       m12*n2 + m13*n6 + m14*n10 + m15*n14,
       m12*n3 + m13*n7 + m14*n11 + m15*n15      
-    ];
+    ]);
   },
   multiplyVector4:function(v){
     var m = this.m;
@@ -150,111 +150,60 @@ Matrix4.Multiply = function(m,n){
   );
 };
 
-function Vector3(x,y,z){
-  this.x = x;
-  this.y = y;
-  this.z = z;
-   
-  return this;
-};
-Vector3.prototype = {
-  constructor:Vector3,
-  add:function(v){
-    this.x += v.x;
-    this.y += v.y;
-    this.z += v.z;
-    
-    return this;
-  },
-  sub:function(v){
-    this.x -= v.x;
-    this.y -= v.y;
-    this.z -= v.z;
-    
-    return this;
-  },
-  multiply:function(v){
-    this.x *= v.x;
-    this.y *= v.y;
-    this.z *= v.z;
-    
-    return this;
-  },
-  divide:function(v){
-    this.x /= v.x;
-    this.y /= v.y;
-    this.z /= v.z;
-    
-    return this;
-  },
-  dot:function(v){
-    return this.x * v.x + this.y * v.y + this.z * v.z;
-  },
-  normalize:function(){
-    return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-  },
-  toString:function(){
-    return "N3D.Vector3("+this.x+","+this.y+","+this.z+")";
-  } 
+Matrix4.CreateRotationX = function(angle){ //pitch
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    1,0,0,0,
+    0,c,s,0,
+    0,-s,c,0,
+    0,0,0,1
+  );
 };
 
-function Vector4(x,y,z,w){
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  this.w = w;
-   
-  return this;
-};
-Vector4.prototype = {
-  constructor:Vector4,
-  add:function(v){
-    this.x += v.x;
-    this.y += v.y;
-    this.z += v.z;
-    this.w -= v.w;
-    
-    return this;
-  },
-  sub:function(v){
-    this.x -= v.x;
-    this.y -= v.y;
-    this.z -= v.z;
-    this.w -= v.w;
-    
-    return this;
-  },
-  multiply:function(v){
-    this.x *= v.x;
-    this.y *= v.y;
-    this.z *= v.z;
-    this.w *= v.w;
-    
-    return this;
-  },
-  divide:function(v){
-    this.x /= v.x;
-    this.y /= v.y;
-    this.z /= v.z;
-    this.w /= v.w;
-    
-    return this;
-  },
-  dot:function(v){
-    return (this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w);
-  },
-  normalize:function(){
-    return Math.sqrt(this.dot());
-  },
-  toString:function(){
-    return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
-  }
+Matrix4.CreateRotationY = function(angle){ //heading (yaw)
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    c,0,-s,0,
+    0,1,0,0,
+    s,0,c,0,
+    0,0,0,1
+  );  
 };
 
-var N3D = {
-  Matrix4:function(){
-    return Matrix4.apply(new Matrix4,arguments);
-  },
-  Vector3:Vector3,
-  Vector4:Vector4
+Matrix4.CreateRotationZ = function(angle){ //roll
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    c,s,0,0,
+    -s,c,0,0,
+    0,0,1,0,
+    0,0,0,1
+  );   
 };
+Matrix4.CreateTranslation = function(x,y,z){ //roll
+  return new this(
+    1,0,0,x,
+    0,1,0,y,
+    0,0,1,z,
+    0,0,0,1
+  );   
+};
+Matrix4.CreateScale = function(x,y,z){ //roll
+  return new this(
+    x,0,0,0,
+    0,y,0,0,
+    0,0,z,0,
+    0,0,0,1
+  );   
+};
+/*
+Xx,Yx,Zx,0,
+Xy,Yy,Zy,0,
+Xz,Yz,Zz,0,
+0,0,0,1
+*/
