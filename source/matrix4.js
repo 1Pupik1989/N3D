@@ -1,20 +1,19 @@
 function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
-    return this; 
+    
+    return this;
   }
   this.m = [
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
     0,0,0,1
-  ];
-
+  ]; 
   return this;
 };
 Matrix4.prototype = {
   constructor:Matrix4,
-  m:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
