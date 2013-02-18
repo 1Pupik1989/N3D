@@ -1,4 +1,4 @@
-function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+function Matrix4a(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
     
@@ -12,8 +12,8 @@ function Matrix4(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   ]; 
   return this;
 };
-Matrix4.prototype = {
-  constructor:Matrix4,
+Matrix4a.prototype = {
+  constructor:Matrix4a,
   determinant:function(){
     var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
         m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
@@ -108,16 +108,7 @@ Matrix4.prototype = {
   }
 };
 
-Matrix4.Identity = function(){
-  return new Matrix4(
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1  
-  );
-};
-
-Matrix4.Multiply = function(m,n){
+Matrix4a.Multiply = function(m,n){
   var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
       m4 = m.m[4], m5 = m.m[5], m6 = m.m[6], m7 = m.m[7],
       m8 = m.m[8], m9 = m.m[9], m10 = m.m[10], m11 = m.m[11],
@@ -147,6 +138,76 @@ Matrix4.Multiply = function(m,n){
     m12*n1 + m13*n5 + m14*n9 + m15*n13,
     m12*n2 + m13*n6 + m14*n10 + m15*n14,
     m12*n3 + m13*n7 + m14*n11 + m15*n15      
+  );
+};
+
+function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  if(n15){
+    this.m0 = n0; this.m1 = n1; this.m2 = n2; this.m3 = n3;
+    this.m4 = n4; this.m5 = n5; this.m6 = n6; this.m7 = n7;
+    this.m8 = n8; this.m9 = n9; this.m10 = n10; this.m11 = n11;
+    this.m12 = n12; this.m13 = n13; this.m14 = n14; this.m15 = n15;
+    
+    return this;
+  }
+  this.m0 = 1; this.m1 = 0; this.m2 = 0; this.m3 = 0;
+  this.m4 = 0; this.m5 = 1; this.m6 = 0; this.m7 = 0;
+  this.m8 = 0; this.m9 = 0; this.m10 = 1; this.m11 = 0;
+  this.m12 = 0; this.m13 = 0; this.m14 = 0; this.m15 = 1;
+  
+  return this;
+};
+Matrix4o.prototype = {
+  inverse:function(){
+    var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
+        m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
+        m8 = this.m8, m9 = this.m9, m10 = this.m10, m11 = this.m11,
+        m12 = this.m12, m13 = this.m13, m14 = this.m14, m15 = this.m15,
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
+        det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
+    
+    this.m0 = n0*det;
+    this.m1 =  -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det;
+    this.m2 = (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det;
+    this.m3 = -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det;
+    this.m4 = -n4*det;
+    this.m5 = (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det;
+    this.m6 = -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det;
+    this.m7 = (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det;
+    this.m8 = n8*det;
+    this.m9 = -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det;
+    this.m10 = (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det;
+    this.m11 = -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det;
+    this.m12 = -n12*det;
+    this.m13 = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
+    this.m14 = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
+    this.m15 = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
+
+    return this;
+  },
+  toString:function(){
+    var m = this;
+    return m.m0.toFixed(4)+", "+m.m1.toFixed(4)+", "+m.m2.toFixed(4)+", "+m.m3.toFixed(4) + "\n" +
+           m.m4.toFixed(4)+", "+m.m5.toFixed(4)+", "+m.m6.toFixed(4)+", "+m.m7.toFixed(4) + "\n" + 
+           m.m8.toFixed(4)+", "+m.m9.toFixed(4)+", "+m.m10.toFixed(4)+", "+m.m11.toFixed(4) + "\n" + 
+           m.m12.toFixed(4)+", "+m.m13.toFixed(4)+", "+m.m14.toFixed(4)+", "+m.m15.toFixed(4); 
+  }  
+};
+
+
+
+
+Matrix4 = Matrix4a;
+
+Matrix4.Identity = function(){
+  return new Matrix4(
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1  
   );
 };
 
