@@ -220,8 +220,8 @@ Matrix4.CreateRotationX = function(angle){ //pitch
 
   return new Matrix4(
     1,0,0,0,
-    0,c,s,0,
-    0,-s,c,0,
+    0,c,-s,0,
+    0,s,c,0,
     0,0,0,1
   );
 };
@@ -231,9 +231,9 @@ Matrix4.CreateRotationY = function(angle){ //heading (yaw)
   var s = Math.sin(angle);
 
   return new Matrix4(
-    c,0,-s,0,
+    c,0,s,0,
     0,1,0,0,
-    s,0,c,0,
+    -s,0,c,0,
     0,0,0,1
   );  
 };
@@ -243,8 +243,8 @@ Matrix4.CreateRotationZ = function(angle){ //roll
   var s = Math.sin(angle);
 
   return new Matrix4(
-    c,s,0,0,
-    -s,c,0,0,
+    c,-s,0,0,
+    s,c,0,0,
     0,0,1,0,
     0,0,0,1
   );   
@@ -264,4 +264,18 @@ Matrix4.CreateScale = function(x,y,z){ //roll
     0,0,z,0,
     0,0,0,1
   );   
+};
+
+Matrix4.CreateRotationAroundAxis = function(rad,v){
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  var t = 1-c,x = v.x,y = v.y,z = v.z;
+  var xx = x*x, yy = y*y, zz = z*z;
+  
+  return new Matrix4(
+    t*xx+c, t*x*y-s*z, t*x*z+s*y, 0,
+    t*x*y + s*z, t*yy+c, t*y*z-s*x, 0,
+    t*x*z - s*y, t*y*z+s*x, t*zz+c, 0,
+    0,0,0,1
+  );
 };
