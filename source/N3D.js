@@ -1,1 +1,361 @@
-function Matrix4a(m,k,i,g,f,e,d,c,b,a,p,o,n,l,j,h){if(h){this.m=([m,k,i,g,f,e,d,c,b,a,p,o,n,l,j,h]);return this}this.m=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];return this}Matrix4a.prototype={constructor:Matrix4a,type:"Array",determinant:function(){var p=this.m[0],o=this.m[1],n=this.m[2],m=this.m[3],l=this.m[4],k=this.m[5],j=this.m[6],i=this.m[7],h=this.m[8],g=this.m[9],f=this.m[10],e=this.m[11],d=this.m[12],c=this.m[13],b=this.m[14],a=this.m[15];n0=k*(f*a-e*b-j*(g*a-e*c)+i*(g*b-f*c)),n4=l*(f*a-e*b)-j*(h*a-e*d)+i*(h*b-f*d),n8=l*(g*a-e*c)-k*(h*a-e*d)+i*(h*c-g*d),n12=l*(g*b-f*c)-k*(h*b-f*d)+j*(h*c-g*d);return(p*n0+o*n4-n*n8+m*n12)},inverse:function(){var d=this.m[0],c=this.m[1],b=this.m[2],a=this.m[3],u=this.m[4],t=this.m[5],r=this.m[6],p=this.m[7],n=this.m[8],l=this.m[9],s=this.m[10],q=this.m[11],o=this.m[12],m=this.m[13],k=this.m[14],j=this.m[15],h=t*(s*j-q*k-r*(l*j-q*m)+p*(l*k-s*m)),g=u*(s*j-q*k)-r*(n*j-q*o)+p*(n*k-s*o),f=u*(l*j-q*m)-t*(n*j-q*o)+p*(n*m-l*o),i=u*(l*k-s*m)-t*(n*k-s*o)+r*(n*m-l*o),e=1/(d*h+c*g-b*f+a*i);this.m=([h*e,-(c*(s*j-q*k)-b*(l*j-q*m)+a*(l*k-s*m))*e,(c*(r*j-p*k)-b*(t*j-p*m)+a*(t*k-r*m))*e,-(c*(r*q-p*s)-b*(t*q-p*l)+a*(t*s-r*l))*e,-g*e,(d*(s*j-q*k)-b*(n*j-q*o)+a*(n*k-s*o))*e,-(d*(r*j-p*k)-b*(u*j-p*o)+a*(u*k-r*o))*e,(d*(r*q-p*s)-b*(u*q-p*n)+a*(u*s-r*n))*e,f*e,-(d*(l*j-q*m)-c*(n*j-q*o)+a*(n*m-l*o))*e,(d*(t*j-p*m)-c*(u*j-p*o)+a*(u*m-t*o))*e,-(d*(t*q-p*l)-c*(u*q-p*n)+a*(u*l-t*n))*e,-i*e,(d*(l*k-s*m)-c*(n*k-s*o)+b*(n*m-l*o))*e,-(d*(t*k-r*m)-c*(u*k-r*o)+b*(u*m-t*o))*e,(d*(t*s-r*l)-c*(u*s-r*n)+b*(u*l-t*n))*e]);return this},multiply:function(v){var d=this.m[0],c=this.m[1],b=this.m[2],a=this.m[3],H=this.m[4],G=this.m[5],E=this.m[6],C=this.m[7],A=this.m[8],y=this.m[9],F=this.m[10],D=this.m[11],B=this.m[12],z=this.m[13],x=this.m[14],w=this.m[15],q=v.m[0],o=v.m[1],l=v.m[2],k=v.m[3],j=v.m[4],i=v.m[5],h=v.m[6],g=v.m[7],f=v.m[8],e=v.m[9],u=v.m[10],t=v.m[11],s=v.m[12],r=v.m[13],p=v.m[14],m=v.m[15];this.m=([d*q+c*j+b*f+a*s,d*o+c*i+b*e+a*r,d*l+c*h+b*u+a*p,d*k+c*g+b*t+a*m,H*q+G*j+E*f+C*s,H*o+G*i+E*e+C*r,H*l+G*h+E*u+C*p,H*k+G*g+E*t+C*m,A*q+y*j+F*f+D*s,A*o+y*i+F*e+D*r,A*l+y*h+F*u+D*p,A*k+y*g+F*t+D*m,B*q+z*j+x*f+w*s,B*o+z*i+x*e+w*r,B*l+z*h+x*u+w*p,B*k+z*g+x*t+w*m])},multiplyVector4:function(b){var a=this.m;return new Vector4(a[0]*b.x+a[1]*b.y+a[2]*b.z+a[3]*b.w,a[4]*b.x+a[5]*b.y+a[6]*b.z+a[7]*b.w,a[8]*b.x+a[9]*b.y+a[10]*b.z+a[11]*b.w,a[12]*b.x+a[13]*b.y+a[14]*b.z+a[15]*b.w)},toString:function(){var a=this.m;return a[0].toFixed(4)+", "+a[1].toFixed(4)+", "+a[2].toFixed(4)+", "+a[3].toFixed(4)+"\n"+a[4].toFixed(4)+", "+a[5].toFixed(4)+", "+a[6].toFixed(4)+", "+a[7].toFixed(4)+"\n"+a[8].toFixed(4)+", "+a[9].toFixed(4)+", "+a[10].toFixed(4)+", "+a[11].toFixed(4)+"\n"+a[12].toFixed(4)+", "+a[13].toFixed(4)+", "+a[14].toFixed(4)+", "+a[15].toFixed(4)}};function Matrix4o(m,k,i,g,f,e,d,c,b,a,p,o,n,l,j,h){if(h){this.m0=m;this.m1=k;this.m2=i;this.m3=g;this.m4=f;this.m5=e;this.m6=d;this.m7=c;this.m8=b;this.m9=a;this.m10=p;this.m11=o;this.m12=n;this.m13=l;this.m14=j;this.m15=h;return this}this.m0=1;this.m1=0;this.m2=0;this.m3=0;this.m4=0;this.m5=1;this.m6=0;this.m7=0;this.m8=0;this.m9=0;this.m10=1;this.m11=0;this.m12=0;this.m13=0;this.m14=0;this.m15=1;return this}Matrix4o.prototype={type:"Object",inverse:function(){var d=this.m0,c=this.m1,b=this.m2,a=this.m3,u=this.m4,t=this.m5,r=this.m6,p=this.m7,n=this.m8,l=this.m9,s=this.m10,q=this.m11,o=this.m12,m=this.m13,k=this.m14,j=this.m15,h=t*(s*j-q*k-r*(l*j-q*m)+p*(l*k-s*m)),g=u*(s*j-q*k)-r*(n*j-q*o)+p*(n*k-s*o),f=u*(l*j-q*m)-t*(n*j-q*o)+p*(n*m-l*o),i=u*(l*k-s*m)-t*(n*k-s*o)+r*(n*m-l*o),e=1/(d*h+c*g-b*f+a*i);this.m0=h*e;this.m1=-(c*(s*j-q*k)-b*(l*j-q*m)+a*(l*k-s*m))*e;this.m2=(c*(r*j-p*k)-b*(t*j-p*m)+a*(t*k-r*m))*e;this.m3=-(c*(r*q-p*s)-b*(t*q-p*l)+a*(t*s-r*l))*e;this.m4=-g*e;this.m5=(d*(s*j-q*k)-b*(n*j-q*o)+a*(n*k-s*o))*e;this.m6=-(d*(r*j-p*k)-b*(u*j-p*o)+a*(u*k-r*o))*e;this.m7=(d*(r*q-p*s)-b*(u*q-p*n)+a*(u*s-r*n))*e;this.m8=f*e;this.m9=-(d*(l*j-q*m)-c*(n*j-q*o)+a*(n*m-l*o))*e;this.m10=(d*(t*j-p*m)-c*(u*j-p*o)+a*(u*m-t*o))*e;this.m11=-(d*(t*q-p*l)-c*(u*q-p*n)+a*(u*l-t*n))*e;this.m12=-i*e;this.m13=(d*(l*k-s*m)-c*(n*k-s*o)+b*(n*m-l*o))*e;this.m14=-(d*(t*k-r*m)-c*(u*k-r*o)+b*(u*m-t*o))*e;this.m15=(d*(t*s-r*l)-c*(u*s-r*n)+b*(u*l-t*n))*e;return this},multiply:function(v){var d=this.m0,c=this.m1,b=this.m2,a=this.m3,H=this.m4,G=this.m5,E=this.m6,C=this.m7,A=this.m8,y=this.m9,F=this.m10,D=this.m11,B=this.m12,z=this.m13,x=this.m14,w=this.m15,q=v.m0,o=v.m1,l=v.m2,k=v.m3,j=v.m4,i=v.m5,h=v.m6,g=v.m7,f=v.m8,e=v.m9,u=v.m10,t=v.m11,s=v.m12,r=v.m13,p=v.m14,m=v.m15;this.m0=d*q+c*j+b*f+a*s;this.m1=d*o+c*i+b*e+a*r;this.m2=d*l+c*h+b*u+a*p;this.m3=d*k+c*g+b*t+a*m;this.m4=H*q+G*j+E*f+C*s;this.m5=H*o+G*i+E*e+C*r;this.m6=H*l+G*h+E*u+C*p;this.m7=H*k+G*g+E*t+C*m;this.m8=A*q+y*j+F*f+D*s;this.m9=A*o+y*i+F*e+D*r;this.m10=A*l+y*h+F*u+D*p;this.m11=A*k+y*g+F*t+D*m;this.m12=B*q+z*j+x*f+w*s;this.m13=B*o+z*i+x*e+w*r;this.m14=B*l+z*h+x*u+w*p},multiplyVector4:function(a){return new Vector4(this.m0*a.x+this.m1*a.y+this.m2*a.z+this.m3*a.w,this.m4*a.x+this.m5*a.y+this.m6*a.z+this.m7*a.w,this.m8*a.x+this.m9*a.y+this.m10*a.z+this.m11*a.w,this.m12*a.x+this.m13*a.y+this.m14*a.z+this.m15*a.w)},toString:function(){var a=this;return a.m0.toFixed(4)+", "+a.m1.toFixed(4)+", "+a.m2.toFixed(4)+", "+a.m3.toFixed(4)+"\n"+a.m4.toFixed(4)+", "+a.m5.toFixed(4)+", "+a.m6.toFixed(4)+", "+a.m7.toFixed(4)+"\n"+a.m8.toFixed(4)+", "+a.m9.toFixed(4)+", "+a.m10.toFixed(4)+", "+a.m11.toFixed(4)+"\n"+a.m12.toFixed(4)+", "+a.m13.toFixed(4)+", "+a.m14.toFixed(4)+", "+a.m15.toFixed(4)}};var Matrix4=(window.chrome)?Matrix4a:Matrix4o;Matrix4.Identity=function(){return new Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)};Matrix4.CreateRotationX=function(b){var d=Math.cos(b);var a=Math.sin(b);return new Matrix4(1,0,0,0,0,d,-a,0,0,a,d,0,0,0,0,1)};Matrix4.CreateRotationY=function(b){var d=Math.cos(b);var a=Math.sin(b);return new Matrix4(d,0,a,0,0,1,0,0,-a,0,d,0,0,0,0,1)};Matrix4.CreateRotationZ=function(b){var d=Math.cos(b);var a=Math.sin(b);return new Matrix4(d,-a,0,0,a,d,0,0,0,0,1,0,0,0,0,1)};Matrix4.CreateTranslation=function(a,c,b){return new Matrix4(1,0,0,a,0,1,0,c,0,0,1,b,0,0,0,1)};Matrix4.CreateScale=function(a,c,b){return new Matrix4(a,0,0,0,0,c,0,0,0,0,b,0,0,0,0,1)};Matrix4.CreateRotationAroundAxis=function(g,j){var l=Math.sin(g);var e=Math.cos(g);var k=1-e,i=j.x,h=j.y,f=j.z;var a=i*i,d=h*h,b=f*f;return new Matrix4(k*a+e,k*i*h-l*f,k*i*f+l*h,0,k*i*h+l*f,k*d+e,k*h*f-l*i,0,k*i*f-l*h,k*h*f+l*i,k*b+e,0,0,0,0,1)};function Vector4(a,d,c,b){this.x=a;this.y=d;this.z=c;this.w=b;return this}Vector4.prototype={constructor:Vector4,add:function(a){this.x+=a.x;this.y+=a.y;this.z+=a.z;this.w-=a.w;return this},sub:function(a){this.x-=a.x;this.y-=a.y;this.z-=a.z;this.w-=a.w;return this},multiply:function(a){this.x*=a.x;this.y*=a.y;this.z*=a.z;this.w*=a.w;return this},divide:function(a){this.x/=a.x;this.y/=a.y;this.z/=a.z;this.w/=a.w;return this},dot:function(a){return(this.x*a.x+this.y*a.y+this.z*a.z+this.w*a.w)},normalize:function(){return Math.sqrt(this.dot())},projection:function(b,a){var b=b||Game.viewport.width;var a=a||Game.viewport.height},toString:function(){return"N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")"}};var N3D={Matrix4:function(){return Matrix4.apply(new Matrix4,arguments)},Vector3:Vector3,Vector4:Vector4};
+function Vector3(x,y,z){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  
+  return this;
+};
+Vector3.prototype = {
+  add:function(v){
+    this.x += v.x;
+    this.y += v.y;
+    this.z += v.z;
+    
+    return this;
+  }
+};
+
+
+function Vector4(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+   
+  return this;
+};
+Vector4.prototype = {
+  constructor:Vector4,
+  add:function(v){
+    this.x += v.x;
+    this.y += v.y;
+    this.z += v.z;
+    this.w -= v.w;
+    
+    return this;
+  },
+  sub:function(v){
+    this.x -= v.x;
+    this.y -= v.y;
+    this.z -= v.z;
+    this.w -= v.w;
+    
+    return this;
+  },
+  multiply:function(v){
+    this.x *= v.x;
+    this.y *= v.y;
+    this.z *= v.z;
+    this.w *= v.w;
+    
+    return this;
+  },
+  divide:function(v){
+    this.x /= v.x;
+    this.y /= v.y;
+    this.z /= v.z;
+    this.w /= v.w;
+    
+    return this;
+  },
+  dot:function(v){
+    return (this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w);
+  },
+  normalize:function(){
+    return Math.sqrt(this.dot());
+  },
+  projection:function(width,height){
+    var width = width || Game.viewport.width;
+    var height = height || Game.viewport.height;
+  },
+  toString:function(){
+    return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
+  }
+};
+function Matrix4a(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  if(n15){
+    this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
+    
+    return this;
+  }
+  this.m = [
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1
+  ]; 
+  return this;
+};
+Matrix4a.prototype = {
+  constructor:Matrix4a,
+  type:"Array",
+  determinant:function(){
+    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
+        m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
+        m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
+        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15];
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12)
+
+    return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
+  },
+  inverse:function(){
+    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
+        m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
+        m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
+        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
+        det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
+    
+    this.m = ([
+      n0*det,
+      -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
+      (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
+      -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det,
+      -n4*det,
+      (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det,
+      -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det,
+      (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det,
+      n8*det,
+      -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det,
+     (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det,
+     -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det,
+     -n12*det,
+     (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
+     -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
+     (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
+    ]);
+
+    return this;
+  },
+  multiply:function(n){
+    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
+    m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
+    m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
+    m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+    n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
+    n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
+    n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
+    n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
+        
+    this.m = ([
+      m0*n0 + m1*n4 + m2*n8 + m3*n12,
+      m0*n1 + m1*n5 + m2*n9 + m3*n13,
+      m0*n2 + m1*n6 + m2*n10 + m3*n14,
+      m0*n3 + m1*n7 + m2*n11 + m3*n15,
+      
+      m4*n0 + m5*n4 + m6*n8 + m7*n12,
+      m4*n1 + m5*n5 + m6*n9 + m7*n13,
+      m4*n2 + m5*n6 + m6*n10 + m7*n14,
+      m4*n3 + m5*n7 + m6*n11 + m7*n15,
+      
+      m8*n0 + m9*n4 + m10*n8 + m11*n12,
+      m8*n1 + m9*n5 + m10*n9 + m11*n13,
+      m8*n2 + m9*n6 + m10*n10 + m11*n14,
+      m8*n3 + m9*n7 + m10*n11 + m11*n15,
+      
+      m12*n0 + m13*n4 + m14*n8 + m15*n12,
+      m12*n1 + m13*n5 + m14*n9 + m15*n13,
+      m12*n2 + m13*n6 + m14*n10 + m15*n14,
+      m12*n3 + m13*n7 + m14*n11 + m15*n15      
+    ]);
+  },
+  multiplyVector4:function(v){
+    var m = this.m;
+    return new Vector4(
+      m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] * v.w,
+      m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] * v.w,
+      m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11] * v.w,
+      m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] * v.w  
+    );
+  },
+  toString:function(){
+    var m = this.m;
+    return m[0].toFixed(4)+", "+m[1].toFixed(4)+", "+m[2].toFixed(4)+", "+m[3].toFixed(4) + "\n" +
+           m[4].toFixed(4)+", "+m[5].toFixed(4)+", "+m[6].toFixed(4)+", "+m[7].toFixed(4) + "\n" + 
+           m[8].toFixed(4)+", "+m[9].toFixed(4)+", "+m[10].toFixed(4)+", "+m[11].toFixed(4) + "\n" + 
+           m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
+  }
+};
+
+function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+  if(n15){
+    this.m0 = n0; this.m1 = n1; this.m2 = n2; this.m3 = n3;
+    this.m4 = n4; this.m5 = n5; this.m6 = n6; this.m7 = n7;
+    this.m8 = n8; this.m9 = n9; this.m10 = n10; this.m11 = n11;
+    this.m12 = n12; this.m13 = n13; this.m14 = n14; this.m15 = n15;
+    
+    return this;
+  }
+  this.m0 = 1; this.m1 = 0; this.m2 = 0; this.m3 = 0;
+  this.m4 = 0; this.m5 = 1; this.m6 = 0; this.m7 = 0;
+  this.m8 = 0; this.m9 = 0; this.m10 = 1; this.m11 = 0;
+  this.m12 = 0; this.m13 = 0; this.m14 = 0; this.m15 = 1;
+  
+  return this;
+};
+Matrix4o.prototype = {
+  type:"Object",
+  inverse:function(){
+    var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
+        m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
+        m8 = this.m8, m9 = this.m9, m10 = this.m10, m11 = this.m11,
+        m12 = this.m12, m13 = this.m13, m14 = this.m14, m15 = this.m15,
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
+        det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
+    
+    this.m0 = n0*det;
+    this.m1 =  -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det;
+    this.m2 = (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det;
+    this.m3 = -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det;
+    this.m4 = -n4*det;
+    this.m5 = (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det;
+    this.m6 = -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det;
+    this.m7 = (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det;
+    this.m8 = n8*det;
+    this.m9 = -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det;
+    this.m10 = (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det;
+    this.m11 = -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det;
+    this.m12 = -n12*det;
+    this.m13 = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
+    this.m14 = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
+    this.m15 = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
+
+    return this;
+  },
+  multiply:function(n){
+    var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
+    m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
+    m8 = this.m8, m9 = this.m9, m10 = this.m10, m11 = this.m11,
+    m12 = this.m12, m13 = this.m13, m14 = this.m14, m15 = this.m15,
+    n0 = n.m0, n1 = n.m1, n2 = n.m2, n3 = n.m3,
+    n4 = n.m4, n5 = n.m5, n6 = n.m6, n7 = n.m7,
+    n8 = n.m8, n9 = n.m9, n10 = n.m10, n11 = n.m11,
+    n12 = n.m12, n13 = n.m13, n14 = n.m14, n15 = n.m15;
+        
+    this.m0 = m0*n0 + m1*n4 + m2*n8 + m3*n12;
+    this.m1 = m0*n1 + m1*n5 + m2*n9 + m3*n13;
+    this.m2 = m0*n2 + m1*n6 + m2*n10 + m3*n14;
+    this.m3 = m0*n3 + m1*n7 + m2*n11 + m3*n15;
+    this.m4 = m4*n0 + m5*n4 + m6*n8 + m7*n12;
+    this.m5 = m4*n1 + m5*n5 + m6*n9 + m7*n13;
+    this.m6 = m4*n2 + m5*n6 + m6*n10 + m7*n14;
+    this.m7 = m4*n3 + m5*n7 + m6*n11 + m7*n15;
+    this.m8 = m8*n0 + m9*n4 + m10*n8 + m11*n12;
+    this.m9 = m8*n1 + m9*n5 + m10*n9 + m11*n13;
+    this.m10 = m8*n2 + m9*n6 + m10*n10 + m11*n14;
+    this.m11 = m8*n3 + m9*n7 + m10*n11 + m11*n15;
+    this.m12 = m12*n0 + m13*n4 + m14*n8 + m15*n12;
+    this.m13 = m12*n1 + m13*n5 + m14*n9 + m15*n13;
+    this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
+  },
+  multiplyVector4:function(v){
+    return new Vector4(
+      this.m0 * v.x + this.m1 * v.y + this.m2 * v.z + this.m3 * v.w,
+      this.m4 * v.x + this.m5 * v.y + this.m6 * v.z + this.m7 * v.w,
+      this.m8 * v.x + this.m9 * v.y + this.m10 * v.z + this.m11 * v.w,
+      this.m12 * v.x + this.m13 * v.y + this.m14 * v.z + this.m15 * v.w  
+    );
+  },
+  toString:function(){
+    var m = this;
+    return m.m0.toFixed(4)+", "+m.m1.toFixed(4)+", "+m.m2.toFixed(4)+", "+m.m3.toFixed(4) + "\n" +
+           m.m4.toFixed(4)+", "+m.m5.toFixed(4)+", "+m.m6.toFixed(4)+", "+m.m7.toFixed(4) + "\n" + 
+           m.m8.toFixed(4)+", "+m.m9.toFixed(4)+", "+m.m10.toFixed(4)+", "+m.m11.toFixed(4) + "\n" + 
+           m.m12.toFixed(4)+", "+m.m13.toFixed(4)+", "+m.m14.toFixed(4)+", "+m.m15.toFixed(4); 
+  }  
+};
+
+
+
+
+var Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
+
+Matrix4.Identity = function(){
+  return new this(
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1  
+  );
+};
+
+Matrix4.CreateRotationX = function(angle){
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    1,0,0,0,
+    0,c,-s,0,
+    0,s,c,0,
+    0,0,0,1
+  );
+};
+
+Matrix4.CreateRotationY = function(angle){
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    c,0,s,0,
+    0,1,0,0,
+    -s,0,c,0,
+    0,0,0,1
+  );  
+};
+
+Matrix4.CreateRotationZ = function(angle){
+  var c = Math.cos(angle);
+  var s = Math.sin(angle);
+
+  return new this(
+    c,-s,0,0,
+    s,c,0,0,
+    0,0,1,0,
+    0,0,0,1
+  );   
+};
+Matrix4.CreateTranslation = function(x,y,z){
+  return new this(
+    1,0,0,x,
+    0,1,0,y,
+    0,0,1,z,
+    0,0,0,1
+  );   
+};
+Matrix4.CreateScale = function(x,y,z){
+  return new this(
+    x,0,0,0,
+    0,y,0,0,
+    0,0,z,0,
+    0,0,0,1
+  );   
+};
+
+Matrix4.CreateRotationAroundAxis = function(rad,v){
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  var t = 1-c,x = v.x,y = v.y,z = v.z;
+  var xx = x*x, yy = y*y, zz = z*z;
+  
+  return new this(
+    t*xx+c, t*x*y-s*z, t*x*z+s*y, 0,
+    t*x*y + s*z, t*yy+c, t*y*z-s*x, 0,
+    t*x*z - s*y, t*y*z+s*x, t*zz+c, 0,
+    0,0,0,1
+  );
+};
+
+var N3D = {
+  Vector3:Vector3,
+  Vector4:Vector4,
+  Matrix4:Matrix4
+};
