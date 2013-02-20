@@ -28,17 +28,35 @@ Matrix4a.prototype = {
     return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
   },
   inverse:function(){
-    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
-        m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
-        m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15],
+    var m = this.m, 
+        m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
+        m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
+        m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
+        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
         n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
         n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
         n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
         n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
         det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
     
-    this.m = ([
+    m[0] = n0*det;
+    m[1] = -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det;
+    m[2] = (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det;
+    m[3] = -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det;
+    m[4] = -n4*det;
+    m[5] = (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det;
+    m[6] = -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det;
+    m[7] = (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det;
+    m[8] = n8*det;
+    m[9] = -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det;
+    m[10] = (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det;
+    m[11] = -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det;
+    m[12] = -n12*det;
+    m[13] = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
+    m[14] = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
+    m[15] = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
+    
+    /*this.m = ([
       n0*det,
       -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
       (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
@@ -55,7 +73,7 @@ Matrix4a.prototype = {
      (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
      -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
      (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
-    ]);
+    ]); */
 
     return this;
   },
@@ -206,7 +224,7 @@ Matrix4o.prototype = {
 var Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
 
 Matrix4.Identity = function(){
-  return new Matrix4(
+  return new this(
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
@@ -214,11 +232,11 @@ Matrix4.Identity = function(){
   );
 };
 
-Matrix4.CreateRotationX = function(angle){ //pitch
+Matrix4.CreateRotationX = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new Matrix4(
+  return new this(
     1,0,0,0,
     0,c,-s,0,
     0,s,c,0,
@@ -226,11 +244,11 @@ Matrix4.CreateRotationX = function(angle){ //pitch
   );
 };
 
-Matrix4.CreateRotationY = function(angle){ //heading (yaw)
+Matrix4.CreateRotationY = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new Matrix4(
+  return new this(
     c,0,s,0,
     0,1,0,0,
     -s,0,c,0,
@@ -238,27 +256,27 @@ Matrix4.CreateRotationY = function(angle){ //heading (yaw)
   );  
 };
 
-Matrix4.CreateRotationZ = function(angle){ //roll
+Matrix4.CreateRotationZ = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return new Matrix4(
+  return new this(
     c,-s,0,0,
     s,c,0,0,
     0,0,1,0,
     0,0,0,1
   );   
 };
-Matrix4.CreateTranslation = function(x,y,z){ //roll
-  return new Matrix4(
+Matrix4.CreateTranslation = function(x,y,z){
+  return new this(
     1,0,0,x,
     0,1,0,y,
     0,0,1,z,
     0,0,0,1
   );   
 };
-Matrix4.CreateScale = function(x,y,z){ //roll
-  return new Matrix4(
+Matrix4.CreateScale = function(x,y,z){
+  return new this(
     x,0,0,0,
     0,y,0,0,
     0,0,z,0,
@@ -272,7 +290,7 @@ Matrix4.CreateRotationAroundAxis = function(rad,v){
   var t = 1-c,x = v.x,y = v.y,z = v.z;
   var xx = x*x, yy = y*y, zz = z*z;
   
-  return new Matrix4(
+  return new this(
     t*xx+c, t*x*y-s*z, t*x*z+s*y, 0,
     t*x*y + s*z, t*yy+c, t*y*z-s*x, 0,
     t*x*z - s*y, t*y*z+s*x, t*zz+c, 0,
