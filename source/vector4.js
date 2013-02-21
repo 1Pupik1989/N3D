@@ -54,3 +54,22 @@ Vector4.prototype = {
     return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
 };
+
+Vector4.Equals = function(v){
+  return v instanceof this;
+};
+Vector4.Projection = function(obj,viewport){
+  var viewport = viewport || Game.viewport;
+  
+  if(-1 <= obj[0] <= 1 && -1 <= obj[1] <= 1 && -1 <= obj[2] <= 1){
+    var x = (obj[0]+1)*(viewport.width*0.5); 
+    var y = (obj[1]+1)*(viewport.height*0.5);
+    return new Vector2(x ^ 0,y ^ 0);
+  }
+  
+  return false;
+};
+
+if(N3D){
+  N3D.Vector4 = Vector4;
+}

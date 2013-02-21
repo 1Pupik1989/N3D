@@ -297,3 +297,7 @@ Matrix4.CreateRotationAroundAxis = function(rad,v){
     0,0,0,1
   );
 };
+
+if(N3D){
+  N3D.Matrix4 = Matrix4;
+}

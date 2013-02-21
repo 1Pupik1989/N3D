@@ -1,3 +1,60 @@
+var N3D = {};
+
+var Vector2 = function(x,y){
+  this.x = x;
+  this.y = y;
+
+  return this;
+};
+Vector2.prototype = {
+  constructor:Vector2,
+  add:function(v){
+    this.x += v.x;
+    this.y += v.y;
+    
+    return this;
+  },
+  sub:function(v){
+    this.x -= v.x;
+    this.y -= v.y;
+    
+    return this;  
+  },
+  multiply:function(){
+    this.x *= v.x;
+    this.y *= v.y;
+    
+    return this;  
+  },
+  divide:function(){
+    this.x /= v.x;
+    this.y /= v.y;
+    
+    return this;  
+  },
+  multiplyNumber:function(n){
+    this.x *= n;
+    this.y *= n;
+    
+    return this;
+  },
+  toString:function(){
+    return "N3D.Vector2("+this.x+","+this.y+")";
+  },
+  negative:function(){
+    return this.scale(-1);
+  }  
+};
+
+Vector2.Equals = function(v){
+  return v instanceof this;
+};
+
+if(N3D){
+  N3D.Vector2 = Vector2;
+}
+
+
 function Vector3(x,y,z){
   this.x = x;
   this.y = y;
@@ -6,15 +63,175 @@ function Vector3(x,y,z){
   return this;
 };
 Vector3.prototype = {
+  constructor:Vector3,
   add:function(v){
     this.x += v.x;
     this.y += v.y;
     this.z += v.z;
     
     return this;
+  },
+  sub:function(v){
+    this.x -= v.x;
+    this.y -= v.y;
+    this.z -= v.z;
+    
+    return this;
+  },
+  scale:function(v){
+    this.x *= v.x;
+    this.y *= v.y;
+    this.z *= v.z;
+    
+    return this;
+  },
+  multiplyNumber:function(n){
+    this.x *= n;
+    this.y *= n;
+    this.z *= n;
+    
+    return this;
+  },
+  cross:function(v){
+    var x = this.x,y = this.y,z = this.z;
+    
+    this.x = y*v.z - z*v.y;
+    this.y = z*v.x - x*v.z;
+    this.z = x*v.y - y*v.x;
+    
+    return this;
+  },
+  dot:function(){
+    var x = this.x,y = this.y,z = this.z;
+    return (x*x + y*y + z*z);
+  },
+  length:function(){
+    var x = this.x,y = this.y,z = this.z;
+    return Math.sqrt(x*x + y*y + z*z);
+  },
+  normalize:function(){
+    var x = this.x,y = this.y,z = this.z;
+    var length = Math.sqrt(x*x + y*y + z*z);
+    
+    this.x /= length;
+    this.y /= length;
+    this.z /= length;
+    
+    return this; 
+  },
+  negative:function(){
+    this.x *= -1;
+    this.y *= -1;
+    this.z *= -1;
+    return this;
+  },
+  toString:function(){
+    return "N3D.Vector3("+this.x+","+this.y+","+this.z+")";
   }
 };
 
+Vector3.Up = new Vector3(0,1,0);
+Vector3.Right = new Vector3(1,0,0);
+Vector3.Forward = new Vector3(0,0,1);
+Vector3.Zero = new Vector3(0,0,0);
+
+Vector3.Lerp = function(v1,v2,a){
+  return new this(
+    MathHelper.Lerp(v1.x, v2.x, a),
+    MathHelper.Lerp(v1.y, v2.y, a),
+    MathHelper.Lerp(v1.z, v2.z, a)
+  );
+};
+Vector3.Max = function(v1,v2){
+  return new this(
+    MathHelper.Max(v1.x, v2.x),
+    MathHelper.Max(v1.y, v2.y),
+    MathHelper.Max(v1.z, v2.z)
+  );
+};
+Vector3.Min = function(v1,v2){
+  return new this(
+    MathHelper.Min(v1.x, v2.x),
+    MathHelper.Min(v1.y, v2.y),
+    MathHelper.Min(v1.z, v2.z)
+  );
+};
+Vector3.Herminte = function(v1,t1,v2,t2,a){
+  return new this(
+    MathHelper.Hermite(v1.x, t1.x, v2.x, t2.x, a),
+    MathHelper.Hermite(v1.y, t1.y, v2.y, t2.y, a),
+    MathHelper.Hermite(v1.z, t1.z, v2.z, t2.z, a)
+  );   
+};
+Vector3.isZero = function(v){
+  if(v.x==v.y==v.z==0){
+    return true;
+  }
+  return false;
+};
+Vector3.Equals = function(v){
+  return v instanceof this;
+};
+Vector3.DistanceSquared = function(v1,v2){
+  return (v1.x-v2.x) * (v1.x-v2.x) + (v1.y-v2.y) * (v1.y-v2.y) + (v1.z-v2.z) * (v1.z-v2.z); 
+};
+Vector3.Distance = function(v1,v2){
+  return Math.sqrt(this.DistanceSquared(v1,v2));
+};
+Vector3.Cross = function(v1, v2){
+  return new this(
+    v1.y * v2.z - v1.z * v2.y,
+    v1.z * v2.x - v1.x * v2.z,
+    v1.x * v2.y - v1.y * v2.x  
+  );
+};
+Vector3.BaryCentric = function(v1,v2,v3,a1,a2,r){
+  return new this(
+    MathHelper.Barycentric(v1.x, v2.x, v3.x, a1, a2),
+    MathHelper.Barycentric(v1.y, v2.y, v3.y, a1, a2),
+    MathHelper.Barycentric(v1.z, v2.z, v3.z, a1, a2)
+  );
+};
+
+Vector3.CatmullRom = function(v1,v2,v3,v4,a,r){
+  return new this(
+    MathHelper.CatmullRom(v1.x, v2.x, v3.x, v4.x, a),
+    MathHelper.CatmullRom(v1.y, v2.y, v3.y, v4.y, a),
+    MathHelper.CatmullRom(v1.z, v2.z, v3.z, v4.z, a)
+  );
+};
+
+Vector3.Clamp = function(v1, min, max){
+  return new this(
+    MathHelper.Clamp(v1.x, min.x, max.x),
+    MathHelper.Clamp(v1.y, min.y, max.y),
+    MathHelper.Clamp(v1.z, min.z, max.z)
+  );
+};
+Vector3.Dot = function(v1, v2){
+  return (v1.x*v2.x + v1.y*v2.y + v1.z * v2.z);
+};
+Vector3.Reflect = function(v,n){
+  var dT = 2 * this.Dot(v,n);
+  return new N3D.Vector3(
+    v.x - dT * n.x,
+    v.y - dT * n.y,
+    v.z - dT * n.z
+  );
+};
+
+
+Vector3.SmoothStep = function(v1,v2,a){
+  return new this(
+    MathHelper.SmoothStep(v1.x, v2.x, a),
+    MathHelper.SmoothStep(v1.y, v2.y, a),
+    MathHelper.SmoothStep(v1.z, v2.z, a)
+  );
+};
+
+if(N3D){
+  N3D.Vector3 = Vector3;
+}
 
 function Vector4(x,y,z,w){
   this.x = x;
@@ -72,6 +289,26 @@ Vector4.prototype = {
     return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
 };
+
+Vector4.Equals = function(v){
+  return v instanceof this;
+};
+Vector4.Projection = function(obj,viewport){
+  var viewport = viewport || Game.viewport;
+  
+  if(-1 <= obj[0] <= 1 && -1 <= obj[1] <= 1 && -1 <= obj[2] <= 1){
+    var x = (obj[0]+1)*(viewport.width*0.5); 
+    var y = (obj[1]+1)*(viewport.height*0.5);
+    return new Vector2(x ^ 0,y ^ 0);
+  }
+  
+  return false;
+};
+
+if(N3D){
+  N3D.Vector4 = Vector4;
+}
+
 function Matrix4a(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(n15){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
@@ -129,6 +366,25 @@ Matrix4a.prototype = {
     m[13] = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
     m[14] = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
     m[15] = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
+    
+    /*this.m = ([
+      n0*det,
+      -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
+      (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
+      -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det,
+      -n4*det,
+      (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det,
+      -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det,
+      (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det,
+      n8*det,
+      -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det,
+     (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det,
+     -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det,
+     -n12*det,
+     (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
+     -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
+     (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
+    ]); */
 
     return this;
   },
@@ -353,8 +609,67 @@ Matrix4.CreateRotationAroundAxis = function(rad,v){
   );
 };
 
-var N3D = {
-  Vector3:Vector3,
-  Vector4:Vector4,
-  Matrix4:Matrix4
+if(N3D){
+  N3D.Matrix4 = Matrix4;
+}
+
+var Maths = {
+  Log10E : 0.4342945,
+  Log2E : 1.442695,
+  PiOver2 : Math.PI*0.5,
+  PiOver4 : Math.PI*0.25,
+  TwoPi : Math.PI*2,
+  PiOver360 : Math.PI/360,
+  PiOver180 : Math.PI/180
+}
+
+Maths.cot = function(num){
+  return 1/Math.tan(num);
 };
+
+Maths.Barycentric = function(v1,v2,v3,a1,a2){
+  return v1 + (v2-v1) * a1 + (v3-v1) * a2;
+};
+Maths.CatmullRom = function(v1, v2, v3, v4, a){
+  var aS = a * a;
+  var aC = aS * a;
+  return (0 * (2 * ve2 + (v3 - v1) * a + (2 * v1 - 5 * v2 + 4 * v3 - v4) * aS + (3 * v2 - v1 - 3 * v3 + v4) * aC));
+};
+Maths.Clamp = function(v,min,max){
+  return v > max ? max : (v < min ? min : v);
+};
+Maths.Lerp = function(v1,v2,a){
+  return v1 + (v2-v1) * a;
+};
+Maths.Lerp2 = function(a1,a2,b1,b2,a){
+  var a = (a-a1)/(a2-a1);  
+  return (b1 + a*(b2-b1)); 
+};
+Maths.SmoothStep = function(v1,v2,a){
+  return MathHelper.Hermite(v1,v2,MathHelper.Clamp(a,0,1));
+};
+Maths.ToDegrees = function(d){
+  return d * 180/Math.PI;
+};
+Maths.ToRadians = function(d){
+  return d * Math.PI/180;
+};
+Maths.IEEERemainder = function(f1,f2){
+  return f1 - (f2 * Math.round(f1/f2));
+};
+Maths.WrapAngle = function(){
+  var angle = MathHelper(angle,MathHelper.TwoPi);
+  
+  if(angle<=-Math.PI){
+    angle += MathHelper.TwoPi;
+    return angle;
+  }
+  if(angle > Math.PI){
+    angle -= MathHelper.TwoPi;
+  } 
+  return angle;
+};
+
+if(N3D){
+  N3D.Math = Maths;
+}
