@@ -70,6 +70,6 @@ Vector4.Projection = function(obj,viewport){
   return false;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector4 = Vector4;
 }

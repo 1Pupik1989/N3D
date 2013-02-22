@@ -55,6 +55,6 @@ Maths.WrapAngle = function(){
   return angle;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Math = Maths;
 }

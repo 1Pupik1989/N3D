@@ -50,10 +50,9 @@ Vector2.Equals = function(v){
   return v instanceof this;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector2 = Vector2;
 }
-
 
 function Vector3(x,y,z){
   this.x = x;
@@ -229,7 +228,7 @@ Vector3.SmoothStep = function(v1,v2,a){
   );
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector3 = Vector3;
 }
 
@@ -305,22 +304,23 @@ Vector4.Projection = function(obj,viewport){
   return false;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector4 = Vector4;
 }
 
 function Matrix4a(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(n15){
+  if(n15 !== undefined){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
-    
+
     return this;
+  }else{
+    this.m = [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1
+    ]; 
   }
-  this.m = [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1
-  ]; 
   return this;
 };
 Matrix4a.prototype = {
@@ -366,25 +366,6 @@ Matrix4a.prototype = {
     m[13] = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
     m[14] = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
     m[15] = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
-    
-    /*this.m = ([
-      n0*det,
-      -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det,
-      (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det,
-      -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det,
-      -n4*det,
-      (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det,
-      -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det,
-      (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det,
-      n8*det,
-      -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det,
-     (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det,
-     -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det,
-     -n12*det,
-     (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det,
-     -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det,
-     (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det
-    ]); */
 
     return this;
   },
@@ -422,11 +403,12 @@ Matrix4a.prototype = {
   },
   multiplyVector4:function(v){
     var m = this.m;
+    var x = v.x, y = v.y, z = v.z;
     return new Vector4(
-      m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] * v.w,
-      m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] * v.w,
-      m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11] * v.w,
-      m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] * v.w  
+      m[0] * x + m[1] * y + m[2] * z + m[3] * v.w,
+      m[4] * x + m[5] * y + m[6] * z + m[7] * v.w,
+      m[8] * x + m[9] * y + m[10] * z + m[11] * v.w,
+      m[12] * x + m[13] * y + m[14] * z + m[15] * v.w  
     );
   },
   toString:function(){
@@ -456,6 +438,18 @@ function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
 };
 Matrix4o.prototype = {
   type:"Object",
+  determinant:function(){
+    var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
+        m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
+        m8 = this.m8, m9 = this.m9, m10 = this.m10, m11 = this.m11,
+        m12 = this.m12, m13 = this.m13, m14 = this.m14, m15 = this.m15;
+        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
+        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
+        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
+        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12)
+
+    return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
+  },
   inverse:function(){
     var m0 = this.m0, m1 = this.m1, m2 = this.m2, m3 = this.m3,
         m4 = this.m4, m5 = this.m5, m6 = this.m6, m7 = this.m7,
@@ -513,11 +507,12 @@ Matrix4o.prototype = {
     this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
   },
   multiplyVector4:function(v){
+    var x = v.x, y = v.y, z = v.z;
     return new Vector4(
-      this.m0 * v.x + this.m1 * v.y + this.m2 * v.z + this.m3 * v.w,
-      this.m4 * v.x + this.m5 * v.y + this.m6 * v.z + this.m7 * v.w,
-      this.m8 * v.x + this.m9 * v.y + this.m10 * v.z + this.m11 * v.w,
-      this.m12 * v.x + this.m13 * v.y + this.m14 * v.z + this.m15 * v.w  
+      this.m0 * x + this.m1 * y + this.m2 * z + this.m3 * w,
+      this.m4 * x + this.m5 * y + this.m6 * z + this.m7 * w,
+      this.m8 * x + this.m9 * y + this.m10 * z + this.m11 * w,
+      this.m12 * x + this.m13 * y + this.m14 * z + this.m15 * w  
     );
   },
   toString:function(){
@@ -595,21 +590,68 @@ Matrix4.CreateScale = function(x,y,z){
   );   
 };
 
-Matrix4.CreateRotationAroundAxis = function(rad,v){
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  var t = 1-c,x = v.x,y = v.y,z = v.z;
-  var xx = x*x, yy = y*y, zz = z*z;
-  
+Matrix4.CreateRotationAroundAxis = function(angle,v){
+  var c = Math.cos(angle);    // cosine
+      s = Math.sin(angle);    // sine
+      x = v.x, y = v.y, z = v.z,
+      xx = x * x,
+      xy = x * y,
+      xz = x * z,
+      yy = y * y,
+      yz = y * z,
+      zz = z * z,
+      t = 1 - c;
+
   return new this(
-    t*xx+c, t*x*y-s*z, t*x*z+s*y, 0,
-    t*x*y + s*z, t*yy+c, t*y*z-s*x, 0,
-    t*x*z - s*y, t*y*z+s*x, t*zz+c, 0,
+    xx * t + c, xy * t - z * s, xz * t + y * s, 0,  
+    xy * t + z * s, yy * t + c, yz * t - x * s, 0,
+    xz * t - y * s, yz * t + x * s, zz * t + c, 0,
+    0,0,0,1
+  );
+
+};
+
+Matrix4.CreateFrustum = function(l,r,b,t,n,f){
+  var a = 2*n/(r-l),
+      b = (r+l)/(r-l),
+      c = 2*n/(t-b),
+      d = (t+b)*(t-b),
+      e = -(f+n) / (f-n),
+      f = -2*f*n/(f-n);
+
+  return new this(
+    a,0,b,0,
+    0,c,d,0,
+    0,0,e,f,
+    0,0,-1,0
+  );
+};
+
+Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
+  var t = Math.tan(fov*0.5 * Math.PI/180);
+  var h = near*t;
+  var w = near*aspect;
+  
+  return Matrix4.CreateFrustum(-w,w,-h,h,near,far);
+};
+
+Matrix4.CreateOrthographicProjection = function(l,r,b,t,n,f){
+  var a = 2/(r-l),
+      b = -((r+l)/(r-l)),
+      c = 2/(t-b),
+      d = -((t+b)/(t-b)),
+      e = -2/(f-n),
+      f = -((f+n)/(f-n));
+      
+  return new this(
+    a,0,0,b,
+    0,c,0,d,
+    0,0,e,f,
     0,0,0,1
   );
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Matrix4 = Matrix4;
 }
 
@@ -670,6 +712,6 @@ Maths.WrapAngle = function(){
   return angle;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Math = Maths;
 }

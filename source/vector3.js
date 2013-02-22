@@ -172,6 +172,6 @@ Vector3.SmoothStep = function(v1,v2,a){
   );
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector3 = Vector3;
 }

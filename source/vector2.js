@@ -48,6 +48,6 @@ Vector2.Equals = function(v){
   return v instanceof this;
 };
 
-if(N3D){
+if(typeof N3D !== "undefined"){
   N3D.Vector2 = Vector2;
 }
