@@ -386,23 +386,6 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
     xz * t - ys, yz * t + xs, z*z * t + c, 0,
     0,0,0,1
   );
-
-};
-
-N3D.Math.Matrix4.CreateRotationAroundAxis2 = function(angle,v){
-  var v = v.normalize();
-  var c = Math.cos(angle),    // cosine
-      s = Math.sin(angle),    // sine
-      x = v.x, y = v.y, z = v.z,
-      t = 1 - c;
-
-  return new this(
-    x*x * t + c, x*y * t - z*s, x*z * t + y*s, 0,  
-    x*y * t + z*s, y*y * t + c, y*z * t - x*s, 0,
-    x*z * t - y*s, y*z * t + x*s, z*z * t + c, 0,
-    0,0,0,1
-  );
-
 };
 
 N3D.Math.Matrix4.CreateFrustum = function(left, right, bottom, top, near, far){
