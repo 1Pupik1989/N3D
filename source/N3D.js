@@ -1,6 +1,10 @@
 //N3D s načítáním částí kódů
 var N3D = {
-  Dom:{},
+  Math:{},
+  Graphics:{},
+  Game:{},
+  Utils:{},
+  Geometry:{},
   librariesAvailable:{
     "Math.Main":"maths.js",
     "Math.Matrix4":"matrix4.js",
@@ -18,9 +22,6 @@ var N3D = {
   }
 };
 
-N3D.Dom.getScript = function(src,complete) {
-  
-};
 
 N3D.require = function(){
   var src = Array.prototype.slice.call(arguments);
@@ -40,7 +41,7 @@ N3D.require = function(){
     }; 
 
     js.type = 'text/javascript';
-    js.src = src;
+    js.src = "https://raw.github.com/1Pupik1989/N3D/master/source/"+src;    //
     head.appendChild(js); 
     
     js.onload = function(){
@@ -61,6 +62,3 @@ N3D.require = function(){
   
   return callbacks;
 };
-
-
-$D = N3D.Dom;
