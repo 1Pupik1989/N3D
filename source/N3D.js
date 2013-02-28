@@ -46,7 +46,7 @@ N3D.require = function(){
 
     js.type = 'text/javascript';
     js.src = N3D.Path+src;
-    console.log(js.src);
+
     head.appendChild(js); 
     
     js.onload = function(){
