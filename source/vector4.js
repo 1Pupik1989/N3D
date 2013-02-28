@@ -1,4 +1,4 @@
-function Vector4(x,y,z,w){
+N3D.Math.Vector4 = function(x,y,z,w){
   this.x = x;
   this.y = y;
   this.z = z;
@@ -6,8 +6,8 @@ function Vector4(x,y,z,w){
    
   return this;
 };
-Vector4.prototype = {
-  constructor:Vector4,
+N3D.Math.Vector4.prototype = {
+  constructor:N3D.Math.Vector4,
   add:function(v){
     this.x += v.x;
     this.y += v.y;
@@ -32,11 +32,19 @@ Vector4.prototype = {
     
     return this;
   },
-  divide:function(v){
+  divideVector:function(v){
     this.x /= v.x;
     this.y /= v.y;
     this.z /= v.z;
     this.w /= v.w;
+    
+    return this;
+  },
+  divideNumber:function(n){
+    this.x /= n;
+    this.y /= n;
+    this.z /= n;
+    this.w /= n;
     
     return this;
   },
@@ -55,21 +63,19 @@ Vector4.prototype = {
   }
 };
 
-Vector4.Equals = function(v){
+N3D.Math.Vector4.Equals = function(v){
   return v instanceof this;
 };
-Vector4.Projection = function(obj,viewport){
+N3D.Math.Vector4.Projection = function(obj,viewport){
   var viewport = viewport || Game.viewport;
-  
-  if(-1 <= obj[0] <= 1 && -1 <= obj[1] <= 1 && -1 <= obj[2] <= 1){
-    var x = (obj[0]+1)*(viewport.width*0.5); 
-    var y = (obj[1]+1)*(viewport.height*0.5);
+  obj.divideNumber(obj.w);
+  //if(-1 <= obj.x <= 1 && -1 <= obj.y <= 1 && -1 <= obj.z <= 1){
+    var x = (obj.x+1)*(viewport.width*0.5); 
+    var y = (obj.y+1)*(viewport.height*0.5);
     return new Vector2(x ^ 0,y ^ 0);
-  }
+  //}
   
   return false;
 };
 
-if(typeof N3D !== "undefined"){
-  N3D.Vector4 = Vector4;
-}
+$V4 = N3D.Math.Vector4;

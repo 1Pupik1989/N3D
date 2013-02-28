@@ -1,11 +1,11 @@
-var Vector2 = function(x,y){
+N3D.Math.Vector2 = function(x,y){
   this.x = x;
   this.y = y;
 
   return this;
 };
-Vector2.prototype = {
-  constructor:Vector2,
+N3D.Math.Vector2.prototype = {
+  constructor:N3D.Math.Vector2,
   add:function(v){
     this.x += v.x;
     this.y += v.y;
@@ -44,10 +44,8 @@ Vector2.prototype = {
   }  
 };
 
-Vector2.Equals = function(v){
+N3D.Math.Vector2.Equals = function(v){
   return v instanceof this;
 };
 
-if(typeof N3D !== "undefined"){
-  N3D.Vector2 = Vector2;
-}
+$V2 = N3D.Math.Vector2;

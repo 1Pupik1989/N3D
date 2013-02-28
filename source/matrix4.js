@@ -119,15 +119,16 @@ Matrix4a.prototype = {
       m12*n2 + m13*n6 + m14*n10 + m15*n14,
       m12*n3 + m13*n7 + m14*n11 + m15*n15      
     ]);
+    return this;
   },
   multiplyVector4:function(v){
     var m = this.m;
-    var x = v.x, y = v.y, z = v.z;
-    return new Vector4(
-      m[0] * x + m[1] * y + m[2] * z + m[3] * v.w,
-      m[4] * x + m[5] * y + m[6] * z + m[7] * v.w,
-      m[8] * x + m[9] * y + m[10] * z + m[11] * v.w,
-      m[12] * x + m[13] * y + m[14] * z + m[15] * v.w  
+    var x = v.x, y = v.y, z = v.z,w = v.w;
+    return new $V4(
+      m[0] * x + m[1] * y + m[2] * z + m[3] * w,
+      m[4] * x + m[5] * y + m[6] * z + m[7] * w,
+      m[8] * x + m[9] * y + m[10] * z + m[11] * w,
+      m[12] * x + m[13] * y + m[14] * z + m[15] * w 
     );
   },
   toString:function(){
@@ -137,6 +138,35 @@ Matrix4a.prototype = {
            m[8].toFixed(4)+", "+m[9].toFixed(4)+", "+m[10].toFixed(4)+", "+m[11].toFixed(4) + "\n" + 
            m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
   }
+};
+
+Matrix4a.Multiply = function(m,n){
+  var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
+  m4 = m.m[4], m5 = m.m[5], m6 = m.m[6], m7 = m.m[7],
+  m8 = m.m[8], m9 = m.m[9], m10 = m.m[10], m11 = m.m[11],
+  m12 = m.m[12], m13 = m.m[13], m14 = m.m[14], m15 = m.m[15],
+  n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
+  n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
+  n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
+  n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
+      
+  return new this(
+    m0*n0 + m1*n4 + m2*n8 + m3*n12,
+    m0*n1 + m1*n5 + m2*n9 + m3*n13,
+    m0*n2 + m1*n6 + m2*n10 + m3*n14,
+    m0*n3 + m1*n7 + m2*n11 + m3*n15,
+    m4*n0 + m5*n4 + m6*n8 + m7*n12,
+    m4*n1 + m5*n5 + m6*n9 + m7*n13,
+    m4*n2 + m5*n6 + m6*n10 + m7*n14,
+    m4*n3 + m5*n7 + m6*n11 + m7*n15,
+    m8*n0 + m9*n4 + m10*n8 + m11*n12,
+    m8*n1 + m9*n5 + m10*n9 + m11*n13,
+    m8*n2 + m9*n6 + m10*n10 + m11*n14,
+    m8*n3 + m9*n7 + m10*n11 + m11*n15,
+    m12*n0 + m13*n4 + m14*n8 + m15*n12,
+    m12*n1 + m13*n5 + m14*n9 + m15*n13,
+    m12*n2 + m13*n6 + m14*n10 + m15*n14
+  );
 };
 
 function Matrix4o(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
@@ -224,10 +254,11 @@ Matrix4o.prototype = {
     this.m12 = m12*n0 + m13*n4 + m14*n8 + m15*n12;
     this.m13 = m12*n1 + m13*n5 + m14*n9 + m15*n13;
     this.m14 = m12*n2 + m13*n6 + m14*n10 + m15*n14;
+    return this;
   },
   multiplyVector4:function(v){
     var x = v.x, y = v.y, z = v.z;
-    return new Vector4(
+    return new $V4(
       this.m0 * x + this.m1 * y + this.m2 * z + this.m3 * w,
       this.m4 * x + this.m5 * y + this.m6 * z + this.m7 * w,
       this.m8 * x + this.m9 * y + this.m10 * z + this.m11 * w,
@@ -243,12 +274,39 @@ Matrix4o.prototype = {
   }  
 };
 
+Matrix4o.Multiply = function(m,n){
+  var m0 = m.m0, m1 = m.m1, m2 = m.m2, m3 = m.m3,
+  m4 = m.m4, m5 = m.m5, m6 = m.m6, m7 = m.m7,
+  m8 = m.m8, m9 = m.m9, m10 = m.m10, m11 = m.m11,
+  m12 = m.m12, m13 = m.m13, m14 = m.m14, m15 = m.m15,
+  n0 = n.m0, n1 = n.m1, n2 = n.m2, n3 = n.m3,
+  n4 = n.m4, n5 = n.m5, n6 = n.m6, n7 = n.m7,
+  n8 = n.m8, n9 = n.m9, n10 = n.m10, n11 = n.m11,
+  n12 = n.m12, n13 = n.m13, n14 = n.m14, n15 = n.m15;
+      
+  return new this(
+    m0*n0 + m1*n4 + m2*n8 + m3*n12,
+    m0*n1 + m1*n5 + m2*n9 + m3*n13,
+    m0*n2 + m1*n6 + m2*n10 + m3*n14,
+    m0*n3 + m1*n7 + m2*n11 + m3*n15,
+    m4*n0 + m5*n4 + m6*n8 + m7*n12,
+    m4*n1 + m5*n5 + m6*n9 + m7*n13,
+    m4*n2 + m5*n6 + m6*n10 + m7*n14,
+    m4*n3 + m5*n7 + m6*n11 + m7*n15,
+    m8*n0 + m9*n4 + m10*n8 + m11*n12,
+    m8*n1 + m9*n5 + m10*n9 + m11*n13,
+    m8*n2 + m9*n6 + m10*n10 + m11*n14,
+    m8*n3 + m9*n7 + m10*n11 + m11*n15,
+    m12*n0 + m13*n4 + m14*n8 + m15*n12,
+    m12*n1 + m13*n5 + m14*n9 + m15*n13,
+    m12*n2 + m13*n6 + m14*n10 + m15*n14
+  );
+};
+
+N3D.Math.Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
 
 
-
-var Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
-
-Matrix4.Identity = function(){
+N3D.Math.Matrix4.Identity = function(){
   return new this(
     1,0,0,0,
     0,1,0,0,
@@ -257,7 +315,7 @@ Matrix4.Identity = function(){
   );
 };
 
-Matrix4.CreateRotationX = function(angle){
+N3D.Math.Matrix4.CreateRotationX = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
@@ -269,7 +327,7 @@ Matrix4.CreateRotationX = function(angle){
   );
 };
 
-Matrix4.CreateRotationY = function(angle){
+N3D.Math.Matrix4.CreateRotationY = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
@@ -281,7 +339,7 @@ Matrix4.CreateRotationY = function(angle){
   );  
 };
 
-Matrix4.CreateRotationZ = function(angle){
+N3D.Math.Matrix4.CreateRotationZ = function(angle){
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
@@ -292,7 +350,7 @@ Matrix4.CreateRotationZ = function(angle){
     0,0,0,1
   );   
 };
-Matrix4.CreateTranslation = function(x,y,z){
+N3D.Math.Matrix4.CreateTranslation = function(x,y,z){
   return new this(
     1,0,0,x,
     0,1,0,y,
@@ -300,7 +358,7 @@ Matrix4.CreateTranslation = function(x,y,z){
     0,0,0,1
   );   
 };
-Matrix4.CreateScale = function(x,y,z){
+N3D.Math.Matrix4.CreateScale = function(x,y,z){
   return new this(
     x,0,0,0,
     0,y,0,0,
@@ -309,7 +367,7 @@ Matrix4.CreateScale = function(x,y,z){
   );   
 };
 
-Matrix4.CreateRotationAroundAxis = function(angle,v){
+N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
   var c = Math.cos(angle);    // cosine
       s = Math.sin(angle);    // sine
       x = v.x, y = v.y, z = v.z,
@@ -330,31 +388,32 @@ Matrix4.CreateRotationAroundAxis = function(angle,v){
 
 };
 
-Matrix4.CreateFrustum = function(l,r,b,t,n,f){
-  var a = 2*n/(r-l),
-      b = (r+l)/(r-l),
-      c = 2*n/(t-b),
-      d = (t+b)*(t-b),
-      e = -(f+n) / (f-n),
-      f = -2*f*n/(f-n);
-
+N3D.Math.Matrix4.CreateFrustum = function(left, right, bottom, top, near, far){
+  var a = 2*near/(right-left),
+      b = (right+left)/(right-left),
+      c = 2*near/(top-bottom),
+      d = (top+bottom)/(top-bottom),
+      e = -(far+near)/(far-near),
+      f = -(2*far*near)/(far-near);
+  
   return new this(
     a,0,b,0,
     0,c,d,0,
     0,0,e,f,
-    0,0,-1,0
+    0,0,-1,0  
   );
 };
 
-Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
-  var t = Math.tan(fov*0.5 * Math.PI/180);
-  var h = near*t;
-  var w = near*aspect;
-  
-  return Matrix4.CreateFrustum(-w,w,-h,h,near,far);
+N3D.Math.Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
+  var ymax = near*Math.tan(fov * N3D.Math.PiOver360);
+  var ymin = -ymax;
+  var xmin = ymin*aspect;
+  var xmax = ymax*aspect;
+
+  return this.CreateFrustum(xmin,xmax,ymin,ymax,near,far);
 };
 
-Matrix4.CreateOrthographicProjection = function(l,r,b,t,n,f){
+N3D.Math.Matrix4.CreateOrthographicProjection = function(l,r,b,t,n,f){
   var a = 2/(r-l),
       b = -((r+l)/(r-l)),
       c = 2/(t-b),
@@ -369,7 +428,17 @@ Matrix4.CreateOrthographicProjection = function(l,r,b,t,n,f){
     0,0,0,1
   );
 };
+N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
+  var z = $V3.Sub(eye,center).normalize();
+  var x = $V3.Cross(up,z).normalize();
+  var y = $V3.Cross(z,x);
+  
+  return new this(
+    x.x,y.x,z.x,-eye.x,
+    x.y,y.y,z.y,-eye.y,
+    x.z,y.z,z.z,-eye.z,
+    0,0,0,1
+  );  
+};
 
-if(typeof N3D !== "undefined"){
-  N3D.Matrix4 = Matrix4;
-}
+$M4 = N3D.Math.Matrix4;
