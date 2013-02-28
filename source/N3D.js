@@ -22,6 +22,10 @@ var N3D = {
   }
 };
 
+N3D.Path = (function(){
+  var scripts= document.getElementsByTagName('script');
+  return scripts[scripts.length-1].src.split('?')[0].split('/').slice(0, -1).join('/')+'/';      // remove any ?query
+})();
 
 N3D.require = function(){
   var src = Array.prototype.slice.call(arguments);
@@ -41,7 +45,8 @@ N3D.require = function(){
     }; 
 
     js.type = 'text/javascript';
-    js.src = "https://raw.github.com/1Pupik1989/N3D/master/source/"+src;    //
+    js.src = N3D.Path+src;
+    console.log(js.src);
     head.appendChild(js); 
     
     js.onload = function(){
