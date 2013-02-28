@@ -372,21 +372,18 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
   var c = Math.cos(angle),    // cosine
       s = Math.sin(angle),    // sine
       x = v.x, y = v.y, z = v.z,
-      xx = x * x,
       xy = x * y,
       xz = x * z,
-      yy = y * y,
       yz = y * z,
-      zz = z * z,
       xs = x * s,
       ys = y * s,
       zs = z * s,      
       t = 1 - c;
 
   return new this(
-    xx * t + c, xy * t - zs, xz * t + ys, 0,  
-    xy * t + zs, yy * t + c, yz * t - xs, 0,
-    xz * t - ys, yz * t + xs, zz * t + c, 0,
+    x*x * t + c, xy * t - zs, xz * t + ys, 0,  
+    xy * t + zs, y*y * t + c, yz * t - xs, 0,
+    xz * t - ys, yz * t + xs, z*z * t + c, 0,
     0,0,0,1
   );
 
