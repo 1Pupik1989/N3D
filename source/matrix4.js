@@ -368,10 +368,12 @@ N3D.Math.Matrix4.CreateScale = function(x,y,z){
 };
 
 N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
-  var v = v.normalize();
+  var x = v.x,y = v.y, z = v.z;
+  var v = 1/Math.sqrt(x*x + y*y + z*v.z);
+  
   var c = Math.cos(angle),    // cosine
       s = Math.sin(angle),    // sine
-      x = v.x, y = v.y, z = v.z,
+      x = x*v, y = y*v, z = z*v,
       xy = x * y,
       xz = x * z,
       yz = y * z,
