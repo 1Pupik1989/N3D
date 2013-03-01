@@ -7,6 +7,21 @@ N3D.Math.TwoPi = Math.PI*2;
 N3D.Math.PiOver360 = Math.PI/360;
 N3D.Math.PiOver180 = Math.PI/180;
 
+N3D.Math.min = function() {
+  var min = this[0];
+  var len = this.length;
+  var i = 1;
+  for ( ; i < len; i++) if (this[i] < min) min = this[i];
+  return min;
+};
+
+N3D.Math.max = function() {
+  var min = this[0];
+  var len = this.length;
+  var i = 1;
+  for ( ; i < len; i++) if (this[i] > max) max = this[i];
+  return max;
+};
 
 N3D.Math.cot = function(num){
   return 1/Math.tan(num);
