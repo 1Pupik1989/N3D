@@ -1,4 +1,3 @@
-N3D.Math = Math;
 N3D.Math.Log10E = 0.4342945;
 N3D.Math.Log2E = 1.442695;
 N3D.Math.PiOver2 = Math.PI*0.5;
