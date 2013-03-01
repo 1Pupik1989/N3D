@@ -7,19 +7,19 @@ N3D.Math.TwoPi = Math.PI*2;
 N3D.Math.PiOver360 = Math.PI/360;
 N3D.Math.PiOver180 = Math.PI/180;
 
-N3D.Math.min = function() {
-  var min = this[0];
-  var len = this.length;
+N3D.Math.min = function(arr) {
+  var min = arr[0];
+  var len = arr.length;
   var i = 1;
-  for ( ; i < len; i++) if (this[i] < min) min = this[i];
+  for ( ; i < len; i++) if (arr[i] < min) min = arr[i];
   return min;
 };
 
-N3D.Math.max = function() {
-  var min = this[0];
-  var len = this.length;
+N3D.Math.max = function(arr) {
+  var max = arr[0];
+  var len = arr.length;
   var i = 1;
-  for ( ; i < len; i++) if (this[i] > max) max = this[i];
+  for ( ; i < len; i++) if (arr[i] > max) max = arr[i];
   return max;
 };
 
