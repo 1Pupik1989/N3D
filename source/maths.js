@@ -69,3 +69,5 @@ N3D.Math.WrapAngle = function(){
   } 
   return angle;
 };
+
+$Math = N3D.Math;
