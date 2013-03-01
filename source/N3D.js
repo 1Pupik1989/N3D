@@ -11,10 +11,10 @@ var N3D = {
     "Math.Vector2":"vector2.js",
     "Math.Vector3":"vector3.js",
     "Math.Vector4":"vector4.js",
-    "Graphics.Camera":"camera.js",
-    "Graphics.Scene":"scene.js",
-    "Graphics.Texture":"texture.js",
-    "Graphics.Render":"render.js",
+    "Graphic.Camera":"camera.js",
+    "Graphic.Scene":"scene.js",
+    "Graphic.Texture":"texture.js",
+    "Graphic.Render":"render.js",
     "Geometry.Object3D":"objects.js",
     "Game.Main":"game.js",
     "Utils":"tools.js",
@@ -24,46 +24,60 @@ var N3D = {
 
 N3D.Path = (function(){
   var scripts= document.getElementsByTagName('script');
-  return scripts[scripts.length-1].src.split('?')[0].split('/').slice(0, -1).join('/')+'/';      // remove any ?query
+  var path = scripts[scripts.length-1].src.match(/.*\//)[0];
+  
+  return path; 
 })();
 
+
+
 N3D.require = function(){
-  var src = Array.prototype.slice.call(arguments);
-  var length = src.length;
+  var urls = Array.prototype.slice.call(arguments);
+  var length = urls.length;
+  var name;
+  var loaded = 0;
+  var errorNames = [];
+  var head = document.getElementsByTagName("head")[0];
+
   var callbacks = {
-    error:function(f){ this.error = f || this.error; },
-    complete:function(f){ this.complete = f || this.complete; }
+    error:function(f){ this.error = f || this.error; return this; },
+    complete:function(f){ this.complete = f || this.complete; return this; },
+    success:function(f){ this.success = f || this.success; return this; }
   };
-  
-  function loadJS(src){
-    var head = document.getElementsByTagName('head')[0];
-    var length = src.length;
-    var js = document.createElement('script');
-    var callbacks = {
-      complete:function(f){ this.complete = f || this.complete; return this;},
-      error:function(f){ this.error = f || this.error; return this;}
-    }; 
 
-    js.type = 'text/javascript';
-    js.src = N3D.Path+src;
-
-    head.appendChild(js); 
-    
-    js.onload = function(){
-      callbacks.complete();
-    };
-    js.onerror = function(){
-      callbacks.error();
-    };   
   
-    return callbacks;
-  };
-  
-  for(var i=0;i<length;i++){
-    if(name = N3D.librariesAvailable[ src[i] ]){
-      loadJS(name);
+  var i=0;
+  while(i<length){
+    var src = N3D.librariesAvailable[ urls[i] ];
+    if(typeof src == "undefined"){
+      errorNames.push(urls[i]+ " not exists");
+      i++;
+      continue;
     }
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = N3D.Path+src;
+    head.appendChild(script);
+
+    script.onload = (function(n){
+      
+      return function(){
+        loaded++;
+        if(n==length){
+          if(loaded == length){
+            callbacks.complete();
+          }else{
+            callbacks.error(errorNames.join("\n"));
+          }
+          callbacks.success();
+        }
+      }
+    })(i+1);
+    script.onerror = function(){
+      return false;
+    }
+    i++;
   }
-  
+ 
   return callbacks;
 };
