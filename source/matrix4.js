@@ -303,7 +303,7 @@ Matrix4o.Multiply = function(m,n){
   );
 };
 
-N3D.Math.Matrix4 = (window.chrome) ? Matrix4a : Matrix4o;
+N3D.Math.Matrix4 = Matrix4a;//(window.chrome) ? Matrix4a : Matrix4o;
 
 
 N3D.Math.Matrix4.Identity = function(){
@@ -382,7 +382,7 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
       zs = z * s,      
       t = 1 - c;
 
-  return new $M4(
+  return new this(
     x*x * t + c, xy * t - zs, xz * t + ys, 0,  
     xy * t + zs, y*y * t + c, yz * t - xs, 0,
     xz * t - ys, yz * t + xs, z*z * t + c, 0,
