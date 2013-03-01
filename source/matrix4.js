@@ -382,7 +382,7 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
       zs = z * s,      
       t = 1 - c;
 
-  return new this(
+  return new $M4(
     x*x * t + c, xy * t - zs, xz * t + ys, 0,  
     xy * t + zs, y*y * t + c, yz * t - xs, 0,
     xz * t - ys, yz * t + xs, z*z * t + c, 0,
