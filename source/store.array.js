@@ -1,15 +1,14 @@
 //Store.Array
-N3D.Array = function(arr){
-  this.values = arr;
-  return arr;
+N3D.Array = function(){
+  this.values = Array.apply( null, arguments );
+  return this;
 };
 N3D.Array.prototype = {
   each: function(callback){
     var el = this.values;
     var length = el.length;
     for(var i=0;i<length;i++) callback(el[i]);
-  },
-  
+  }  
 };
 /*N3D.Array.prototype.insertionSort = function(callback){
   var callback = (typeof callback === "function" ? callback : function(a,b){ return b>a; });
