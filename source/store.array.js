@@ -1,13 +1,8 @@
 //Store.Array
+var oldProto = Array.prototype;
 N3D.Array = function(arr){
-  arr.__proto__.each = function(){};
-
+  Array.prototype.concat.call(this,arr);
   return arr;
-};
-
-
-/*N3D.Array.prototype.clone = function(){
-  return true; //vymyslet
 };
 N3D.Array.prototype.each = function(callback){
   var length = this.length;
@@ -66,6 +61,6 @@ N3D.Array.prototype.quickSort = function(arr) {
   }
 
   return left.quickSort().concat([pivot], right.quickSort());
-};   */
+};
 
 $array = N3D.Array;
