@@ -1,12 +1,13 @@
 //Store.Array
 N3D.Array = function(arr){
-  this.push.apply(this,arguments);
-
-  return this;
+  arr.__proto__ = {
+      
+  };
+  return arr;
 };
 N3D.Array.prototype = [];
 N3D.Array.prototype.constructor = Array;
-N3D.Array.prototype.clone = function(){
+/*N3D.Array.prototype.clone = function(){
   return true; //vymyslet
 };
 N3D.Array.prototype.each = function(callback){
@@ -66,6 +67,6 @@ N3D.Array.prototype.quickSort = function(arr) {
   }
 
   return left.quickSort().concat([pivot], right.quickSort());
-};
+};   */
 
 $array = N3D.Array;
