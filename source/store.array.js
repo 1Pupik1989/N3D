@@ -1,6 +1,7 @@
 //Store.Array
+var _slice = Array.prototype.slice;
 N3D.Array = function(){
-  this.values = Array.apply(null,arguments);
+  this.values = _slice.call( arguments);
   return this;
 };
 N3D.Array.prototype = {
