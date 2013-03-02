@@ -1,16 +1,7 @@
 //Store.Array
-var _slice = Array.prototype.slice;
-N3D.Array = function(){
-  this.values = _slice.call( arguments);
-  return this;
-};
-N3D.Array.prototype = {
-  constructor:Array,
-  each: function(callback){
-    var el = this.values;
-    var length = el.length;
-    for(var i=0;i<length;i++) callback(el[i]);
-  }  
+N3D.Array = function(arr){
+  arr.each = function(){};
+  return arr;
 };
 /*N3D.Array.prototype.insertionSort = function(callback){
   var callback = (typeof callback === "function" ? callback : function(a,b){ return b>a; });
