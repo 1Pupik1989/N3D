@@ -1,10 +1,10 @@
 //Store.Array
-var cons = [].constructor;
 N3D.Array = function(){
-  this.values = cons.apply(null,arguments);
+  this.values = Array.apply(null,arguments);
   return this;
 };
 N3D.Array.prototype = {
+  constructor:Array,
   each: function(callback){
     var el = this.values;
     var length = el.length;
