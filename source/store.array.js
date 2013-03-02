@@ -1,11 +1,11 @@
 //Store.Array
 N3D.Array = function(arr){
-  Array.prototype.concat.call(this,arr);
+  this.values = arr;
   return arr;
 };
 N3D.Array.prototype = {
   each: function(callback){
-    var el = this.el;
+    var el = this.values;
     var length = el.length;
     for(var i=0;i<length;i++) callback(el[i]);
   },
