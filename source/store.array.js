@@ -1,6 +1,6 @@
 //Store.Array
 N3D.Array = function(){
-  this.values = Array.apply( null, arguments );
+  this.values = [].constructor.apply(null,arguments);
   return this;
 };
 N3D.Array.prototype = {
