@@ -1,6 +1,3 @@
-/*
-Knihovna událostí
-*/
 N3D.Utils = {};
 
 N3D.Utils.Keys = {
@@ -84,4 +81,30 @@ N3D.Utils.Array.prototype.insertSort = function(){
 
 N3D.Utils.Array.prototype.copy = function(){
   return this.slice();
+};
+
+N3D.Console = {
+  log:"",
+  add:function(type){
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth()+1;
+    var y = date.getFullYear();
+    var h = date.getHours();
+    var min = date.getMinutes();
+    var s = date.getSeconds();
+    
+    var types = {
+      "new": "Created Object instance of function",
+      "get": "Access object"
+    };
+    
+    var str = (typeof types[type] !== "undefined" ? types[type] : "");
+    
+    date = (d<=9?'0'+d:d)+'-'+ (m<=9?'0'+m:m) +'-'+y+" "+
+           (h<10?"0"+h:h)+":"+(min<10?"0"+min:min)+":"+(s<10?"0"+s:s);
+    
+    N3D.Console.log += date+" - "+str+" '"+arguments.callee.caller.name+"'\n";
+    console.log(N3D.Console.log);
+  }
 };

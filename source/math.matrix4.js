@@ -28,7 +28,7 @@ Lz,Uz,Fz,Tz,
 Lw,Uw,Fw,Tw 
 */
 N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(n15 !== undefined){
+  if(typeof n15 !== "undefined"){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
 
     return this;

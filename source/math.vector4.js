@@ -52,7 +52,7 @@ N3D.Math.Vector4.prototype = {
     return (this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w);
   },
   normalize:function(){
-    return Math.sqrt(this.dot());
+    return Math.sqrt(this.dot(this));
   },
   projection:function(width,height){
     var width = width || Game.viewport.width;

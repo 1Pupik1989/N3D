@@ -1,4 +1,3 @@
-//N3D s načítáním částí kódů
 var N3D = {
   Math:{},
   Graphics:{},
@@ -6,19 +5,22 @@ var N3D = {
   Utils:{},
   Geometry:{},
   librariesAvailable:{
-    "Math.Main":"maths.js",
-    "Math.Matrix4":"matrix4.js",
-    "Math.Vector2":"vector2.js",
-    "Math.Vector3":"vector3.js",
-    "Math.Vector4":"vector4.js",
-    "Graphic.Camera":"camera.js",
-    "Graphic.Scene":"scene.js",
-    "Graphic.Texture":"texture.js",
-    "Graphic.Render":"render.js",
-    "Geometry.Object3D":"objects.js",
-    "Game.Main":"game.js",
-    "Utils":"tools.js",
-    "Utils.Ajax":"ajax.js"
+    "Math.Main":"math.main.js",
+    "Math.Matrix4":"math.matrix4.js",
+    "Math.Vector2":"math.vector2.js",
+    "Math.Vector3":"math.vector3.js",
+    "Math.Vector4":"math.vector4.js",
+    "Graphics.Camera":"graphics.camera.js",
+    "Graphics.Color":"graphics.color.js",
+    "Graphics.Scene":"graphics.scene.js",
+    "Graphics.Texture":"graphics.texture.js",
+    "Graphics.Render":"graphics.render.js",
+    "Geometry.Objects3D":"geometry.objects3d.js",
+    "Game.Main":"game.main.js",
+    "Utils.Main":"utils.main.js",
+    "Utils.Ajax":"utils.ajax.js",
+    "Store.Cookie":"store.cookie.js",
+    "Store.Array":"store.array.js"
   }
 };
 
@@ -27,57 +29,61 @@ N3D.Path = (function(){
   var path = scripts[scripts.length-1].src.match(/.*\//)[0];
   
   return path; 
-})();
-
-
+})(); 
 
 N3D.require = function(){
   var urls = Array.prototype.slice.call(arguments);
   var length = urls.length;
-  var name;
-  var loaded = 0;
+  var script;
   var errorNames = [];
+  var loaded = 0;
   var head = document.getElementsByTagName("head")[0];
-
-  var callbacks = {
-    error:function(f){ this.error = f || this.error; return this; },
-    complete:function(f){ this.complete = f || this.complete; return this; },
-    success:function(f){ this.success = f || this.success; return this; }
-  };
-
   
-  var i=0;
+  var callback = {
+    complete:function(f){ this.complete = f || this.complete; return this;},
+    error:function(f){ this.error = f || this.error; return this;},
+    success:function(f){ this.success = f || this.success; return this;},
+  }
+  
+  var i = 0;
   while(i<length){
-    var src = N3D.librariesAvailable[ urls[i] ];
-    if(typeof src == "undefined"){
-      errorNames.push(urls[i]+ " not exists");
-      i++;
-      continue;
-    }
-    var script = document.createElement("script");
+    script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = N3D.Path+src;
+    script.src = N3D.Path+N3D.librariesAvailable[ urls[i] ];
     head.appendChild(script);
-
-    script.onload = (function(n){
-      
+    
+    var load = (function(n){
       return function(){
         loaded++;
-        if(n==length){
-          if(loaded == length){
-            callbacks.complete();
-          }else{
-            callbacks.error(errorNames.join("\n"));
-          }
-          callbacks.success();
+        if(loaded == length){
+          callback.success();
         }
-      }
+        if(n == length){
+          callback.complete();
+        }
+      };
     })(i+1);
-    script.onerror = function(){
-      return false;
+    
+    script.onload = load;
+    script.onreadystatechange = function(){
+      if (this.readyState == 'complete') load();
     }
+    
+    var t;
+    
+    script.onerror = (function(n){
+      return function(){
+        head.removeChild(this);
+        errorNames.push(urls[n-1]);
+        if(n == length){
+          setTimeout(function(){
+            callback.error(errorNames);
+          },10);
+        }
+      };
+    })(i+1);
     i++;
   }
- 
-  return callbacks;
+
+  return callback;
 };
