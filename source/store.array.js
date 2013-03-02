@@ -1,10 +1,11 @@
 //Store.Array
 N3D.Array = function(arr){
-  arr.__proto__ = {
-    each:function(){}
-  };
+  arr.__proto__.each = function(){};
+
   return arr;
 };
+
+
 /*N3D.Array.prototype.clone = function(){
   return true; //vymyslet
 };
