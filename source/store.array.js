@@ -1,14 +1,17 @@
 //Store.Array
-var oldProto = Array.prototype;
 N3D.Array = function(arr){
   Array.prototype.concat.call(this,arr);
   return arr;
 };
-N3D.Array.prototype.each = function(callback){
-  var length = this.length;
-  for(var i=0;i<length;i++) callback(this[i]);
+N3D.Array.prototype = {
+  each: function(callback){
+    var el = this.el;
+    var length = el.length;
+    for(var i=0;i<length;i++) callback(el[i]);
+  },
+  
 };
-N3D.Array.prototype.insertionSort = function(callback){
+/*N3D.Array.prototype.insertionSort = function(callback){
   var callback = (typeof callback === "function" ? callback : function(a,b){ return b>a; });
   
   function getter(a,b){
@@ -61,6 +64,6 @@ N3D.Array.prototype.quickSort = function(arr) {
   }
 
   return left.quickSort().concat([pivot], right.quickSort());
-};
+};    */
 
 $array = N3D.Array;
