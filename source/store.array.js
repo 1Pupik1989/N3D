@@ -1,6 +1,7 @@
 //Store.Array
+var cons = [].constructor;
 N3D.Array = function(){
-  this.values = [].constructor.apply(null,arguments);
+  this.values = cons.apply(null,arguments);
   return this;
 };
 N3D.Array.prototype = {
