@@ -1,9 +1,5 @@
 //Store.Array
-N3D.Array = function(arr){
-  arr.each = function(){};
-  return arr;
-};
-/*N3D.Array.prototype.insertionSort = function(callback){
+Array.prototype.insertionSort = function(callback){
   var callback = (typeof callback === "function" ? callback : function(a,b){ return b>a; });
   
   function getter(a,b){
@@ -21,7 +17,7 @@ N3D.Array = function(arr){
     this[i+1] = key;
   }  
 };
-N3D.Array.prototype.bubbleSort = function() {
+Array.prototype.bubbleSort = function() {
   var arr = this;
   if (arr.length <= 1) {
     return arr;
@@ -40,7 +36,7 @@ N3D.Array.prototype.bubbleSort = function() {
 
 };
 
-N3D.Array.prototype.quickSort = function(arr) {
+Array.prototype.quickSort = function(arr) {
   if (this.length <= 1) {
     return this;
   }
@@ -56,6 +52,4 @@ N3D.Array.prototype.quickSort = function(arr) {
   }
 
   return left.quickSort().concat([pivot], right.quickSort());
-};    */
-
-$array = N3D.Array;
+};
