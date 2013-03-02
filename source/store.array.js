@@ -4,7 +4,7 @@ N3D.Array = function(arr){
   
   return this;
 };
-N3D.Array.prototype = [];
+N3D.Array.prototype = new Array();
 N3D.Array.prototype.clone = function(){
   return true; //vymyslet
 };
