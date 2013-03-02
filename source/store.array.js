@@ -1,8 +1,5 @@
 //Store.Array
 N3D.Array = function(arr){
-  arr.__proto__ = {
-      
-  };
   return arr;
 };
 /*N3D.Array.prototype.clone = function(){
