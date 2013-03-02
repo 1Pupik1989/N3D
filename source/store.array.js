@@ -5,8 +5,6 @@ N3D.Array = function(arr){
   };
   return arr;
 };
-N3D.Array.prototype = [];
-N3D.Array.prototype.constructor = Array;
 /*N3D.Array.prototype.clone = function(){
   return true; //vymyslet
 };
