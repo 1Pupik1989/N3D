@@ -285,20 +285,13 @@ N3D.Math.Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
 
 N3D.Math.Matrix4.CreateOrthographicProjection = function(left, right, bottom, top, near, far){
   var rl = right-left,
-      tb = top-bottom
+      tb = top-bottom,
       fn = far-near;
-      a = 2/rl,
-      b = -(right+left)/rl,
-      c = 2/tb,
-      d = -(top+bottom)/tb,
-      e = -2/fn,
-      f = -(far+near)/fn;
-      
   return new this(
-    a,0,0,0,
-    0,c,0,0,
-    0,0,e,0,
-    b,d,f,1
+    2/rl,             0,                0,              0,
+    0,                2/tb,             0,              0,
+    0,                0,                -2/fn,          0,
+    -(right+left)/rl, -(top+bottom)/tb, -(far+near)/fn, 1
   );
 };
 N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
