@@ -255,18 +255,22 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
 };
 
 N3D.Math.Matrix4.CreateFrustum = function(left, right, bottom, top, near, far){
-  var a = 2*near/(right-left),
-      b = (right+left)/(right-left),
-      c = 2*near/(top-bottom),
-      d = (top+bottom)/(top-bottom),
-      e = -(far+near)/(far-near),
-      f = -(2*far*near)/(far-near);
+  var near2 = 2*near;
+  var rl = right-left,
+      tb = top-bottom
+      fn = far-near;
+      a = near2/rl,
+      b = (right+left)/rl,
+      c = near2/tb,
+      d = (top+bottom)/tb,
+      e = -(far+near)/fn,
+      f = -(2*far*near)/fn;
   
   return new this(
-    a,0,b,0,
-    0,c,d,0,
-    0,0,e,f,
-    0,0,-1,0  
+    a,0,0,0,
+    0,c,0,0,
+    b,d,e,-1,
+    0,0,f,0  
   );
 };
 
@@ -279,32 +283,43 @@ N3D.Math.Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
   return this.CreateFrustum(xmin,xmax,ymin,ymax,near,far);
 };
 
-N3D.Math.Matrix4.CreateOrthographicProjection = function(l,r,b,t,n,f){
-  var a = 2/(r-l),
-      b = -((r+l)/(r-l)),
-      c = 2/(t-b),
-      d = -((t+b)/(t-b)),
-      e = -2/(f-n),
-      f = -((f+n)/(f-n));
+N3D.Math.Matrix4.CreateOrthographicProjection = function(left, right, bottom, top, near, far){
+  var rl = right-left,
+      tb = top-bottom
+      fn = far-near;
+      a = 2/rl,
+      b = -(right+left)/rl,
+      c = 2/tb,
+      d = -(top+bottom)/tb,
+      e = -2/fn,
+      f = -(far+near)/fn;
       
   return new this(
-    a,0,0,b,
-    0,c,0,d,
-    0,0,e,f,
-    0,0,0,1
+    a,0,0,0,
+    0,c,0,0,
+    0,0,e,0,
+    b,d,f,1
   );
+  
+  /*dest[0] = 2 / rl; dest[1] = 0; dest[2] = 0; dest[3] = 0;
+  dest[4] = 0; dest[5] = 2 / tb; dest[6] = 0; dest[7] = 0;
+  dest[8] = 0; dest[9] = 0; dest[10] = -2 / fn; dest[11] = 0;
+  dest[12] = -(left + right) / rl; dest[13] = -(top + bottom) / tb;
+        dest[14] = -(far + near) / fn;
+        dest[15] = 1;  */
+  
+  
 };
 N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
-  var z = $V3.Sub(eye,center).normalize();
-  var x = $V3.Cross(up,z).normalize();
-  var y = $V3.Cross(z,x);
-  
+  var zaxis = $V3.Sub(eye,center).normalize(); //normal(cameraPosition - cameraTarget)
+  var xaxis = $V3.Cross(up,zaxis).normalize(); //normal(cross(cameraUpVector, zaxis))
+  var yaxis = $V3.Cross(zaxis, xaxis);
   return new this(
-    x.x,y.x,z.x,-eye.x,
-    x.y,y.y,z.y,-eye.y,
-    x.z,y.z,z.z,-eye.z,
-    0,0,0,1
-  );  
+    xaxis.x, yaxis.x, zaxis.x, 0,
+    xaxis.y, yaxis.y, zaxis.y, 0,
+    xaxis.z, yaxis.z, zaxis.z, 0,
+    -$V3.Dot(xaxis, eye), -$V3.Dot(yaxis, eye), -$V3.Dot(zaxis, eye), 1
+  );
 };
 
 $M4 = N3D.Math.Matrix4;
