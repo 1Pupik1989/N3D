@@ -124,11 +124,12 @@ N3D.Math.Matrix4.prototype = {
   multiplyVector4:function(v){
     var m = this.m;
     var x = v.x, y = v.y, z = v.z,w = v.w;
+
     return new $V4(
-      m[0] * x + m[1] * y + m[2] * z + m[3] * w,
-      m[4] * x + m[5] * y + m[6] * z + m[7] * w,
-      m[8] * x + m[9] * y + m[10] * z + m[11] * w,
-      m[12] * x + m[13] * y + m[14] * z + m[15] * w 
+      m[0] * x + m[4] * y + m[8] * z + m[12] * w,
+      m[1] * x + m[5] * y + m[9] * z + m[13] * w,
+      m[2] * x + m[6] * y + m[10] * z + m[14] * w,
+      m[3] * x + m[7] * y + m[11] * z + m[15] * w   
     );
   },
   toString:function(){
