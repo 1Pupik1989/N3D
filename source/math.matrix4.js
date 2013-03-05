@@ -27,9 +27,24 @@ Ly,Uy,Fy,Ty,
 Lz,Uz,Fz,Tz,
 Lw,Uw,Fw,Tw 
 */
-N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+/*N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(typeof n15 !== "undefined"){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
+
+    return this;
+  }else{
+    this.m = [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1
+    ]; 
+  }
+  return this;
+};*/
+N3D.Math.Matrix4 = function(m){
+  if(typeof m !== "undefined"){
+    this.m = m;
 
     return this;
   }else{
