@@ -27,7 +27,7 @@ Ly,Uy,Fy,Ty,
 Lz,Uz,Fz,Tz,
 Lw,Uw,Fw,Tw 
 */
-/*N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
+N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(typeof n15 !== "undefined"){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
 
@@ -41,8 +41,8 @@ Lw,Uw,Fw,Tw
     ]; 
   }
   return this;
-};*/
-N3D.Math.Matrix4 = function(m){
+};
+N3D.Math.Matrix4new = function(m){
   if(typeof m !== "undefined"){
     this.m = m;
 
@@ -154,6 +154,8 @@ N3D.Math.Matrix4.prototype = {
            m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
   }
 };
+
+N3D.Math.Matrix4new.prototype = N3D.Math.Matrix4.prototype;
 
 N3D.Math.Matrix4.Multiply = function(m,n){
   var m0 = m.m[0], m1 = m.m[1], m2 = m.m[2], m3 = m.m[3],
@@ -322,3 +324,4 @@ N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
 };
 
 $M4 = N3D.Math.Matrix4;
+$M4new = N3D.Math.Matrix4new;
