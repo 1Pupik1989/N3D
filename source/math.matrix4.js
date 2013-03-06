@@ -334,7 +334,6 @@ N3D.Math.Matrix4.CreateFromQuaternion = function(q){
   var tmp1 = qx*qy, tmp2 = qz*qw, tmp3 = qx*qz,
       tmp4 = qy*qw, tmp5 = qy*qz, tmp6 = qx*qw;
 
-  
   return new this(
     ( sqx - sqy - sqz + sqw)*invs,  2 * (tmp1 - tmp2)*invs,       2 * (tmp3 + tmp4)*invs,     0,
     2 * (tmp1 + tmp2)*invs,       (-sqx + sqy - sqz + sqw)*invs,  2 * (tmp5 - tmp6)*invs,     0,
@@ -366,21 +365,24 @@ var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
 };
 
 N3D.Math.Matrix4.CreateFromQuaternion3 = function(q){
-var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
-var n = 1/Math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
-qx *= n;
-qy *= n;
-qz *= n;
-qw *= n;
+var qx = q.x, qy = q.y, qz = q.z, qw = q.w,
+    n = 1/Math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
+    
+    qx *= n;
+    qy *= n;
+    qz *= n;
+    qw *= n;
+    
 var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
     yy = qy * qy, yz = qy * qz, yw = qy * qw,
     zz = qz * qz, zw = qz * qw;
-
+    
     return new this(
-      1 - 2*qy*qy - 2*qz*qz, 2*qx*qy - 2*qz*qw, 2*qx*qz + 2*qy*qw, 0,
-      2*qx*qy + 2*qz*qw, 1 - 2*qx*qx - 2*qz*qz, 2*qy*qz - 2*qx*qw, 0,
-      2*qx*qz - 2*qy*qw, 2*qy*qz + 2*qx*qw, 1 - 2*qx*qx - 2*qy*qy, 0,
-      0, 0, 0, 1
+      1-2*(yy+zz),  2*(xy-zw),    2*(xz+yw),  0,
+      2*(xy+zw),    1-2*(xx+zz),  2*(yz-xw),  0,
+      2*(xz-yw),    2*(yz+xw),    1-2*(xx+yy),0,
+      0,0,0,1   
+    
     );
 
 };
