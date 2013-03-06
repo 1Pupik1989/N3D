@@ -88,52 +88,6 @@ N3D.Math.Matrix4.prototype = {
 
     return this;
   },
-  inverse2:function(){
-    var m = this.m, 
-        i00 = m[0], i01 = m[4], i02 = m[8], i03 = m[12],
-        i10 = m[1], i11 = m[5], i12 = m[9], i13 = m[13],
-        i20 = m[2], i21 = m[6], i22 = m[10], i23 = m[14],
-        i30 = m[3], i31 = m[7], i32 = m[11], i33 = m[15];
-
-    var s0 = i00 * i11 - i10 * i01,
-        s1 = i00 * i12 - i10 * i02,
-        s2 = i00 * i13 - i10 * i03,
-        s3 = i01 * i12 - i11 * i02,
-        s4 = i01 * i13 - i11 * i03,
-        s5 = i02 * i13 - i12 * i03,
-
-        c5 = i22 * i33 - i32 * i23,
-        c4 = i21 * i33 - i31 * i23,
-        c3 = i21 * i32 - i31 * i22,
-        c2 = i20 * i33 - i30 * i23,
-        c1 = i20 * i32 - i30 * i22,
-        c0 = i20 * i31 - i30 * i21,
-    
-        invdet = 1 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
-    
-    m[0] = (i11 * c5 - i12 * c4 + i13 * c3) * invdet;
-    m[1] = (-i10 * c5 + i12 * c2 - i13 * c1) * invdet;
-    m[2] = (i10 * c4 - i11 * c2 + i13 * c0) * invdet;
-    m[3] = (-i10 * c3 + i11 * c1 - i12 * c0) * invdet;
-    
-    m[4] = (-i01 * c5 + i02 * c4 - i03 * c3) * invdet;
-    m[5] = (i00 * c5 - i02 * c2 + i03 * c1) * invdet;
-    m[6] = (-i00 * c4 + i01 * c2 - i03 * c0) * invdet;
-    m[7] = (i00 * c3 - i01 * c1 + i02 * c0) * invdet;    
-    
-    m[8] = (i31 * s5 - i32 * s4 + i33 * s3) * invdet;
-    m[9] = (-i30 * s5 + i32 * s2 - i33 * s1) * invdet;
-    m[10] = (i30 * s4 - i31 * s2 + i33 * s0) * invdet;
-    m[11] = (-i30 * s3 + i31 * s1 - i32 * s0) * invdet;
-    
-    m[12] = (-i21 * s5 + i22 * s4 - i23 * s3) * invdet;
-    m[13] = (i20 * s5 - i22 * s2 + i23 * s1) * invdet;
-    m[14] = (-i20 * s4 + i21 * s2 - i23 * s0) * invdet;
-    m[15] = (i20 * s3 - i21 * s1 + i22 * s0) * invdet;
-
-    /////doděálat aby to fungovalo
-    return this;
-  },
   multiply:function(n){
     var m = this.m, 
         m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
@@ -166,6 +120,44 @@ N3D.Math.Matrix4.prototype = {
     m[15] = m12*n3 + m13*n7 + m14*n11 + m15*n15;      
 
     return this;
+  },
+  multiply2:function(n){
+    var m = this.m, 
+        n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
+        n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
+        n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
+        n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
+    
+    var a = m[0], b = m[1], c = m[2], d = m[3];
+    
+    
+    m[0] = a*n0 + b*n4 + c*n8 + d*n12;
+    m[1] = a*n1 + b*n5 + c*n9 + d*n13;
+    m[2] = a*n2 + b*n6 + c*n10 + d*n14;
+    m[3] = a*n3 + b*n7 + c*n11 + d*n15;
+      
+    a = m[4], b = m[5], c = m[6], d = m[7];      
+      
+    m[4] = a*n0 + b*n4 + c*n8 + d*n12;
+    m[5] = a*n1 + b*n5 + c*n9 + d*n13;
+    m[6] = a*n2 + b*n6 + c*n10 + d*n14;
+    m[7] = a*n3 + b*n7 + c*n11 + d*n15;
+    
+    a = m[8], b = m[9], c = m[10], d = m[11];
+      
+    m[8] = a*n0 + b*n4 + c*n8 + d*n12;
+    m[9] = a*n1 + b*n5 + c*n9 + d*n13;
+    m[10] = a*n2 + b*n6 + c*n10 + d*n14;
+    m[11] = a*n3 + b*n7 + c*n11 + d*n15;
+    
+    a = m[12], b = m[13], c = m[14], d = m[15];
+      
+    m[12] = a*n0 + b*n4 + c*n8 + d*n12;
+    m[13] = a*n1 + b*n5 + c*n9 + d*n13;
+    m[14] = a*n2 + b*n6 + c*n10 + d*n14;
+    m[15] = a*n3 + b*n7 + c*n11 + d*n15;      
+    
+    return this;      
   },
   multiplyVector4:function(v){
     var m = this.m;
