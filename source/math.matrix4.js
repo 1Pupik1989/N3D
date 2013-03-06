@@ -95,22 +95,21 @@ N3D.Math.Matrix4.prototype = {
         i20 = m[2], i21 = m[6], i22 = m[10], i23 = m[14],
         i30 = m[3], i31 = m[7], i32 = m[11], i33 = m[15];
 
-    var s0 = i00 * i11 - i10 * i01;
-    var s1 = i00 * i12 - i10 * i02;
-    var s2 = i00 * i13 - i10 * i03;
-    var s3 = i01 * i12 - i11 * i02;
-    var s4 = i01 * i13 - i11 * i03;
-    var s5 = i02 * i13 - i12 * i03;
+    var s0 = i00 * i11 - i10 * i01,
+        s1 = i00 * i12 - i10 * i02,
+        s2 = i00 * i13 - i10 * i03,
+        s3 = i01 * i12 - i11 * i02,
+        s4 = i01 * i13 - i11 * i03,
+        s5 = i02 * i13 - i12 * i03,
 
-    var c5 = i22 * i33 - i32 * i23;
-    var c4 = i21 * i33 - i31 * i23; //?
-    var c3 = i21 * i32 - i31 * i22;
-    var c2 = i20 * i33 - i30 * i23;
-    var c1 = i20 * i32 - i30 * i22;
-    var c0 = i20 * i31 - i30 * i21;
+        c5 = i22 * i33 - i32 * i23,
+        c4 = i21 * i33 - i31 * i23,
+        c3 = i21 * i32 - i31 * i22,
+        c2 = i20 * i33 - i30 * i23,
+        c1 = i20 * i32 - i30 * i22,
+        c0 = i20 * i31 - i30 * i21,
     
-   
-    var invdet = 1 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
+        invdet = 1 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
     
     m[0] = (i11 * c5 - i12 * c4 + i13 * c3) * invdet;
     m[1] = (-i10 * c5 + i12 * c2 - i13 * c1) * invdet;
