@@ -345,23 +345,33 @@ N3D.Math.Matrix4.CreateFromQuaternion = function(q){
 
 
 N3D.Math.Matrix4.CreateFromQuaternion2 = function(q){
-var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
-var n = 1/Math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
-qx *= n;
-qy *= n;
-qz *= n;
-qw *= n;
+  var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
 
-var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
-    yy = qy * qy, yz = qy * qz, yw = qy * qw,
-    zz = qz * qz, zw = qz * qw;
+  var sqw = qw*qw;
+  var sqx = qx*qx;
+  var sqy = qy*qy;
+  var sqz = qz*qz;
 
-  return new this(
-    1 - 2 * ( yy + zz ),  2 * ( xy - zw ),      2 * ( xz + yw ),      0,
-    2 * ( xy + zw ),      1 - 2 * ( xx + zz ),  2 * ( yz - xw ),      0,
-    2 * ( xz - yw ),      2 * ( yz + xw ),      1 - 2 * ( xx + yy ),  0,
-    0,0,0,1  
-  );
+  // invs (inverse square length) is only required if quaternion is not already normalised
+  var invs = 1 / (sqx + sqy + sqz + sqw);
+  
+  var tmp1 = qx*qy, tmp2 = qz*qw, tmp3 = qx*qz,
+      tmp4 = qy*qw, tmp5 = qy*qz, tmp6 = qx*qw;
+    
+  var m = new this();
+  m.m[0] = ( sqx - sqy - sqz + sqw)*invs;
+  m.m[1] = 2 * (tmp1 - tmp2)*invs;
+  m.m[2] = 2 * (tmp3 + tmp4)*invs;
+  
+  m.m[4] = 2 * (tmp1 + tmp2)*invs;
+  m.m[5] = (-sqx + sqy - sqz + sqw)*invs;
+  m.m[6] = 2 * (tmp5 - tmp6)*invs;
+   
+  m.m[8] = 2 * (tmp3 - tmp4)*invs;
+  m.m[9] = 2 * (tmp5 + tmp6)*invs;
+  m.m[10] = (-sqx - sqy + sqz + sqw)*invs;  
+   
+   return m;
 };
 
 N3D.Math.Matrix4.CreateFromQuaternion3 = function(q){
