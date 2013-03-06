@@ -20,7 +20,8 @@ var N3D = {
     "Utils.Main":"utils.main.js",
     "Utils.Ajax":"utils.ajax.js",
     "Store.Cookie":"store.cookie.js",
-    "Store.Array":"store.array.js"
+    "Store.Array":"store.array.js",
+    "Math.Vector3_test":"vector3_test.js"
   }
 };
 
