@@ -377,13 +377,20 @@ var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
     yy = qy * qy, yz = qy * qz, yw = qy * qw,
     zz = qz * qz, zw = qz * qw;
     
-    return new this(
-      1-2*(yy+zz),  2*(xy-zw),    2*(xz+yw),  0,
-      2*(xy+zw),    1-2*(xx+zz),  2*(yz-xw),  0,
-      2*(xz-yw),    2*(yz+xw),    1-2*(xx+yy),0,
-      0,0,0,1   
+    var m = new this();
+    m.m[0] = 1-2*(yy+zz);
+    m.m[1] = 2*(xy-zw);
+    m.m[2] = 2*(xz+yw);
     
-    );
+    m.m[4] = 2*(xy+zw);
+    m.m[5] = 1-2*(xx+zz);
+    m.m[6] = 2*(yz-xw);
+     
+    m.m[8] = 2*(xz-yw);
+    m.m[9] = 2*(yz+xw);
+    m.m[10] = 1-2*(xx+yy);  
+    
+    return m;
 
 };
 
