@@ -121,44 +121,6 @@ N3D.Math.Matrix4.prototype = {
 
     return this;
   },
-  multiply2:function(n){
-    var m = this.m, 
-        n0 = n.m[0], n1 = n.m[1], n2 = n.m[2], n3 = n.m[3],
-        n4 = n.m[4], n5 = n.m[5], n6 = n.m[6], n7 = n.m[7],
-        n8 = n.m[8], n9 = n.m[9], n10 = n.m[10], n11 = n.m[11],
-        n12 = n.m[12], n13 = n.m[13], n14 = n.m[14], n15 = n.m[15];
-    
-    var a = m[0], b = m[1], c = m[2], d = m[3];
-    
-    
-    m[0] = a*n0 + b*n4 + c*n8 + d*n12;
-    m[1] = a*n1 + b*n5 + c*n9 + d*n13;
-    m[2] = a*n2 + b*n6 + c*n10 + d*n14;
-    m[3] = a*n3 + b*n7 + c*n11 + d*n15;
-      
-    a = m[4], b = m[5], c = m[6], d = m[7];      
-      
-    m[4] = a*n0 + b*n4 + c*n8 + d*n12;
-    m[5] = a*n1 + b*n5 + c*n9 + d*n13;
-    m[6] = a*n2 + b*n6 + c*n10 + d*n14;
-    m[7] = a*n3 + b*n7 + c*n11 + d*n15;
-    
-    a = m[8], b = m[9], c = m[10], d = m[11];
-      
-    m[8] = a*n0 + b*n4 + c*n8 + d*n12;
-    m[9] = a*n1 + b*n5 + c*n9 + d*n13;
-    m[10] = a*n2 + b*n6 + c*n10 + d*n14;
-    m[11] = a*n3 + b*n7 + c*n11 + d*n15;
-    
-    a = m[12], b = m[13], c = m[14], d = m[15];
-      
-    m[12] = a*n0 + b*n4 + c*n8 + d*n12;
-    m[13] = a*n1 + b*n5 + c*n9 + d*n13;
-    m[14] = a*n2 + b*n6 + c*n10 + d*n14;
-    m[15] = a*n3 + b*n7 + c*n11 + d*n15;      
-    
-    return this;      
-  },
   multiplyVector4:function(v){
     var m = this.m;
     var x = v.x, y = v.y, z = v.z,w = v.w;
@@ -345,6 +307,7 @@ N3D.Math.Matrix4.CreateOrthographicProjection = function(left, right, bottom, to
     -(right+left)/rl, -(top+bottom)/tb, -(far+near)/fn, 1
   );
 };
+
 N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
   var zaxis = $V3.Sub(eye,center).normalize();
   var xaxis = $V3.Cross(up,zaxis).normalize();
@@ -357,5 +320,70 @@ N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
   );
 };
 
+N3D.Math.Matrix4.CreateFromQuaternion = function(q){
+  var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+
+  var sqw = qw*qw;
+  var sqx = qx*qx;
+  var sqy = qy*qy;
+  var sqz = qz*qz;
+
+  // invs (inverse square length) is only required if quaternion is not already normalised
+  var invs = 1 / (sqx + sqy + sqz + sqw);
+  
+  var tmp1 = qx*qy, tmp2 = qz*qw, tmp3 = qx*qz,
+      tmp4 = qy*qw, tmp5 = qy*qz, tmp6 = qx*qw;
+
+  
+  return new this(
+    ( sqx - sqy - sqz + sqw)*invs,  2 * (tmp1 - tmp2)*invs,       2 * (tmp3 + tmp4)*invs,     0,
+    2 * (tmp1 + tmp2)*invs,       (-sqx + sqy - sqz + sqw)*invs,  2 * (tmp5 - tmp6)*invs,     0,
+    2 * (tmp3 - tmp4)*invs,       2 * (tmp5 + tmp6)*invs,       (-sqx - sqy + sqz + sqw)*invs,0,
+    0,0,0,1  
+  );
+};
+
+
+
+N3D.Math.Matrix4.CreateFromQuaternion2 = function(q){
+var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+var n = 1/Math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
+qx *= n;
+qy *= n;
+qz *= n;
+qw *= n;
+
+var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
+    yy = qy * qy, yz = qy * qz, yw = qy * qw,
+    zz = qz * qz, zw = qz * qw;
+
+  return new this(
+    1 - 2 * ( yy + zz ),  2 * ( xy - zw ),      2 * ( xz + yw ),      0,
+    2 * ( xy + zw ),      1 - 2 * ( xx + zz ),  2 * ( yz - xw ),      0,
+    2 * ( xz - yw ),      2 * ( yz + xw ),      1 - 2 * ( xx + yy ),  0,
+    0,0,0,1  
+  );
+};
+
+N3D.Math.Matrix4.CreateFromQuaternion3 = function(q){
+var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+var n = 1/Math.sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
+qx *= n;
+qy *= n;
+qz *= n;
+qw *= n;
+var xx = qx * qx, xy = qx * qy, xz = qx * qz, xw = qx * qw,
+    yy = qy * qy, yz = qy * qz, yw = qy * qw,
+    zz = qz * qz, zw = qz * qw;
+
+    return new this(
+      1 - 2*qy*qy - 2*qz*qz, 2*qx*qy - 2*qz*qw, 2*qx*qz + 2*qy*qw, 0,
+      2*qx*qy + 2*qz*qw, 1 - 2*qx*qx - 2*qz*qz, 2*qy*qz - 2*qx*qw, 0,
+      2*qx*qz - 2*qy*qw, 2*qy*qz + 2*qx*qw, 1 - 2*qx*qx - 2*qy*qy, 0,
+      0, 0, 0, 1
+    );
+
+};
+
+
 $M4 = N3D.Math.Matrix4;
-$M4new = N3D.Math.Matrix4new;
