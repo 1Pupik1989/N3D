@@ -6,24 +6,36 @@ var N3D = {
   Geometry:{},
   librariesAvailable:{
     "Math.Main":"math.main.js",
+    "Math.Matrix3":"math.matrix3.js",
     "Math.Matrix4":"math.matrix4.js",
     "Math.Vector2":"math.vector2.js",
     "Math.Vector3":"math.vector3.js",
     "Math.Vector4":"math.vector4.js",
+    "Graphics.Buffer":"graphics.buffer.js",
     "Graphics.Camera":"graphics.camera.js",
     "Graphics.Color":"graphics.color.js",
     "Graphics.Scene":"graphics.scene.js",
-    "Graphics.Texture":"graphics.texture.js",
+    "Graphics.Material":"graphics.material.js",
     "Graphics.Render":"graphics.render.js",
+    "Graphics.ZBuffer":"graphics.zbuffer.js",
+    "Graphics.Light":"graphics.light.js",
+    "Graphics.Shader":"graphics.shader.js",
     "Geometry.Objects3D":"geometry.objects3d.js",
     "Game.Main":"game.main.js",
     "Utils.Main":"utils.main.js",
     "Utils.Ajax":"utils.ajax.js",
     "Store.Cookie":"store.cookie.js",
-    "Store.Array":"store.array.js",
-    "Math.Vector3_test":"vector3_test.js"
+    "Audio.Main":"audio.main.js"
   }
 };
+
+(function(f){
+  var lib = f.librariesAvailable;
+  f.LoadedModule = {};
+  for(var i in lib){
+    f.LoadedModule[i] = false;  
+  }
+})(N3D);
 
 N3D.Path = (function(){
   var scripts= document.getElementsByTagName('script');
@@ -36,9 +48,20 @@ N3D.require = function(){
   var urls = Array.prototype.slice.call(arguments);
   var length = urls.length;
   var script;
-  var errorNames = [];
+  var errorName = "prdel";
   var loaded = 0;
   var head = document.getElementsByTagName("head")[0];
+  
+  var domLoad = function(callback){
+    if(window.addEventListener) {
+      window.addEventListener("load",function() { callback(); },false);
+    }else if(window.attachEvent) {
+      window.attachEvent("onload",function() { callback(); });
+    }else {
+      window.onload=function() { callback(); };
+    }
+  };
+  
   
   var callback = {
     complete:function(f){ this.complete = f || this.complete; return this;},
@@ -46,45 +69,48 @@ N3D.require = function(){
     success:function(f){ this.success = f || this.success; return this;},
   }
   
-  var i = 0;
-  while(i<length){
-    script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = N3D.Path+N3D.librariesAvailable[ urls[i] ];
-    head.appendChild(script);
-    
-    var load = (function(n){
-      return function(){
-        loaded++;
-        if(loaded == length){
+  var load = (function(n,name){
+    return function(){
+      if(n == length-1){
+        domLoad(function(){
           callback.success();
-        }
-        if(n == length){
           callback.complete();
-        }
-      };
-    })(i+1);
-    
-    script.onload = load;
-    script.onreadystatechange = function(){
-      if (this.readyState == 'complete') load();
+        });
+      }
+      N3D.LoadedModule[name] = true;
     }
-    
-    var t;
-    
-    script.onerror = (function(n){
-      return function(){
-        head.removeChild(this);
-        errorNames.push(urls[n-1]);
-        if(n == length){
-          setTimeout(function(){
-            callback.error(errorNames);
-          },10);
-        }
-      };
-    })(i+1);
-    i++;
-  }
+  });
+  
+  var error = (function(n){
+    return function(name){
+      domLoad(function(){
+        callback.error(errorName);
+        callback.complete();
+      });
+    }
+  });
+  
 
+    var i = 0;
+    while(i<length){
+      var libraryName = urls[i];
+    
+      if(typeof N3D.librariesAvailable[ urls[i] ] !== "undefined"){
+        script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = N3D.Path+N3D.librariesAvailable[ urls[i] ];
+        head.appendChild(script);
+    
+        script.onload = load(i,urls[i]);
+        script.onerror = error(i);
+      }else{
+        errorName = libraryName;
+        error(i)();
+     
+        break;
+      }
+      i++; 
+    }
+  
   return callback;
 };
