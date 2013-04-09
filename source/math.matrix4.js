@@ -378,18 +378,18 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
   var c = Math.cos(angle),
       s = Math.sin(angle),
       x = x*v, y = y*v, z = z*v,
-      xy = x * y,
+      /*xy = x * y,
       xz = x * z,
       yz = y * z,
       xs = x * s,
       ys = y * s,
-      zs = z * s,      
+      zs = z * s, */     
       t = 1 - c;
 
   return new this(
-    x*x * t + c,xy * t + zs,xz * t - ys,0, 
-    xy * t - zs,y*y * t + c,yz * t + xs,0, 
-    xz * t + ys,yz * t - xs,z*z * t + c,0, 
+    x*x * t + c,x*y * t + z*s,x*z * t - y*s,0, 
+    x*y * t - z*s,y*y * t + c,y*z * t + x*s,0, 
+    x*z * t + y*s,y*z * t - x*s,z*z * t + c,0, 
     0,0,0,1
   );
 };
@@ -455,7 +455,6 @@ N3D.Math.Matrix4.CreateFromQuaternion = function(q){
   var sqy = qy*qy;
   var sqz = qz*qz;
 
-  // invs (inverse square length) is only required if quaternion is not already normalised
   var invs = 1 / (sqx + sqy + sqz + sqw);
   
   var tmp1 = qx*qy, tmp2 = qz*qw, tmp3 = qx*qz,
