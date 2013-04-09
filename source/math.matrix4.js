@@ -28,7 +28,6 @@ Lz,Uz,Fz,Tz,
 Lw,Uw,Fw,Tw 
 */
 N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  this.store = [];
   if(typeof n15 !== "undefined"){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
 
@@ -376,8 +375,8 @@ N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
   var x = v.x,y = v.y, z = v.z;
   var v = 1/Math.sqrt(x*x + y*y + z*v.z);
   
-  var c = Math.cos(angle),    // cosine
-      s = Math.sin(angle),    // sine
+  var c = Math.cos(angle),
+      s = Math.sin(angle),
       x = x*v, y = y*v, z = z*v,
       xy = x * y,
       xz = x * z,
@@ -510,16 +509,6 @@ N3D.Math.Matrix4.CreateShadow = function(plane,light){
     m8,m9,m10,m11,
     m12,m13,m14,m15    
   );
-};
-
-
-function CalculatePlane(p1,p2,p3){
-  var px = Math.abs(((p2.y - p1.y) * (p3.z - p1.z)) - ((p2.z - p1.z) * (p3.y - p1.y)));
-  var py = Math.abs(((p2.z - p1.z) * (p3.x - p1.x)) - ((p2.x - p1.x) * (p3.z - p1.z)));
-  var pz = Math.abs(((p2.x - p1.x) * (p3.y - p1.y)) - ((p2.y - p1.y) * (p3.x - p1.x)));
-  var pw = -(px * p1.x + py * p1.y + pz * p1.z);
-
-  return new $V4(px,py,pz,pw);
 };
 
 $M4 = N3D.Math.Matrix4;
