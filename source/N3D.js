@@ -4,12 +4,15 @@ var N3D = {
   Game:{},
   Utils:{},
   Geometry:{},
+  Files:{},
   librariesAvailable:{
     "Math.Main":"math.main.js",
     "Math.Matrix3":"math.matrix3.js",
     "Math.Matrix4":"math.matrix4.js",
+    "Math.Units":"math.units.js",
     "Math.Vector2":"math.vector2.js",
     "Math.Vector3":"math.vector3.js",
+    "Math.Vector3.Test":"math.vector3_test.js",
     "Math.Vector4":"math.vector4.js",
     "Graphics.Buffer":"graphics.buffer.js",
     "Graphics.Camera":"graphics.camera.js",
@@ -18,11 +21,13 @@ var N3D = {
     "Graphics.Material":"graphics.material.js",
     "Graphics.Render":"graphics.render.js",
     "Graphics.ZBuffer":"graphics.zbuffer.js",
-    "Graphics.Light":"graphics.light.js",
+    "Graphics.Light":"graphics.light.js",            
     "Graphics.Shader":"graphics.shader.js",
-    "Geometry.Objects3D":"geometry.objects3d.js",
+    "Geometry.Lightning":"geometry.lightning.js",
+    "Geometry.Shapes":"geometry.shapes.js",
+    "Geometry.Trees":"geometry.trees.js",
     "Game.Main":"game.main.js",
-    "Utils.Main":"utils.main.js",
+    "Utils.Keys":"utils.keys.js",
     "Utils.Ajax":"utils.ajax.js",
     "Store.Cookie":"store.cookie.js",
     "Audio.Main":"audio.main.js"
@@ -39,9 +44,13 @@ var N3D = {
 
 N3D.Path = (function(){
   var scripts= document.getElementsByTagName('script');
-  var path = scripts[scripts.length-1].src.match(/.*\//)[0];
+
+  var path = scripts[scripts.length-1].src.match(/.*\//);
+  if(path){
+    return path[0];
+  }
   
-  return path; 
+  return ""; 
 })(); 
 
 N3D.require = function(){
@@ -66,10 +75,10 @@ N3D.require = function(){
   var callback = {
     complete:function(f){ this.complete = f || this.complete; return this;},
     error:function(f){ this.error = f || this.error; return this;},
-    success:function(f){ this.success = f || this.success; return this;},
-  }
+    success:function(f){ this.success = f || this.success; return this;}
+  };
   
-  var load = (function(n,name){
+  var load = (function(n){
     return function(){
       if(n == length-1){
         domLoad(function(){
@@ -77,7 +86,7 @@ N3D.require = function(){
           callback.complete();
         });
       }
-      N3D.LoadedModule[name] = true;
+      N3D.LoadedModule[urls[name]] = true;
     }
   });
   
@@ -94,14 +103,22 @@ N3D.require = function(){
     var i = 0;
     while(i<length){
       var libraryName = urls[i];
-    
-      if(typeof N3D.librariesAvailable[ urls[i] ] !== "undefined"){
+      var fileName = N3D.librariesAvailable[ urls[i] ];
+      if(typeof fileName !== "undefined"){
         script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = N3D.Path+N3D.librariesAvailable[ urls[i] ];
+        script.src = N3D.Path+fileName;
         head.appendChild(script);
     
-        script.onload = load(i,urls[i]);
+        script.onload = load(i);
+        script.onreadystatechange = (function(n){
+          
+          return function(){
+            if(script.readyState=="loaded"){
+              load(n)();
+            }  
+          }
+        })(i);
         script.onerror = error(i);
       }else{
         errorName = libraryName;

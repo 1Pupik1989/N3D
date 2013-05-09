@@ -7,6 +7,12 @@ N3D.Math.Vector3 = function(x,y,z){
 };
 N3D.Math.Vector3.prototype = {
   constructor:N3D.Math.Vector3,
+  clone:function(){
+    return new $V3(this.x,this.y,this.z);
+  },
+  xyz:function(){
+    return [this.x,this.y,this.z];
+  },
   add:function(v){
     this.x += v.x;
     this.y += v.y;
@@ -68,12 +74,23 @@ N3D.Math.Vector3.prototype = {
     this.z *= -1;
     return this;
   },
+  rotateYaw:function(angle){
+    var x = this.x, y = this.y;
+    
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    
+    this.x = x*cos - y*sin;
+    this.y = x*sin + y*cos;
+    
+    return this;
+  },
   toString:function(){
     return "N3D.Vector3("+this.x+","+this.y+","+this.z+")";
   }
 };
 
-N3D.Math.Vector3.Up = new N3D.Math.Vector3(0,-1,0);
+N3D.Math.Vector3.Up = new N3D.Math.Vector3(0,1,0);
 N3D.Math.Vector3.Right = new N3D.Math.Vector3(1,0,0);
 N3D.Math.Vector3.Forward = new N3D.Math.Vector3(0,0,1);
 N3D.Math.Vector3.Zero = new N3D.Math.Vector3(0,0,0);
@@ -119,7 +136,7 @@ N3D.Math.Vector3.DistanceSquared = function(v1,v2){
   return (v1.x-v2.x) * (v1.x-v2.x) + (v1.y-v2.y) * (v1.y-v2.y) + (v1.z-v2.z) * (v1.z-v2.z); 
 };
 N3D.Math.Vector3.Distance = function(v1,v2){
-  return Math.sqrt(this.DistanceSquared(v1,v2));
+  return Math.sqrt((v1.x-v2.x) * (v1.x-v2.x) + (v1.y-v2.y) * (v1.y-v2.y) + (v1.z-v2.z) * (v1.z-v2.z));
 };
 N3D.Math.Vector3.Cross = function(v1, v2){
   return new this(

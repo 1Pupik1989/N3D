@@ -1,29 +1,51 @@
-N3D.Math.Log10E = 0.4342945;
-N3D.Math.Log2E = 1.442695;
-N3D.Math.PiOver2 = Math.PI*0.5;
-N3D.Math.PiOver4 = Math.PI*0.25;
-N3D.Math.TwoPi = Math.PI*2;
-N3D.Math.PiOver360 = Math.PI/360;
-N3D.Math.PiOver180 = Math.PI/180;
+N3D.Math = (function(n){
+  var obj = {};
+  var random = n.random;
+  var tan = n.tan;
+  var PI = Math.PI;
+  
+  obj.Log10E = 0.4342945;
+  obj.Log2E = 1.442695;
+  obj.PiOver2 = Math.PI*0.5;
+  obj.PiOver4 = Math.PI*0.25;
+  obj.TwoPi = Math.PI*2;
+  obj.PiOver360 = Math.PI/360;
+  obj.PiOver180 = Math.PI/180;
+  obj.PI = Math.PI;  
+  
+  obj.pow2 = function(n){return n*n;};
+  obj.pow3 = function(n){return n*n*n;}; 
+  obj.randomFloat = function(from,to){
+    return random()*(to-from) + from;  
+  };
+  obj.cot = function(num){
+    return 1/tan(num);
+  };
+  obj.cosDeg = function(angle){
+    return Math.cos(angle * Math.PI/180);
+  };
+  obj.sinDeg = function(angle){
+    return Math.sin(angle * Math.PI/180);
+  };
+  
+  return obj;
+})(Math);
 
-N3D.Math.min = function(arr) {
-  var min = arr[0];
-  var len = arr.length;
-  var i = 1;
-  for ( ; i < len; i++) if (arr[i] < min) min = arr[i];
-  return min;
+N3D.Math.FromFibonacci = function(T){
+  var root5 = Math.sqrt(5);
+  var phi = (1 + root5) / 2;
+
+  var idx  = Math.floor( Math.log(T*root5) / Math.log(phi) + 0.5 );
+  var u = Math.floor( Math.pow(phi, idx)/root5 + 0.5);
+
+  return (u == T) ? idx : false;
+};
+N3D.Math.ToFibonacci = function(T){
+  return T<2 ? T : fib(T-1)+fib(T-2);
 };
 
-N3D.Math.max = function(arr) {
-  var max = arr[0];
-  var len = arr.length;
-  var i = 1;
-  for ( ; i < len; i++) if (arr[i] > max) max = arr[i];
-  return max;
-};
-
-N3D.Math.cot = function(num){
-  return 1/Math.tan(num);
+N3D.Math.IsFibonacci = function(T){
+  return N3D.Math.FromFibonacci(T)!==false;
 };
 
 N3D.Math.Barycentric = function(v1,v2,v3,a1,a2){
