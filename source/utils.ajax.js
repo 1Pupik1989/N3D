@@ -2,7 +2,7 @@ N3D.Utils.Ajax = function(src,attr,options){
   if(arguments.length == 0){
     return false;
   }
-  var options = options || N3D.Utils.Ajax.defaultOptions;
+  var options = options || $Ajax.defaultOptions;
   
   var callback = {
     complete:function(f){ this.complete = f || this.complete; },
@@ -77,4 +77,4 @@ N3D.Utils.Ajax.xmlhttprequest = (function(){
   };
 })();
 
-$ajax = N3D.Utils.Ajax;
+$Ajax = N3D.Utils.Ajax;
