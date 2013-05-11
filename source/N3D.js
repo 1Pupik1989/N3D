@@ -40,10 +40,27 @@ N3D.require = function(){
   var head = document.getElementsByTagName("head")[0];
   var priority = N3D.mod_priority; 
   var callback = {
-    complete : function(f){ this.complete = f || this.complete; },
+    complete : function(f){  this.complete = f || this.complete; },
     error : function(f){ this.error = f || this.error; },
     success : function(f){ this.success = f || this.success; }
   };
+  
+  var onload = (function(){
+    var load;
+    if(window.addEventListener) {
+      return function(callback){
+        window.addEventListener("load",function(){ callback(); } ,false);  
+      };
+    }else if(window.attachEvent){
+      return function(callback){
+        window.attachEvent("onload",callback);
+      }  
+    }else{
+      return function(callback){
+        window.onload = callback;
+      }
+    }
+  })();
 
   urls.sort(function(a,b){
     var _a = priority[a.split(".")[0]];
@@ -65,15 +82,12 @@ N3D.require = function(){
         urls = urls.replace(new RegExp(name+"\\.\\*",""),name+"."+mods[name].join(";"+name+"."));
       }
     }
-  
-    
+
   }
   urls = urls.split(";");  
   
-  function error(src){
-    setTimeout(function(){
-      callback.error(src);
-    },100);
+  function call(func,src){
+    setTimeout(function(){ callback[func](src); },100);
   };  
   
   var script;
@@ -85,8 +99,8 @@ N3D.require = function(){
     var url = urls[i];
     n = url.split(".");
     
-    if(typeof mods[ n[0] ] == "undefined") { error(url); break; }
-    if(mods[ n[0] ].indexOf(n[1]) == -1) { error(url); break; } 
+    if(typeof mods[ n[0] ] == "undefined") { call("error",url); break; }
+    if(mods[ n[0] ].indexOf(n[1]) == -1) { call("error",url); break; } 
     
     script = document.createElement("script");
     script.type = "text/javascript";
@@ -97,7 +111,7 @@ N3D.require = function(){
     script.onload = (function(n){
       return function(){
         if(n+1>=length){
-          callback.success();
+          onload(callback.success);
         }
         loaded++;
       }
@@ -110,9 +124,7 @@ N3D.require = function(){
     };
   }
   
-  setTimeout(function(){
-    callback.complete();
-  },100);
+  call("complete");   
   
   delete N3D.mod_priority;
 
