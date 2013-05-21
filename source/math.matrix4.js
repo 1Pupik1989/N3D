@@ -1,32 +1,3 @@
-/*
-Vector - row
-Matrix4 - right-handed
-0,1,2,3,
-4,5,6,7,
-8,9,10,11,
-12,13,14,15
-
-RotateX:
-1,0,0,
-0,c,-s,
-0,s,c
-
-RotateY:
-c,0,s,
-0,1,0,
--s,0,c
-
-RotateZ:
-c,-s,0,
-s,c,0,
-0,0,1
-
-Vector representation:
-Lx,Ux,Fx,Tx,
-Ly,Uy,Fy,Ty,
-Lz,Uz,Fz,Tz,
-Lw,Uw,Fw,Tw 
-*/
 N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
   if(typeof n15 !== "undefined"){
     this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
@@ -43,6 +14,9 @@ N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n1
   
   return this;
 };
+
+
+
 N3D.Math.Matrix4.prototype = {
   constructor:N3D.Math.Matrix4,
   clone:function(){
@@ -512,6 +486,10 @@ N3D.Math.Matrix4.CreateShadow = function(plane,light){
     m8,m9,m10,m11,
     m12,m13,m14,m15    
   );
+};
+
+N3D.Math.Matrix4.toString = function(){
+  return 'N3D.Math.Matrix4, for more information Execute the N3D.Help("Math.Matrix4")';
 };
 
 $M4 = N3D.Math.Matrix4;
