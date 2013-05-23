@@ -9,8 +9,7 @@ N3D.Modules = {
   Geometry:["Lightning","Shapes","Trees"],
   Game:["Main"],
   Files:["Main"],
-  Help:[""],
-  String:["RegExp"]
+  Help:[""]
 };
 
 (function(n){
@@ -59,8 +58,6 @@ N3D.Modules = {
       major = modules[name];
       if(typeof major == "undefined"){ continue; }
       if(typeof ignore[name] !== "undefined"){ continue; }
-      
-      //var c = complete[major.priority] = arr[major.priority] || [];
       c = complete[major.priority];
       if(typeof c == "undefined"){ c = complete[major.priority] = [] }
       if(sub_name == "*"){
