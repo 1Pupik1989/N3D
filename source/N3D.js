@@ -13,8 +13,6 @@ N3D.Modules = {
   String:["RegExp"]
 };
 
-//méně než 101 řádku N3D.require
-
 (function(n){
   var callback = {
     complete : function(f){  this.complete = f || this.complete; return this; },
@@ -43,6 +41,8 @@ N3D.Modules = {
     n[i] = {};
     p_i++;
   }
+  
+  console.log(path);
   
   function getModules(urls){
     urls.sort();
