@@ -78,13 +78,14 @@ N3D.Math.Vector4.prototype = {
     return Math.sqrt(x*x+y*y+z*z+w*w);
   },
   multiplyMatrix4:function(m){
-    var m = m.m;
+    var m = m.elements;
     var x = this.x, y = this.y, z = this.z,w = this.w;
     
     this.x = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
     this.y = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
     this.z = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
     this.w = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+
     
     return this; 
   },
@@ -96,22 +97,36 @@ N3D.Math.Vector4.prototype = {
     
     return this;
   },
-  projection:function(width,height){
+  toHomogenous: function(width,height){
     var invW = 1/this.w;
-
+    
     var x = this.x*invW,
         y = this.y*invW,
         z = this.z*invW;
-  
-    if(-1 < x && x < 1 && -1 < y && y < 1 && -1 < z && z < 1){
+
+    if(-1 < x && x < 1){
+      x = Math.max(x,-1);
+      x = Math.min(x,1);
+    }
+    
+    if(-1 < y && y < 1){
+      y = Math.max(y,-1);
+      y = Math.min(y,1);
+    }
+    
+    if(-1 < z && z < 1){
+      z = Math.max(z,-1);
+      z = Math.min(z,1);
+    }
+
+    //if(-1 < x && x < 1 && -1 < y && y < 1 && -1 < z && z < 1){
       this.x = ~~((x+1)*(width*0.5)); 
       this.y = ~~((y+1)*(height*0.5));
-      this.z = z;
+      this.z = z; 
 
       this.draw = true;
-      
       return this;  
-    }
+    //}
   
     this.draw = false;
     
@@ -120,6 +135,21 @@ N3D.Math.Vector4.prototype = {
   toString:function(){
     return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
+};
+N3D.Math.Vector4.Identity = function(){
+  return new this(0,0,0,1);
+};
+N3D.Math.Vector4.CreateFromVector3 = function(v,n){
+  return new this(v.x,v.y,v.z,n);
+};
+
+N3D.Math.Vector4.Multiply = function(v1,v2){
+  return new this(
+    v1.x*v2.x,
+    v1.y*v2.y,
+    v1.z*v2.z,
+    v1.w*v2.w
+  );
 };
 
 N3D.Math.Vector4.Equals = function(v){

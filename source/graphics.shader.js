@@ -1,87 +1,72 @@
-//Shaders for WebGL
 
-N3D.Graphics.Shader = function(){
+(function(){
+function parsing(that,shaderName,url){
+  var data = new N3D.Utils.Ajax({
+    url:url,
+    async:false
+  }).text;
   
-
-};
-N3D.Graphics.Shader.prototype = {
-  init:function(ctx,callback){
-    var that = this;
+  
+  var regex = /^(varying|uniform|attribute|precision)\s+(.*?)\s+(.*?);?$/gm; 
+  var store = {};
+  while((result = regex.exec(data)) !== null){
+    var prop = result[1];
+    var type = result[2];
+    var name = result[3];
     
-    var vs = "void main(void){}";
-    var fs = "void main(void){}";
-    
-    function loadFile(src){
-      var xmlhttp;
-      if (window.XMLHttpRequest){
-        xmlhttp=new XMLHttpRequest();
-      }else{
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-      }
-      xmlhttp.open("GET",src,false);
-      xmlhttp.send();
-
-      
-      return xmlhttp.responseText;
-    };
-    
-    
-    function loadShader(type,text){
-      var shader = ctx.createShader(type);
-
-      ctx.shaderSource(shader, text);
-      ctx.compileShader(shader);
-      if (!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {  
-        console.log("An error occurred compiling the shaders: " + ctx.getShaderInfoLog(shader));  
-        return null;  
-      }
-      return shader;
+    if(typeof store[prop] == 'undefined'){
+      store[prop] = [];  
     }
 
-    this.fs = loadFile("shaders/fragment.shader");
-    this.vs = loadFile("shaders/vertex.shader");
+    store[prop].push([name,type]);
+  }
+  
+  
+  that[shaderName+'Source'] = data;
+  
+  return store;
+};
 
-    this.fragmentShader = loadShader(ctx.FRAGMENT_SHADER,this.fs);
-    this.vertexShader = loadShader(ctx.VERTEX_SHADER,this.vs);
+N3D.Graphics.Shader = function(vs_url,fs_url){
+  this.vertexStore = parsing(this,'vertex',vs_url);
+  this.fragmentStore = parsing(this,'fragment',fs_url);
+  
+  return this;  
+};
+N3D.Graphics.Shader.prototype = {
+  bind:function(render){
+    var that = this, gl = render.context, sP = render.shaderProgram, name = '';
 
-    return this;  
-  },
-  setParameters:function(render){
-    var gl = render.context, sP = render.shaderProgram; 
-    this.propertyLoaded = [];
+    function setUniform(name){
+      return gl.getUniformLocation(sP, name);
+    };
 
     function setAttribute(name){
       var attr = gl.getAttribLocation(sP, name);
       gl.enableVertexAttribArray(attr);
       return attr;
     };
+    
+    function loader(arr,func){
+      if(typeof arr == 'undefined'){ return false;}
+      var length = arr.length;
+      for(var i=0;i<length;i++){
+        name = arr[i][0];
+        that[name] = func(name);
+      }  
+    };
 
-    function setUniform(name){
-      return render.context.getUniformLocation(sP, name);
-    }
+    loader(this.vertexStore.uniform,setUniform);
+    loader(this.fragmentStore.uniform,setUniform);
+    
+    loader(this.vertexStore.attribute,setAttribute);
+    loader(this.fragmentStore.attribute,setAttribute);
 
-    var line = (this.vs+"\n"+this.fs).split("\n");
-    var length = line.length; 
-    for(var i=0;i<length;i++){
-      var matches = line[i].match(/(attribute|uniform)\s+(\S+)\s+(\S+);/);
-      
-      if(matches){
-        if(matches[1] == "attribute"){
-          if(matches[3] !== "aVertexNormal"){
-            var name = matches[3];
-            this.propertyLoaded.push(name);
-            this[name] = setAttribute(name);  
-          }
-        }else if(matches[1] == "uniform"){
-          var name = matches[3];
-          this.propertyLoaded.push(name);
-          this[name] = setUniform(name);   
-        }
-      }
-      
-    } 
-  
   }
 };
+
+})();
+
+N3D.Graphics.Shader.loaded = true;
 
 $Shader = N3D.Graphics.Shader;

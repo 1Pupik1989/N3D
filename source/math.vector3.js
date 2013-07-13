@@ -85,15 +85,19 @@ N3D.Math.Vector3.prototype = {
     
     return this;
   },
+  toVector4:function(n){
+    return new N3D.Math.Vector4(this.x,this.y,this.z,n);
+  },
   toString:function(){
     return "N3D.Vector3("+this.x+","+this.y+","+this.z+")";
   }
 };
-
+N3D.Math.Vector3.Identity = function(){
+  return new this(0,0,0);
+};
 N3D.Math.Vector3.Up = new N3D.Math.Vector3(0,1,0);
 N3D.Math.Vector3.Right = new N3D.Math.Vector3(1,0,0);
-N3D.Math.Vector3.Forward = new N3D.Math.Vector3(0,0,1);
-N3D.Math.Vector3.Zero = new N3D.Math.Vector3(0,0,0);
+N3D.Math.Vector3.Forward = new N3D.Math.Vector3(0,0,-1);
 
 N3D.Math.Vector3.Lerp = function(v1,v2,a){
   return new this(

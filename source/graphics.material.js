@@ -1,353 +1,285 @@
-N3D.Graphics.Color = function(type,a,b,c,d){
-  var s = new type(a,b,c,d);
-  this.convertFrom(s);
-  this.alpha = (typeof d !== "undefined") ? d : 1;
-  this.storeColor = [this.red,this.green,this.blue,this.alpha];
+N3D.Graphics.Material = function(opts){
+  if(typeof opts !== 'object'){ return this; }
+  
+  if(opts.specularMap){
+    this.specularMap = new N3D.Graphics.Material.Texture(opts.specularMap);
+    this.specularMap.parent = this;
+    this.textured = true;
+  }
+  if(opts.specularColor){
+    this.specularColor = new N3D.Graphics.Material.Color(opts.specularColor);
+    this.specularColor.parent = this;
+  }
+};
+N3D.Graphics.Material.prototype = {
+  constructor:N3D.Graphics.Material,
+  width:0,
+  height:0,
+  textured:false,
+  ambientColor: null, //Ka
+  diffuseColor: null, //Kd
+  specularColor: null, //Ks
+  ambientMap: null,  //map_Ka
+  diffuseMap: null,  //map_Kd
+  specularMap: null, //map_Ks
+  transparent: 1,
+  bind:function(render){
+    this.render = render;
+    if(this.specularMap !== null){
+      this.specularMap.bind(render);
+    }
+  }
+};
+N3D.Graphics.Material.id = 0;
+
+N3D.Graphics.Material.Texture = function(src,callback){
+  var that = this;
+  var img = new Image();
+  this.id = 'texture-'+(N3D.Graphics.Material.id++);
+  
+  img.src = src;
+  img.style.display = 'none';
+
+  this.img = img;
+  this.src = src;
+};
+N3D.Graphics.Material.Texture.prototype = {
+  width:0,
+  height:0,
+  texture:null,
+  bind:function(render){
+    var that = this;
+    this.img.onload = function(){
+      if(render instanceof N3D.Graphics.Render3D){
+        var gl = render.context;
+        var texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        that.texture = texture; 
+      }else if(render instanceof N3D.Graphics.RenderSVG){
+        var pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+        var image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        pattern.appendChild(image);
+        render.defs.appendChild(pattern);
+        pattern.image = image;
+        
+        pattern.setAttributeNS(null,'id',that.id);
+        pattern.setAttributeNS(null,'patternUnits','userSpaceOnUse');
+        pattern.setAttributeNS(null,'width',this.width);
+        pattern.setAttributeNS(null,'height',this.height);
+      
+        image.setAttributeNS('http://www.w3.org/1999/xlink','href',that.src);
+        image.setAttributeNS(null,'x',0);
+        image.setAttributeNS(null,'y',0);
+        image.setAttributeNS(null,'width',this.width);
+        image.setAttributeNS(null,'height',this.height);
+      
+        this.pattern = pattern;
+      } 
+
+      that.parent.width = that.width = this.width;
+      that.parent.height = that.height = this.height;       
+    };
+    
+    if(this.img.complete == true){
+      this.img.onload();
+    }
+  }
+};
+
+N3D.Graphics.Material.Color = function(r,g,b,a){
+  if(typeof g == 'undefined'){
+    this.red = ((r >> 16)&255)/255;
+    this.green = ((r >> 8)&255)/255;
+    this.blue = (r&255)/255;
+    this.alpha = 1;
+    
+    //console.log(this.red,this.green,this.blue);
+    
+    return this;
+  }
+  this.red = r;
+  this.green = g;
+  this.blue = b;
+  this.alpha = a;
   
   return this;
 };
 
-N3D.Graphics.Color.prototype = {
-  set:function(r,g,b){
-    this.red = r;
-    this.green = g;
-    this.blue = b;  
-  },
-  setBrightness:function(l){
-    var colors = this.storeColor;
-    
-    var l = Math.max(0,Math.min(l,100));
-    
-    this.red = colors[0];
-    this.green = colors[1];
-    this.blue = colors[2];
-    
-    var c = this.convertTo(N3D.Graphics.Color.HSL);
-    c.l = l;
-    var c = new N3D.Graphics.Color(N3D.Graphics.Color.HSL,c.h,c.s,c.l);
-    c = c.convertTo(N3D.Graphics.Color.RGB);
-    
-    this.red = c.r;
-    this.green = c.g;
-    this.blue = c.b;   
-    
-    
-    console.log(this);
-    /*var l = l/100;
-    
-    this.red = Math.max(0,Math.min(1,colors[0]+l));
-    this.green = Math.max(0,Math.min(1,colors[1]+l));
-    this.blue = Math.max(0,Math.min(1,colors[2]+l));   */
-    
-    return this;  
-  },
-  setSaturation:function(l){
-    var colors = this.storeColor;
-    
-    var l = Math.max(0,Math.min(l,100));
-    
-    /*var c = this.convertTo(N3D.Graphics.Color.HSL);
-    c.l = l;
-    var c = new N3D.Graphics.Color(N3D.Graphics.Color.HSL,c.h,c.s,c.l);
-    
-    this.red = c.r;
-    this.green = c.g;
-    this.blue = c.b; */    
-    
-    var l = l/100;
-    
-    this.red = Math.max(0,Math.min(1,colors[0]+l));
-    this.green = Math.max(0,Math.min(1,colors[1]+l));
-    this.blue = Math.max(0,Math.min(1,colors[2]+l));
-    
-    return this;  
-  },
-  convertFrom:function(obj){
-    var cons = obj.constructor;
-    var that = this;
-    var inv255 = 1/255;
 
-    function setRGB(){
-      that.red = obj.r/255;
-      that.green = obj.g/255;
-      that.blue = obj.b/255;
-    };
-
-    function setHEX(){
-      var hex = parseInt("0x"+obj.hex.replace(/#/,""));
-
-      that.red = ( hex >> 16 & 255 ) * inv255;
-      that.green = ( hex >> 8 & 255 ) * inv255;
-      that.blue = ( hex & 255 ) * inv255;
-    };
+N3D.Graphics.Material.Color.prototype = {
+  red:0,green:0,blue:0,alpha:1,
+  hex:'000000',
+  get:function(type){
+    if(!type){ return 'rgb('+r+','+g+','+b+')'; }
+    var type = type.toLowerCase();
+    var r = ~~(this.red*255),
+        g = ~~(this.green*255),
+        b = ~~(this.blue*255);
     
-    function setCMYK(){
-      var k = obj.k;
-      var n = 1 - k;
- 
-		  that.red = 1 - Math.min( 1, obj.c * n + k );
-		  that.green = 1 - Math.min( 1, obj.m * n + k );
-		  that.blue = 1 - Math.min( 1, obj.y * n + k );
-    };
-    
-    function setHSV(){
-      var h = obj.h / 360,
-          s = obj.s / 100,
-          v = obj.v / 100;
-      var r,g,b;
-      
-		  if (s == 0) {
-        that.red = v * 255;
-			  that.green = v * 255;
-			  that.blue = v * 255;
-       
-        return;
-		  }else{
-        var h = h * 6,
-			      i = Math.floor(h),
-			      n1 = v * (1 - s),
-			      n2 = v * (1 - s * (h - i)),
-			      n3 = v * (1 - s * (1 - (h - i)));
+    if(type == 'hex'){
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1,7);  
+    }else if(type == 'rgb'){
+      return 'rgb('+r+','+g+','+b+')';  
+    }else if(type == 'rgba'){
+      return 'rgba('+r+','+g+','+b+','+this.alpha+')';  
+    }else if(type == 'rgb-norm'){
+      return 'rgb('+this.red+','+this.green+','+this.blue+')';  
+    }else if(type == 'rgba-norm'){
+      return 'rgba('+this.red+','+this.green+','+this.blue+','+this.alpha+')';  
+    }else if(type == 'hsv'){
+      var rr, gg, bb,
 
-        switch(i){
-          case 0:   that.red = v;   that.green = n3;  that.blue = n1; break;
-          case 1:   that.red = n2;  that.green = v;   that.blue = n1; break;
-          case 2:   that.red = n1;  that.green = v;   that.blue = n3; break;
-          case 3:   that.red = n1;  that.green = n2;  that.blue = v; break;
-          case 4:   that.red = n3;  that.green = n1;  that.blue = v; break;
-          default:  that.red = v;   that.green = n1;  that.blue = n2; 
-        };
-		  }
-    };
-    
-    function setHSL(){
-      var h = obj.h / 360,
-          s = obj.s / 100,
-          l = obj.l / 100;
-      var r, g, b;
+      r = this.red,
+      g = this.green,
+      b = this.blue,
+      h, s,
 
-      if(s == 0){
-        that.r = that.g = that.b = l; // achromatic
-      }else{
-        function hue2rgb(p, q, t){
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
+      v = Math.max(r, g, b),
+      diff = v - Math.min(r, g, b),
+      diffc = function (c) {
+        return (v - c) / 6 / diff + 1 / 2;
+      };
 
-        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        var p = 2 * l - q;
-        that.red = hue2rgb(p, q, h + 1/3);
-        that.green = hue2rgb(p, q, h);
-        that.blue = hue2rgb(p, q, h - 1/3);
+      if (diff === 0) {
+        h = s = 0;
+
+      } else {
+        s = diff / v;
+
+        rr = diffc(r);
+        gg = diffc(g);
+        bb = diffc(b);
+
+        if (r === v) {h = bb - gg}
+        else if (g === v) {h = (1 / 3) + rr - bb} 
+        else if (b === v) {h = (2 / 3) + gg - rr};
+        if (h < 0) {h += 1}
+        else if (h > 1) {h -= 1}
       }
-    };
 
-    switch(cons){
-      case N3D.Graphics.Color.HEX:  setHEX(); break;
-      case N3D.Graphics.Color.CMYK: setCMYK(); break;
-      case N3D.Graphics.Color.RGB:  setRGB(); break;
-      case N3D.Graphics.Color.HSV:  setHSV(); break;
-      case N3D.Graphics.Color.HSL:  setHSL(); break;
-      default: this.setRGB(1,1,1);
-    };
+      return new N3D.Graphics.Material.Color.HSV(
+        (h * 360 + 0.5) |0,
+        (s * 100 + 0.5) |0,
+        (v * 100 + 0.5) |0
+      );
+    }
     
-    //this.brightness = this.red*0.3 + this.green*0.59 + this.blue*0.11;
-    //this.brightness = (this.red + this.green + this.blue)/3;
-    this.brightness = Math.sqrt(this.red*this.red*0.241 + this.green*this.green*0.691 + this.blue*this.blue*0.068);
 
     return this;
   },
-  convertTo:function(type){
-    var red = this.red,
-        green = this.green,
-        blue = this.blue;
-    var r = Math.round(red * 255),
-        g = Math.round(green * 255),
-        b = Math.round(blue * 255);
-          
-    function getHEX(){
-      if(r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255){ return false; }
-      return new N3D.Graphics.Color.HEX("#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1,7));
-    };
-    
-    function getRGB(){
-      return new N3D.Graphics.Color.RGB(r,g,b);
-    }
-    
-    function getHSV(){
-      var minVal = Math.min(red, green, blue);
-		  var maxVal = Math.max(red, green, blue);
-		  var delta = maxVal - minVal;
- 
-      var h = 0, s = 0, v = maxVal;
-
- 
-		  if (delta == 0) {
-        return [h,s,v];
-		  } else {
-			  s = delta / maxVal;
-			  var del_R = (((maxVal - red) / 6) + (delta / 2)) / delta;
-			  var del_G = (((maxVal - green) / 6) + (delta / 2)) / delta;
-			  var del_B = (((maxVal - blue) / 6) + (delta / 2)) / delta;
- 
-			  if (red == maxVal) { h = del_B - del_G; }
-			  else if (green == maxVal) { h = (1 / 3) + del_R - del_B; }
-			  else if (blue == maxVal) { h = (2 / 3) + del_G - del_R; }
- 
-			  if (h < 0) { h += 1; }
-			  if (h > 1) { h -= 1; }
-      }
-
-		  return new N3D.Graphics.Color.HSV(
-        Math.round(h * 360),
-        Math.round(s * 100),
-        Math.round(v * 100)
-      );
-    };
-    
-    function getHSL(){
-      var min = Math.min(red, green, blue),
-          max = Math.max(red, green, blue),
-          h, s, l = (max + min) / 2;
-
-      if(max == min){
-          h = s = 0; // achromatic
-      }else{
-        var d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        
-        if(max == red){
-          h = (green - blue) / d + (green < blue ? 6 : 0);
-        }else if(max == green){
-          h = (blue - red) / d + 2;
-        }else if(max == blue){
-          h = (red - green) / d + 4;
-        }
-
-        h /= 6;
-      }
-
-      return new N3D.Graphics.Color.HSL(
-        Math.round(h * 360),
-        Math.round(s * 100),
-        Math.round(l * 100)
-      );
-    };
-    
-    
-    function getCMYK(){
-		  var k = Math.min( 1 - red, 1 - green, 1 - blue );
-		  var c = ( 1 - red - k ) / ( 1 - k ) * 100;
-		  var m = ( 1 - green - k ) / ( 1 - k ) * 100;
-		  var y = ( 1 - blue - k ) / ( 1 - k ) * 100;
-      k *= 100;
- 
-		  return new N3D.Graphics.Color.CMYK(
-        Math.round(c),
-        Math.round(m),
-        Math.round(y),
-        Math.round(k)
-      );
+  toString:function(){
+    return 'Color RGB (red='+this.red+', green='+this.green+', blue='+this.blue+', alpha='+this.alpha+')';
   }
-    
-    switch(type){
-      case N3D.Graphics.Color.HEX: return getHEX();break;
-      case N3D.Graphics.Color.RGB: return getRGB();break;
-      case N3D.Graphics.Color.HSV: return getHSV();break;
-      case N3D.Graphics.Color.HSL: return getHSL();break;
-      case N3D.Graphics.Color.CMYK: return getCMYK();break;
-      default:console.log("none");
-    };
+};
 
+N3D.Graphics.Material.Color.HSV = function(h,s,v){
+  this.hue = h;
+  this.saturation = s;
+  this.value = v;
+  
+};
+N3D.Graphics.Material.Color.HSV.prototype = {
+  toRGB:function(){
+    var r,g,b;
+    var i;
+    var f, p, q, t;
+    var h = Math.max(0, Math.min(360, this.hue)),
+	      s = Math.max(0, Math.min(100, this.saturation)),
+	      v = Math.max(0, Math.min(100, this.value));
+        
+    s /= 100;
+    v /= 100;    
+        
+    if(s == 0) {
+		  // Achromatic (grey)
+		  r = g = b = v;
+		  return new N3D.Graphics.Material.Color(r, g, b);
+	  }    
+     
+    h /= 60; // sector 0 to 5
+	  i = Math.floor(h);
+    f = h - i; // factorial part of h
+    p = v * (1 - s);
+    q = v * (1 - s * f);
+    t = v * (1 - s * (1 - f));
+    
+    console.log(h);
+    
+    switch(i) {
+		  case 0:r = v; g = t; b = p; break;
+      case 1:r = q;	g = v; b = p;	break;
+      case 2:r = p; g = v; b = t;	break;
+      case 3:r = p; g = q; b = v; break;
+      case 4:r = t; g = p; b = v; break;
+      default:r = v; g = p; b = q;
+    };
+    
+    return new N3D.Graphics.Material.Color(r, g, b, 1);   
   },
   toString:function(){
-    return "N3D.Graphics.Color(\n"+
-    "\tRed:"+this.red+"\n" +
-    "\tGreen:"+this.green+"\n" + 
-    "\tBlue:"+this.blue+"\n" +
-    "\tAlpha:"+this.alpha+"\n" +
-    "\tBrightness:"+this.brightness+"\n" + 
-    ")";  
+    return 'Color HSV (hue='+this.hue+', saturation='+this.saturation+', blue='+this.value+')';
   }
 };
 
-N3D.Graphics.Color.CMYK = function(c,m,y,k){
-  this.c = c;
-  this.m = m;
-  this.y = y;
-  this.k = k; 
-};
 
-N3D.Graphics.Color.RGB = function(r,g,b){
-  this.r = r;
-  this.g = g;
-  this.b = b;
-};
+N3D.Graphics.Material.Color.Black = new N3D.Graphics.Material.Color(0,0,0,1);
+N3D.Graphics.Material.Color.White = new N3D.Graphics.Material.Color(1,1,1,1);
 
-N3D.Graphics.Color.HSV = function(h,s,v){
-  this.h = h;
-  this.s = s;
-  this.v = v;
-};
-
-N3D.Graphics.Color.HSL = function(h,s,l){
-  this.h = h;
-  this.s = s;
-  this.l = l;
-};
-N3D.Graphics.Color.HEX = function(hex){
-  this.hex = hex;  
-};
-
-
-N3D.Graphics.Texture = function(src,render){
-  this.image = new Image();
-  this.image.onload = function(){
-
-  }
-  this.image.src = src;
+N3D.Graphics.Material.ColorPalette = function(){
+  var points = Array.prototype.slice.call(arguments);
+  var length = points.length;
   
-  return this;
+  var can = document.createElement('canvas');
+  can.width = 100;
+  can.height = 100;
+  
+  var ctx = can.getContext('2d');
+   
+  var gradient = ctx.createLinearGradient(0, 50, 100, 50);
+  var ind,color;
+  /*for(var i=0;i<length;i++){
+    ind = points[i];
+    color = new $Graphics_Color(ind[1]).get('hex');
+    gradient.addColorStop(ind[0],  color);
+  }*/
+  
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0,0,100,100);
+  
+  this.canvas = can;
 };
-N3D.Graphics.Texture.prototype = {
-  getUV:function(v){
-    var x = v.original.x;
-    var y = v.original.y;
 
-    if(y<0){
-      y+=2;
-    }
-    
-    v.x = ~~(x*this.image.width);
-    v.y = ~~((1-y)*this.image.height);
-    
-    return v;
-  },
-  bind:function(render){
-    var ctx = render.context;
-    this.texture = ctx.createTexture();
-    ctx.bindTexture(ctx.TEXTURE_2D, this.texture);
-    ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, this.image);
-    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
-    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_NEAREST);
-    ctx.generateMipmap(ctx.TEXTURE_2D);
-    ctx.bindTexture(ctx.TEXTURE_2D, null);
+N3D.Graphics.Material.ColorPalette2 = function(){
+  var points = Array.prototype.slice.call(arguments);
+  var length = points.length;
+  
+  var can = document.createElement('canvas');
+  can.width = 100;
+  can.height = 100;
+  
+  var ctx = can.getContext('2d');
+   
+  var gradient;
+  var ind,color;
+  
+  for(var i=0;i<length;i++){
+    ind = points[i];
+    color = new $Graphics_Color(ind[2]);
+    console.log(''+color.get('HSV'));
   }
+  ctx.fillRect(0,0,100,100);
+  //
+  
+  this.canvas = can;
 };
 
-
-N3D.Graphics.Material = {};
-N3D.Graphics.Material.Blank = function(){
-};
-N3D.Graphics.Material.Blank.prototype = {
-  getUV:function(v){
-    return v;
-  }
-};
-
-$Texture = N3D.Graphics.Texture;
-$Color = N3D.Graphics.Color;
+$Graphics_Material = N3D.Graphics.Material;
+$Graphics_Texture = N3D.Graphics.Material.Texture;
+$Graphics_Color = N3D.Graphics.Material.Color;

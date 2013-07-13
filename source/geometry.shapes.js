@@ -1,384 +1,414 @@
-N3D.Geometry.Object3D = function(data){
-  this.data = data;
-  
-  this.ModelMatrix = new $M4();
-  this.transformation = {}; 
-  
-  var vp = data.v;
-  var length = vp.length;
-  var befMax = Number.MIN_VALUE;
-  var befMin = Number.MAX_VALUE;
+N3D.Geometry.Shapes = function(){
+  this.matrix = $M4.Identity();
 
+  this.vectors_position = [];
+  this.vectors_texture = [];
+  this.vectors_normal = [];
   
-  for(var i=0;i<length;i++){
-    var d = vp[i];
-    var x = d[0];
-    var y = d[1];
-    var z = d[2];
-    
-    var min = Math.min(x,y,z);
-    var max = Math.max(x,y,z);
-    if(max>befMax){
-      befMax = max;
-    }
-    if(min<befMin){
-      befMin = min;
-    }
+  this._vectors_position = [];
+  this._vectors_position.id = 3;
+  this.vectors_position.id = 8;
+  
+  this.transform = {};
+  this.backface_culling = false;
+  
+  
+   
+  this.add(new N3D.Graphics.Material());                 
+  
+  if(N3D.Support.WebGL){
+    this.array_position = new Float32Array();
+    this.array_texture = new Float32Array();
+    this.array_normal = new Float32Array();
+    this.array_indices = new Uint16Array();  
   }
-  
-  var size = befMax-befMin;
-  
-  for(var i=0;i<length;i++){
-    vp[i][0] /= size;
-    vp[i][1] /= size;
-    vp[i][2] /= size;    
-  }
-  
-  
-  
-
-  function get(data,type){
-    var store = [];
-    if(typeof data == "undefined"){
-      return store;
-    }
-    var length = data.length;
-    
-    
-    
-    
-    for(var i=0;i<length;i++){
-      var d = data[i];
-      var v = new type(d[0],d[1],d[2],1);
-      v.original = new type(d[0],d[1],d[2],1);
-      store.push(v);  
-    }
-    return store;
-  };
-  
-  
-  this.verticesPosition = get(data.v,$V4);
-  this.verticesNormal = get(data.vn,$V4);
-  this.verticesTexture = get(data.vt,$V2);
-
+ 
   return this;
 };
 
-N3D.Geometry.Object3D.prototype = {
-  constructor:N3D.Geometry.Object3D,
-  backface:false,
-  addTo2D:function(){
-    this.polygons = [];
-    
-    var vp = this.verticesPosition;
-    var vn = this.verticesNormal;
-    var vt = this.verticesTexture;
-    var f = this.data.f;
-    var f_length = f.length;
-
-    var length = vp.length;
-    for(var i=0;i<length;i++){
-      vp[i].original.y *= -1;
-      vp[i].original.z *= -1;
+N3D.Geometry.Shapes.prototype = {
+  gl_draw_type:"LINES",
+  constructor:N3D.Geometry.Shapes,
+  add:function(o){
+    o.parent = this;
+    o.world_parent = this.parent;
+    if(o instanceof N3D.Graphics.Material){
+      this.material = o;
     }
-    for(var i=0;i<f_length;i++){
-  
-      var it = f[i];
-      var v0 = it[0].split("/");
-      var v1 = it[1].split("/");
-      var v2 = it[2].split("/");
-    
-      var out = new N3D.Geometry.Triangle();
-
-      out.setMaterial(this.material);
-      out.setVerticesPosition(  vp[v0[0]-1],vp[v1[0]-1],vp[v2[0]-1]   );
-      out.setVerticesNormal(    vn[v0[2]-1],vn[v1[2]-1],vn[v2[2]-1]   );
-      out.setVerticesTexture(   vt[v0[1]-1],vt[v1[1]-1],vt[v2[1]-1]   );
-      
-      out.parent = this;
-      
-      this.polygons.push(out);
-    }
-
-   
   },
-  constructForWebGL:function(){
-    var polygons = this.polygons;
-    var length = polygons.length;
+  updateTransform:function(){
+    var trans = this.transform;
+    if(typeof trans == "undefined"){ return false; }
+    var m = this.matrix = $M4.Identity();    
+    var v;
+
+    if(v = trans.translate){
+      m.translate(v.x,v.y,v.z);
+    } 
     
-    var vertP = [];
-    var vertN = [];
-    var vertT = [];
-    var vertF = [];
-    var n = 0;
-    
-    for(var i=0;i<length;i++){
-      var poly = polygons[i];
-      vertP = vertP.concat(poly.getVerticesPosition());
-      vertT = vertT.concat(poly.getVerticesTexture());
-      
-      vertN = vertN.concat(poly.getVerticesNormal()); 
-      vertF.push(n,n+1,n+2);  
-      n+=3;
+    if(v = trans.scale){
+      m.scale(v.x,v.y,v.z);  
+    } 
+
+    if(v = trans.rotateX){
+      m.rotateX(v);
     }
-
-    var gl = this.parent.render.context;
-    var cubeVerticesTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertT), gl.STATIC_DRAW);
-  
-    var cubeVertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertN), gl.STATIC_DRAW); 
-  
-    var cubeVerticesBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertP), gl.STATIC_DRAW);  
-  
-    var cubeVerticesIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertF), gl.STATIC_DRAW);
     
-    this.cubeVerticesTextureCoordBuffer = cubeVerticesTextureCoordBuffer;
-    this.cubeVertexNormalBuffer = cubeVertexNormalBuffer;
-    this.cubeVerticesBuffer = cubeVerticesBuffer;
-    this.cubeVerticesIndexBuffer = cubeVerticesIndexBuffer;
-    this.verticesPosition = vertP;
-    this.verticesNormal = vertN;
-    this.verticesTexture = vertT;
-    this.faces = vertF;
-
-    this.facesLength = vertF.length;
-    this.material.bind(this.parent.render);    
+    if(v = trans.rotateY){
+      m.rotateY(v);
+    }
+    
+    if(v = trans.rotateZ){
+      m.rotateZ(v);
+    }
+    
+    return this;
   },
-  applyMVP:function(){
-    this.applyTransformation();
+  update:function(){
+    var camera = this.parent.camera;
 
-    var MVP = this.ModelMatrix.multiply(this.parent.camera.VPMatrix),
-        vp = this.verticesPosition,
-        vp_length = vp.length,
-        n;
+    var MVP = this.matrix.multiply(camera.projectionViewMatrix),
+        vp = this.vectors_position,
+        _vp = this._vectors_position,
+        vp_length = vp.length;
 
     var width = this.parent.viewport.width,
         height = this.parent.viewport.height;
 
     for(var i=0;i<vp_length;i++){
-      n = vp[i];
-      n.copyFromVector4(n.original).multiplyMatrix4(MVP).projection(width,height);
+      vp[i].copyFromVector4(_vp[i]).multiplyMatrix4(MVP).toHomogenous(width,height);
     }
-
+    return this;
   },
-  applyTransformation:function(){
-    var trans = this.transformation;
-    if(typeof trans == "undefined"){ return false; }
-    var m = this.ModelMatrix = new $M4();    
-    var v;
+  drawTo2DContext:function(){
+    var render = this.parent.render;
+    var material = this.material;
+    var context = render.context;
+    var backface = render.backfaceCulling;
+    var newPoly = [];
+    var polygons = this.polygons;
+    var length = polygons.length;
+    var i;
+    
+    for(i=0;i<length;i++){
+      poly = polygons[i]; 
+      if(poly.projectSettings(backface) == true){
+        newPoly.push(poly);
+      }      
+    }
+    newPoly.sort(function sort(a,b){
+      return (b.depthInt - a.depthInt);
+    });
+    
+    length = newPoly.length;
 
-    if(v = trans.scale){
-      m.scale(v.x,v.y,v.z);  
-    }    
-    if(v = trans.rotateX){
-      m.rotateX(v);
-    }
-    if(v = trans.rotateY){
-      m.rotateY(v);
-    }
-    if(v = trans.rotateZ){
-      m.rotateZ(v);
-    }
-    if(v = trans.translate){
-      m.translate(v);
+    for(i=0;i<length;i++){
+      newPoly[i].draw(context,material,i);
     }
 
     return this;
   },
-  drawTo2DContext:function(){
-    var polygons = this.polygons;
-    var length = polygons.length;
-    var newPoly = [];
-    var n = 0;
-    this.applyMVP();
+  bindBuffer:function(){
+    var gl = this.parent.render.context;
+    var buffer;
+    if(this.parent.render instanceof N3D.Graphics.Render3D){
+      buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.array_texture), gl.STATIC_DRAW);
+      this.buffer_texture = buffer;
     
-    for(var i=0;i<length;i++){
-      poly = polygons[i]; 
-      poly.projectSettings();
-
-      if(poly.isVisible == true){
-        newPoly[n++] = poly;
-        $Game.visibleTriangles++;
+      buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.array_normal), gl.STATIC_DRAW); 
+      this.buffer_normal = buffer;
+    
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.array_position), gl.STATIC_DRAW);  
+      this.buffer_position = buffer;
+    
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.array_indices), gl.STATIC_DRAW);
+      this.buffer_indices = buffer; 
+    }
+    if(this.parent.render instanceof N3D.Graphics.RenderSVG){
+      var polygons = this.polygons;
+      var length = polygons.length;
+      var render = this.parent.render.group;
+      for(var i=0;i<length;i++){
+        render.appendChild(polygons[i].triangleSVG);
       }
     }
-
-    function sort(a,b){
-      return (b.depthInt - a.depthInt);
-    };
-    
-    newPoly.sort(sort);
-
-
-    var length = newPoly.length;
-    var render = this.parent.render.context;
-    
-    for(var i=0;i<length;i++){
-      newPoly[i].draw(render);
+    this.material.bind(this.parent.render); 
+    if(this.material.textured){
+      this.gl_draw_type = "TRIANGLES";
+      N3D.Geometry.Shapes.Triangle.prototype.draw = N3D.Geometry.Shapes.Triangle.drawTexture;
+    }else{
+      N3D.Geometry.Shapes.Triangle.prototype.draw = N3D.Geometry.Shapes.Triangle.draw;
     }
+  }  
+};
 
+N3D.Geometry.Shapes.LoaderOBJ = function(url){
+  N3D.Geometry.Shapes.call(this);
+  var data = new N3D.Utils.Ajax({
+    url:url,
+    async:false
+  }).text;   
+  
+  this.data = data;  
+};
+
+N3D.Geometry.Shapes.LoaderOBJ.prototype = extend(N3D.Geometry.Shapes.LoaderOBJ,N3D.Geometry.Shapes);
+N3D.Geometry.Shapes.LoaderOBJ.prototype.init = function(){
+  var data = this.data;
+  
+  var f0,f1,f2,v0,v1,v2;
+  var result, f_length;
+  var vt = [], vn = [], vp = [],
+      _vp = [], _vn = [], _vt = [],
+      w_ind = [], w_vp = [], w_vt = [], w_vn = [];
+  
+  var V2 = N3D.Math.Vector2,V4 = N3D.Math.Vector4;
+  
+  var regex = /^(v|vt|vn|f)\s+(-?[0-9\.\/]+)\s+(-?[0-9\.\/]+)\s*(-?[0-9\.\/]+)?\s*$/gm;
+  var triangle;
+  var polygons = [];
+  var vec;
+  
+  var ind_i = 0;
+
+  while((result = regex.exec(data)) !== null){
+    if(result[1] == 'vn'){
+      vec = new V4(parseFloat(result[2]),parseFloat(result[3]),parseFloat(result[4]),0).normalize();
+      vn.push(vec);
+      _vn.push(vec.clone());
+    }else if(result[1] == 'v'){
+      vec = new V4(parseFloat(result[2]),parseFloat(result[3]),parseFloat(result[4]),1);
+      vp.push(vec);
+      _vp.push(vec.clone());
+    }else if(result[1] == 'vt'){
+      vec = new V2(parseFloat(result[2]),parseFloat(result[3]));
+      vt.push(vec);
+      _vt.push(vec.clone());
+    }else if(result[1] == 'f'){
+      triangle = new N3D.Geometry.Shapes.Triangle();
+      f0 = result[2].split("/");
+      f1 = result[3].split("/");
+      f2 = result[4].split("/");
+    
+      triangle.parent = this;
+    
+      f_length = f0.length;
+    
+      v0 = (+f0[0])-1;
+      v1 = (+f1[0])-1;
+      v2 = (+f2[0])-1;
+
+      w_ind.push(ind_i++,ind_i++,ind_i++);
+
+      v0 = vp[v0];
+      v1 = vp[v1];
+      v2 = vp[v2];
+
+      triangle.setVectorsPosition(v0,v1,v2);
+      
+      var u = $V3.Sub(v1,v0);
+      var v = $V3.Sub(v2,v0);
+      
+      var vn0 = u.cross(v).normalize();
+
+      w_vp = w_vp.concat(v0.xyz(),v1.xyz(),v2.xyz());
+
+      if(f_length>=2 && f0[1] !== ''){
+        v0 = vt[(+f0[1])-1];
+        v1 = vt[(+f1[1])-1];
+        v2 = vt[(+f2[1])-1]; 
+      
+        w_vt = w_vt.concat(v0.xy(),v1.xy(),v2.xy()); 
+        triangle.setVectorsTexture(v0,v1,v2);
+      }
+    
+      if(f_length>=3 && f0[2] !== ''){
+        v0 = vn[(+f0[2])-1];
+        v1 = vn[(+f1[2])-1];
+        v2 = vn[(+f2[2])-1]; 
+      
+        w_vn = w_vn.concat(v0.xyz(),v1.xyz(),v2.xyz());
+      }else{
+        v0 = vn0;
+        v1 = vn0;
+        v2 = vn0;
+        
+        vn0 = vn0.xyz();
+        
+        w_vn = w_vn.concat(vn0,vn0,vn0);
+      } 
+  
+      triangle.setVectorsNormal(v0,v1,v2);
+      polygons.push(triangle);
+    }
+    
+    
+  }
+  this.polygons = polygons;
+  
+  this.vectors_position = vp;
+  this.vectors_texture = vt;
+  this.vectors_normal = vn;  
+  
+  this._vectors_position = _vp;                
+  this._vectors_normal = _vn;
+  this._vectors_texture = _vt;
+   
+  if(N3D.Support.WebGL){
+    this.array_position = new Float32Array(w_vp);
+    this.array_texture = new Float32Array(w_vt);
+    this.array_normal = new Float32Array(w_vn);
+    
+      
+    
+    this.array_indices = new Uint16Array(w_ind); 
+    this.indices_length = w_ind.length; 
   }
 };
 
-N3D.Geometry.Object3D.LoadFromFiles = function(type,src,options){
-  var that = this;
-  var ajaxCall = $Ajax(src).complete(function(data){
-    var obj = type(data,options);
-    that.success(obj);
-    return true;
-  });
+N3D.Geometry.Shapes.Cube = function(){
+  N3D.Geometry.Shapes.call(this);
+
+};
+
+N3D.Geometry.Shapes.Cube.prototype = extend(N3D.Geometry.Shapes.Cube,N3D.Geometry.Shapes);
+N3D.Geometry.Shapes.Cube.prototype.init = function(){
+  this.vectors_position = [
+    0,0,0,
+    1,0,0,
+    1,1,0,
+    0,1,0
+  ];
+
+  this.indices_length = 2; 
 };
 
 
-var callbacks = {
-  success:function(f){ this.success = f; },
-  error:function(f){ this.error = f; },
-  complete:function(f){ this.complete = f; }
+N3D.Geometry.Shapes.Block = function(){};
+N3D.Geometry.Shapes.Sphere = function(){};
+
+N3D.Geometry.Shapes.Elipse = function(){};
+N3D.Geometry.Shapes.Circle = function(){};
+N3D.Geometry.Shapes.Square = function(){};
+N3D.Geometry.Shapes.Rectangle = function(){
+  N3D.Geometry.Shapes.call(this);
 };
+N3D.Geometry.Shapes.Rectangle.prototype = extend(N3D.Geometry.Shapes.Rectangle,N3D.Geometry.Shapes);
+N3D.Geometry.Shapes.Rectangle.prototype.init = function(){
+  var vt = [], vn = [], vp = [],
+      _vp = [], _vn = [], _vt = [];
+  
+  var w_vp = [
+    0,0,0,
+    1,0,0,
+    1,1,0,
+    0,1,0
+  ];
+  
+  var w_ind = [
+    0,1,2,
+    0,2,3
+  ];
+  
+  var w_vt = [
+    0,0,
+    1,0,
+    1,1,
+    0,1    
+  ];
+  
+  var w_vn = [];
+  
+  var V2 = N3D.Math.Vector2,V4 = N3D.Math.Vector4;
 
-N3D.Geometry.Object3D.LoadFromFiles.prototype = callbacks;
+  var polygons = [],v0, v1, v2;
 
-N3D.Geometry.Triangle = function(){};
-N3D.Geometry.Triangle.prototype = {
+  var vec,triangle;
+  for(var i=0;i<12;i+=3){
+    vec = new V4(w_vp[i],w_vp[i+1],w_vp[i+2],1);
+    vp.push(vec);
+    _vp.push(vec.clone());
+  } 
+  
+  for(var i=0;i<6;i+=3){
+    triangle = new N3D.Geometry.Shapes.Triangle();  
+    v0 = vp[w_ind[i]];
+    v1 = vp[w_ind[i+1]];
+    v2 = vp[w_ind[i+2]];
+
+    triangle.setVectorsPosition(v0,v1,v2);
+    polygons.push(triangle);
+  }
+  
+  this.polygons = polygons;
+  
+  this.vectors_position = vp;
+  this.vectors_texture = vt;
+  this.vectors_normal = vn;  
+  
+  this._vectors_position = _vp;                
+  this._vectors_normal = _vn;
+  this._vectors_texture = _vt;
+   
+  if(N3D.Support.WebGL){
+    this.array_position = new Float32Array(w_vp);
+    this.array_texture = new Float32Array(w_vt);
+    this.array_normal = new Float32Array(w_vn);
+    this.array_indices = new Uint16Array(w_ind); 
+    this.indices_length = w_ind.length; 
+  }
+  
+  this.indices_length = 2; 
+};
+//Trojúhelníky
+N3D.Geometry.Shapes.Triangle = function(){};
+N3D.Geometry.Shapes.Triangle.prototype = {
   isVisible:true,
-  getVerticesPosition:function(){
-    return [].concat(this.vp0.xyz(),this.vp1.xyz(),this.vp2.xyz());
-  },
-  getVerticesNormal:function(){
-    if(!this.vn0){
-      return [0,0,0,0,0,0,0,0,0];
-    }
-    return [].concat(this.vn0.xyz(),this.vn1.xyz(),this.vn2.xyz());
-  },
-  getVerticesTexture:function(){
-    var vt0 = this.vt0.original;
-    var vt1 = this.vt1.original;
-    var vt2 = this.vt2.original;
-    
-    return [].concat(vt0.xy(),vt1.xy(),vt2.xy());
-  },
-  setVerticesPosition:function(v0,v1,v2){
+  triangle:null,
+  setVectorsPosition:function(v0,v1,v2){
     this.vp0 = v0;
     this.vp1 = v1;
     this.vp2 = v2;
+    if(N3D.Support.SVG){
+      var triangle = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); 
+      triangle.setAttributeNS(null,'points',v0.x+" "+v0.y+" "+v1.x+" "+v1.y+" "+v2.x+" "+v2.y);
+      triangle.setAttributeNS(null,'opacity','0');
+      this.triangleSVG = triangle;
+    }    
   },
-  setVerticesNormal:function(v0,v1,v2){
+  setVectorsNormal:function(v0,v1,v2){
     this.vn0 = v0;
     this.vn1 = v1;
-    this.vn2 = v2;
+    this.vn2 = v2; 
   },
-  setVerticesTexture:function(v0,v1,v2){
-    var m = this.material;
-
-    this.vt0 = m.getUV(v0);
-    
-    this.vt1 = m.getUV(v1);
-  
-    this.vt2 = m.getUV(v2);
-  },
-  setMaterial:function(m){
-    this.material = m;
-    if(m instanceof N3D.Graphics.Texture){
-      this.draw = this.drawTexture;
+  setVectorsTexture:function(v0,v1,v2){
+    this.vt0 = v0;
+    this.vt1 = v1;
+    this.vt2 = v2;
+    if(this.triangleSVG !== null){
+      this.triangleSVG.setAttributeNS(null,'points',(v0.x*512)+" "+((1-v0.y)*512)+" "+(v1.x*512)+" "+((1-v1.y)*512)+" "+(v2.x*512)+" "+((1-v2.y)*512));
     }
   },
-  projectSettings:function(){
+  projectSettings:function(backface){
     var p0 = this.vp0,
         p1 = this.vp1,
         p2 = this.vp2;
-    this.isVisible = false;
+
     if(p0.draw == false || p1.draw == false || p2.draw == false){
-      this.isVisible = false;
       return false;
     }
 
-    if(this.parent.backface == false){
-      this.isVisible = ((p1.x-p0.x)*(p2.y-p0.y) - (p1.y-p0.y)*(p2.x-p0.x) > 0);
-    }else{
-      this.isVisible = true;
-    }  
-
     this.depthInt = Math.min(p0.z,p1.z,p2.z);
-  },
-  draw:function(ctx){
-    if(this.isVisible == false){
-      return;
-    }    
- 
-    var vp0 = this.vp0,
-        vp1 = this.vp1,
-        vp2 = this.vp2;
-
-    ctx.strokeStyle = "white";
-
-    ctx.beginPath();
-    ctx.moveTo(vp0.x, vp0.y);
-    ctx.lineTo(vp1.x, vp1.y);
-    ctx.lineTo(vp2.x, vp2.y);
-    ctx.closePath();
-    ctx.stroke();
-
-  },
-  drawTexture:function(ctx){
-    if(this.isVisible == false){
-      return;
-    }  
-
-    var vp0 = this.vp0,
-        vp1 = this.vp1,
-        vp2 = this.vp2,
-        x0 = vp0.x, x1 = vp1.x, x2 = vp2.x,
-        y0 = vp0.y, y1 = vp1.y, y2 = vp2.y;
-    var vt0 = this.vt0, vt1 = this.vt1, vt2 = this.vt2,
-        u0 = vt0.x, u1 = vt1.x, u2 = vt2.x,
-        v0 = vt0.y, v1 = vt1.y, v2 = vt2.y;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.closePath();
-    ctx.clip();
-    
-    x1 -= x0; y1 -= y0; x2 -= x0; y2 -= y0; 
-    u1 -= u0; v1 -= v0; u2 -= u0; v2 -= v0;
-    
-    var id = 1 / (u1*v2 - u2*v1),
-        a = id * (v2*x1 - v1*x2),
-        b = id * (v2*y1 - v1*y2),
-        c = id * (u1*x2 - u2*x1),
-        d = id * (u1*y2 - u2*y1),
-        e = x0 - a*u0 - c*v0,
-        f = y0 - b*u0 - d*v0;
-
-    ctx.transform( a, b, c, d, e, f );
-    ctx.drawImage(this.material.image, 0, 0);
-    
-    
-    ctx.restore();
-  }  
+    return (backface == false ? true : ((p1.x-p0.x) * (p2.y-p0.y) - (p1.y-p0.y) * (p2.x-p0.x) > 0)); 
+  }
 };
 
-
-N3D.Geometry.Cloud = function(){
-  
-};
-N3D.Geometry.Cloud.prototype = {
-  generateMaterial:function(){
-  
-  }  
-};
-
-
-
-$Triangle = N3D.Geometry.Triangle;
-$Quadrangle = N3D.Geometry.Quadrangle;
-
-$Object3D = N3D.Geometry.Object3D;
+$OBJ = N3D.Geometry.Shapes.LoaderOBJ;

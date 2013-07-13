@@ -1,131 +1,373 @@
-N3D.Math.Matrix4 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15){
-  if(typeof n15 !== "undefined"){
-    this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15]);
+/*
+00,04,08,12,
+01,05,09,13,
+02,06,10,14,
+03,07,11,15
 
-    return this;
-  }else{
-    this.m = [
-      1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1
-    ]; 
-  }
+Vektory - sloupcové
+Column Major
+
+Vysvětlení funkcí:
+
+N3D.Math.Matrix4
+  - Identity = Vytvoří novou identickou matici
+  - Multiply = Vynásobí dvě matice "C = A*B"
+  - MultiplyTranspose = Vynásobí dvě matice transponovaně "C = B*A"
+  - CreateLookAt = Vytvoří View matici
+  - CreateRotationX = Vytvoří matici rotace na ose X
+  - CreateRotationY = Vytvoří matici rotace na ose Y
+  - CreateRotationZ = Vytvoří matici rotace na ose Z
+  - CreateScale = Vytvoří matici pro změnu měřítek
+  - CreateTranslate = Vytvoří matici posunu
+  - CreateFrustum = Vytvoří Viewing frustum
+  - CreatePerspektive = Vytvoří matici perspektivní projekce 
+  - CreateOrthographic = Vytvoří matici orthografické projekce
   
+  - constructor 
+    - clone = Vytvoří kopii sama sebe
+    - inverse = Přepočítá se do inversního stavu
+    - multiply = Vynásobí sama sebe maticí C = A*B
+    - multiplyTranspose = Vynásobí sama sebe maticí, ale transponovaně C = B*A
+    - mutliplyVector4 = Násobí svoje hodnoty vektor a vrátí nový
+    - rotateX = Otočí se o stanovený počet radiánů na ose X
+    - rotateY = Otočí se o stanovený počet radiánů na ose Y
+    - rotateZ = Otočí se o stanovený počet radiánů na ose Z
+    - scale = Změní svoje měřítko
+    - translate = Posune se o x,y a z jednotek
+    - transpose = Otočí svoje prvky kolem diagonály
+    - toString = Vypíše se jako string 
+
+
+Vstupní parametry:
+
+N3D.Math.Matrix4
+  - Identity = -- žádný --
+  - Multiply 
+    - (Matrix4 m1) = Matice 4x4
+    - (Matrix4 m2) = Matice 4x4
+  - MultiplyTranspose 
+    - (Matrix4 m1) = Matice 4x4
+    - (Matrix4 m2) = Matice 4x4
+  - CreateLookAt
+    - (Vector3 eye) = Pozice kamery
+    - (Vector3 target) = Kam se kamera kouká  
+    - (Vector3 up) = Vektor směřující nahoru 
+  - CreateRotationX
+    - (Float radians) = Úhel otočení v radiánech
+  - CreateRotationY
+    - (Float radians) = Úhel otočení v radiánech
+  - CreateRotationZ
+    - (Float radians) = Úhel otočení v radiánech
+  - CreateScale
+    - (Float x) = Hodnota změny měřítka na ose X
+    - (Float y) = Hodnota změny měřítka na ose Y
+    - (Float z) = Hodnota změny měřítka na ose Z
+  - CreateTranslate
+    - (Float x) = Hodnota posunu na ose X
+    - (Float y) = Hodnota posunu na ose Y
+    - (Float z) = Hodnota posunu na ose Z
+  - CreateFrustum
+    - (Float left) = Levá strana frusta
+    - (Float right) = Pravá strana frusta
+    - (Float bottom) = Spodní strana frusta
+    - (Float top) = Horní strana frusta
+    - (Float near) = Přední strana frusta
+    - (Float far) = Zadní strana frusta
+  - CreatePerspektive = 
+    - (Int fov) = Úhel vodorovněho zobrazení ve stupních
+    - (Float aspectRatio) = Poměr stran zobrazení (šířka/výška)
+    - (Float near) = Přední strana dohledu (frusta)
+    - (Float far) = Zadní strana dohledu (frusta)
+  - CreateOrthographic = Identické s "CreateFrustum"
+  
+  - constructor 
+    - clone = -- žádný --
+    - inverse = -- žádný --
+    - multiply
+      - (Matrix4 m2) = Matice 4x4
+    - multiplyTranspose
+      - (Matrix4 m2) = Matice 4x4
+    - mutliplyVector4
+      - (Vector4 v) = Čtyřsložkový vektor
+    - rotateX
+      - (Float radians) = Úhel otočení v radiánech
+    - rotateY
+      - (Float radians) = Úhel otočení v radiánech
+    - rotateZ
+      - (Float radians) = Úhel otočení v radiánech
+    - scale
+      - (Float x) = Hodnota změny měřítka na ose X
+      - (Float y) = Hodnota změny měřítka na ose Y
+      - (Float z) = Hodnota změny měřítka na ose Z
+    - translate
+      - (Float x) = Hodnota posunu na ose X
+      - (Float y) = Hodnota posunu na ose Y
+      - (Float z) = Hodnota posunu na ose Z
+    - transpose = -- žádný --
+    - toString = -- žádný --
+*/
+var $M4 = N3D.Math.Matrix4 = function(a00,a04,a08,a12,
+                            a01,a05,a09,a13,
+                            a02,a06,a10,a14,
+                            a03,a07,a11,a15){
+  this.elements =  [
+    a00,a01,a02,a03,
+    a04,a05,a06,a07,
+    a08,a09,a10,a11,
+    a12,a13,a14,a15
+  ];
   return this;
+
 };
-
-
-
 N3D.Math.Matrix4.prototype = {
   constructor:N3D.Math.Matrix4,
-  clone:function(){
-    var M = $M4.Identity();
-    M.m = this.m.slice();
-    return M;
+  clone:function(){  
+    var m = this.elements;
+    return new this.constructor(
+      m[0],m[4],m[8],m[12],
+      m[1],m[5],m[9],m[13],
+      m[2],m[6],m[10],m[14],
+      m[3],m[7],m[11],m[15]
+    );
   },
-  identity:function(){
-    this.m = [
-      1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1
-    ];
-    return this; 
-  },
-  determinant:function(){
-    var m0 = this.m[0], m1 = this.m[1], m2 = this.m[2], m3 = this.m[3],
-        m4 = this.m[4], m5 = this.m[5], m6 = this.m[6], m7 = this.m[7],
-        m8 = this.m[8], m9 = this.m[9], m10 = this.m[10], m11 = this.m[11],
-        m12 = this.m[12], m13 = this.m[13], m14 = this.m[14], m15 = this.m[15];
-        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
-        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
-        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
-        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12)
-
-    return (m0*n0 + m1*n4 - m2*n8 + m3*n12);
-  },
-  inverse:function(){
-    var m = this.m, 
-        m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
-        m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
-        m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
-        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
-        n0 = m5*(m10*m15-m11*m14 - m6*(m9*m15-m11*m13) + m7*(m9*m14-m10*m13)),
-        n4 = m4*(m10*m15-m11*m14) - m6*(m8*m15-m11*m12) + m7*(m8*m14-m10*m12),
-        n8 = m4*(m9*m15-m11*m13) - m5*(m8*m15-m11*m12) + m7*(m8*m13-m9*m12),
-        n12 = m4*(m9*m14-m10*m13) - m5*(m8*m14-m10*m12) + m6*(m8*m13-m9*m12),
-        det = 1/(m0*n0 + m1*n4 - m2*n8 + m3*n12);
+  inverse:function(){ //zkontrolovat
+    var m = this.elements, 
+        m00 = m[0],  m04 = m[4],  m08 = m[8],  m12 = m[12],
+        m01 = m[1],  m05 = m[5],  m09 = m[9],  m13 = m[13],
+        m02 = m[2],  m06 = m[6],  m10 = m[10], m14 = m[14],
+        m03 = m[3],  m07 = m[7],  m11 = m[11], m15 = m[15];
+        
     
-    m[0] = n0*det;
-    m[1] = -(m1*(m10*m15-m11*m14) - m2*(m9*m15-m11*m13) + m3*(m9*m14-m10*m13))*det;
-    m[2] = (m1*(m6*m15-m7*m14) - m2*(m5*m15-m7*m13) + m3*(m5*m14-m6*m13))*det;
-    m[3] = -(m1*(m6*m11-m7*m10) - m2*(m5*m11-m7*m9) + m3*(m5*m10-m6*m9))*det;
-    m[4] = -n4*det;
-    m[5] = (m0*(m10*m15-m11*m14) - m2*(m8*m15-m11*m12) + m3*(m8*m14-m10*m12))*det;
-    m[6] = -(m0*(m6*m15-m7*m14) - m2*(m4*m15-m7*m12) + m3*(m4*m14-m6*m12))*det;
-    m[7] = (m0*(m6*m11-m7*m10) - m2*(m4*m11-m7*m8) + m3*(m4*m10-m6*m8))*det;
-    m[8] = n8*det;
-    m[9] = -(m0*(m9*m15-m11*m13) - m1*(m8*m15-m11*m12) + m3*(m8*m13-m9*m12))*det;
-    m[10] = (m0*(m5*m15-m7*m13) - m1*(m4*m15-m7*m12) + m3*(m4*m13-m5*m12))*det;
-    m[11] = -(m0*(m5*m11-m7*m9) - m1*(m4*m11-m7*m8) + m3*(m4*m9-m5*m8))*det;
-    m[12] = -n12*det;
-    m[13] = (m0*(m9*m14-m10*m13) - m1*(m8*m14-m10*m12) + m2*(m8*m13-m9*m12))*det;
-    m[14] = -(m0*(m5*m14-m6*m13) - m1*(m4*m14-m6*m12) + m2*(m4*m13-m5*m12))*det;
-    m[15] = (m0*(m5*m10-m6*m9) - m1*(m4*m10-m6*m8) + m2*(m4*m9-m5*m8))*det;
-
+    var n0 =  m05 * (m10*m15 - m14*m11) - 
+              m09 * (m06*m15 - m14*m07) + 
+              m13 * (m06*m15 - m14*m07),
+    
+        n1 = m04 * (m10*m15 - m11*m14) - 
+              m08 * (m06*m15 - m07*m14) + 
+              m12 * (m06*m11 - m07*m10),
+    
+        n2 =  m04 * (m09*m15 - m13*m11) - 
+              m08 * (m05*m15 - m13*m07) + 
+              m12 * (m05*m11 - m09*m07),
+              
+        n3 = m04 * (m09*m14 - m13*m10) -
+              m08 * (m05*m14 - m13*m06) + 
+              m12 * (m05*m10 - m09*m06),  
+              
+        invDet = 1/(m00*n0 - m01*n1 + m02*n2 - m03*n3);
+    ¨/*Opravit, páč je to v řiti.*/          
+    console.log(m00*n0 - m01*n1 + m02*n2 - m03*n3);
+    
+    
+    m[0] =  n0*invDet;
+    m[4] =  n1*invDet;
+    m[8] =  n2*invDet;
+    m[12] = n3*invDet;     
+    
+    m[1] =  (-m01 * (m10*m15 - m14*m11) + m09 * (m02*m15 - m14*m03) - m13 * (m02*m11 - m10*m03))*invDet;  
+    m[5] =  ( m00 * (m10*m15 - m14*m11) - m08 * (m02*m15 - m14*m03) + m12 * (m02*m11 - m10*m03))*invDet;
+    m[9] =  (-m00 * (m09*m15 - m13*m11) + m08 * (m01*m15 - m13*m03) - m12 * (m01*m11 - m09*m03))*invDet; 
+    m[13] = ( m00 * (m09*m14 - m13*m10) - m08 * (m01*m14 - m13*m02) + m12 * (m01*m10 - m13*m02))*invDet;
+                                                                                                       
+    m[2] =  ( m01 * (m06*m15 - m14*m07) + m05 * (m02*m15 - m14*m03) - m13 * (m02*m07 - m06*m03))*invDet;
+    m[6] =  (-m00 * (m06*m15 - m14*m07) - m04 * (m02*m15 - m14*m03) + m12 * (m02*m06 - m03*m07))*invDet;
+    m[10] = ( m00 * (m05*m15 - m13*m07) + m04 * (m01*m15 - m13*m03) - m12 * (m01*m07 - m05*m03))*invDet;         
+    m[14] = (-m00 * (m05*m14 - m13*m06) - m04 * (m01*m14 - m13*m02) + m12 * (m01*m06 - m05*m02))*invDet;
+                                                                                                       
+    m[3] =  (-m01 * (m06*m11 - m10*m07) + m05 * (m02*m11 - m10*m03) - m09 * (m02*m07 - m06*m03))*invDet;  
+    m[7] =  ( m00 * (m06*m11 - m10*m07) - m04 * (m02*m11 - m10*m03) + m08 * (m02*m07 - m06*m03))*invDet;
+    m[11] = (-m00 * (m05*m11 - m09*m07) + m04 * (m01*m11 - m09*m03) - m08 * (m01*m07 - m05*m03))*invDet;
+    m[15] = ( m00 * (m05*m10 - m09*m06) - m04 * (m01*m10 - m09*m02) + m08 * (m01*m06 - m05*m02))*invDet;                  
+/*    
+00,04,08
+01,05,09
+02,06,10
+  
+00,04,08,12,
+01,05,09,13,
+02,06,10,14,
+03,07,11,15  
+*/    
+    
+  /*  
+  
+	
+	m[0] = (a11*b11 - a12*b10 + a13*b09)*invDet;
+	m[4] = (-a10*b11 + a12*b08 - a13*b07)*invDet;
+  m[8] = (a10*b10 - a11*b08 + a13*b06)*invDet;
+  m[12] = (-a10*b09 + a11*b07 - a12*b06)*invDet;
+  
+  m[1] = (-a01*b11 + a02*b10 - a03*b09)*invDet;
+	m[2] = (a31*b05 - a32*b04 + a33*b03)*invDet;
+	m[3] = (-a21*b05 + a22*b04 - a23*b03)*invDet;
+  
+	
+	m[5] = (a00*b11 - a02*b08 + a03*b07)*invDet;
+	m[6] = (-a30*b05 + a32*b02 - a33*b01)*invDet;
+	m[7] = (a20*b05 - a22*b02 + a23*b01)*invDet;
+	
+	m[9] = (-a00*b10 + a01*b08 - a03*b06)*invDet;
+	m[10] = (a30*b04 - a31*b02 + a33*b00)*invDet;
+	m[11] = (-a20*b04 + a21*b02 - a23*b00)*invDet;
+	
+	m[13] = (a00*b09 - a01*b07 + a02*b06)*invDet;
+	m[14] = (-a30*b03 + a31*b01 - a32*b00)*invDet;
+	m[15] = (a20*b03 - a21*b01 + a22*b00)*invDet;
+  
+ 
+  console.log(m[0],m[4],m[8],m[12]);
+                 */
+  
     return this;
   },
-  multiply:function(n){
-    var m = this.m,
-        nm = n.m, 
-        m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
-        m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
-        m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
-        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
-        n0 = nm[0], n1 = nm[1], n2 = nm[2], n3 = nm[3],
-        n4 = nm[4], n5 = nm[5], n6 = nm[6], n7 = nm[7],
-        n8 = nm[8], n9 = nm[9], n10 = nm[10], n11 = nm[11],
-        n12 = nm[12], n13 = nm[13], n14 = nm[14], n15 = nm[15];
-        
-    m[0] = m0*n0 + m1*n4 + m2*n8 + m3*n12;
-    m[1] = m0*n1 + m1*n5 + m2*n9 + m3*n13;
-    m[2] = m0*n2 + m1*n6 + m2*n10 + m3*n14;
-    m[3] = m0*n3 + m1*n7 + m2*n11 + m3*n15;
+  multiply:function(m2){
+    var m1 = this.elements,
+        m2 = m2.elements, 
       
-    m[4] = m4*n0 + m5*n4 + m6*n8 + m7*n12;
-    m[5] = m4*n1 + m5*n5 + m6*n9 + m7*n13;
-    m[6] = m4*n2 + m5*n6 + m6*n10 + m7*n14;
-    m[7] = m4*n3 + m5*n7 + m6*n11 + m7*n15;
+        m1_00 = m1[0],  m1_04 = m1[4],  m1_08 = m1[8],  m1_12 = m1[12],
+        m1_01 = m1[1],  m1_05 = m1[5],  m1_09 = m1[9],  m1_13 = m1[13],
+        m1_02 = m1[2],  m1_06 = m1[6],  m1_10 = m1[10], m1_14 = m1[14],
+        m1_03 = m1[3],  m1_07 = m1[7],  m1_11 = m1[11], m1_15 = m1[15], 
+                                                   
+        m2_00 = m2[0],  m2_04 = m2[4],  m2_08 = m2[8],  m2_12 = m2[12],
+        m2_01 = m2[1],  m2_05 = m2[5],  m2_09 = m2[9],  m2_13 = m2[13],
+        m2_02 = m2[2],  m2_06 = m2[6],  m2_10 = m2[10], m2_14 = m2[14],
+        m2_03 = m2[3],  m2_07 = m2[7],  m2_11 = m2[11], m2_15 = m2[15];
       
-    m[8] = m8*n0 + m9*n4 + m10*n8 + m11*n12;
-    m[9] = m8*n1 + m9*n5 + m10*n9 + m11*n13;
-    m[10] = m8*n2 + m9*n6 + m10*n10 + m11*n14;
-    m[11] = m8*n3 + m9*n7 + m10*n11 + m11*n15;
-      
-    m[12] = m12*n0 + m13*n4 + m14*n8 + m15*n12;
-    m[13] = m12*n1 + m13*n5 + m14*n9 + m15*n13;
-    m[14] = m12*n2 + m13*n6 + m14*n10 + m15*n14;
-    m[15] = m12*n3 + m13*n7 + m14*n11 + m15*n15;      
+    m1[0] = m1_00*m2_00 + m1_01*m2_04 + m1_02*m2_08 + m1_03*m2_12;
+    m1[4] = m1_04*m2_00 + m1_05*m2_04 + m1_06*m2_08 + m1_07*m2_12;
+    m1[8] = m1_08*m2_00 + m1_09*m2_04 + m1_10*m2_08 + m1_11*m2_12;
+    m1[12] = m1_12*m2_00 + m1_13*m2_04 + m1_14*m2_08 + m1_15*m2_12;
+    
+    m1[1] = m1_00*m2_01 + m1_01*m2_05 + m1_02*m2_09 + m1_03*m2_13;
+    m1[5] = m1_04*m2_01 + m1_05*m2_05 + m1_06*m2_09 + m1_07*m2_13;
+    m1[9] = m1_08*m2_01 + m1_09*m2_05 + m1_10*m2_09 + m1_11*m2_13;
+    m1[13] = m1_12*m2_01 + m1_13*m2_05 + m1_14*m2_09 + m1_15*m2_13;
+    
+    m1[2] = m1_00*m2_02 + m1_01*m2_06 + m1_02*m2_10 + m1_03*m2_14;
+    m1[6] = m1_04*m2_02 + m1_05*m2_06 + m1_06*m2_10 + m1_07*m2_14;
+    m1[10] = m1_08*m2_02 + m1_09*m2_06 + m1_10*m2_10 + m1_11*m2_14;
+    m1[14] = m1_12*m2_02 + m1_13*m2_06 + m1_14*m2_10 + m1_15*m2_14;
+    
+    m1[3] = m1_00*m2_03 + m1_01*m2_07 + m1_02*m2_11 + m1_03*m2_15;
+    m1[7] = m1_04*m2_03 + m1_05*m2_07 + m1_06*m2_11 + m1_07*m2_15;
+    m1[11] = m1_08*m2_03 + m1_09*m2_07 + m1_10*m2_11 + m1_11*m2_15;
+    m1[15] = m1_12*m2_03 + m1_13*m2_07 + m1_14*m2_11 + m1_15*m2_15;
+    
+    return this;
+  },
+  multiplyTranspose:function(m2){
+    var m1 = this.elements,
+        m2 = m2.elements, 
+        m1_00 = m1[0],  m1_04 = m1[4],  m1_08 = m1[8],  m1_12 = m1[12],
+        m1_01 = m1[1],  m1_05 = m1[5],  m1_09 = m1[9],  m1_13 = m1[13],
+        m1_02 = m1[2],  m1_06 = m1[6],  m1_10 = m1[10], m1_14 = m1[14],
+        m1_03 = m1[3],  m1_07 = m1[7],  m1_11 = m1[11], m1_15 = m1[15], 
+                                                   
+        m2_00 = m2[0],  m2_04 = m2[4],  m2_08 = m2[8],  m2_12 = m2[12],
+        m2_01 = m2[1],  m2_05 = m2[5],  m2_09 = m2[9],  m2_13 = m2[13],
+        m2_02 = m2[2],  m2_06 = m2[6],  m2_10 = m2[10], m2_14 = m2[14],
+        m2_03 = m2[3],  m2_07 = m2[7],  m2_11 = m2[11], m2_15 = m2[15];
+
+    m1[0] =   m1_00*m2_00 + m1_04*m2_01 + m1_08*m2_02 + m1_12*m2_03;
+    m1[1] =   m1_01*m2_00 + m1_05*m2_01 + m1_09*m2_02 + m1_13*m2_03;
+    m1[2] =   m1_02*m2_00 + m1_06*m2_01 + m1_10*m2_02 + m1_14*m2_03;
+    m1[3] =  m1_03*m2_00 + m1_07*m2_01 + m1_11*m2_02 + m1_15*m2_03;
+    
+    m1[4] =   m1_00*m2_04 + m1_04*m2_05 + m1_08*m2_06 + m1_12*m2_07;
+    m1[5] =   m1_01*m2_04 + m1_05*m2_05 + m1_09*m2_06 + m1_13*m2_07;
+    m1[6] =   m1_02*m2_04 + m1_06*m2_05 + m1_10*m2_06 + m1_14*m2_07;
+    m1[7] =  m1_03*m2_04 + m1_07*m2_05 + m1_11*m2_06 + m1_15*m2_07;    
+    
+    m1[8] =   m1_00*m2_08 + m1_04*m2_09 + m1_08*m2_10 + m1_12*m2_11;
+    m1[9] =   m1_01*m2_08 + m1_05*m2_09 + m1_09*m2_10 + m1_13*m2_11;
+    m1[10] =  m1_02*m2_08 + m1_06*m2_09 + m1_10*m2_10 + m1_14*m2_11;
+    m1[11] =  m1_03*m2_08 + m1_07*m2_09 + m1_11*m2_10 + m1_15*m2_11;
+    
+    m1[12] =   m1_00*m2_12 + m1_04*m2_13 + m1_08*m2_14 + m1_12*m2_15;
+    m1[13] =   m1_01*m2_12 + m1_05*m2_13 + m1_09*m2_14 + m1_13*m2_15;
+    m1[14] =  m1_02*m2_12 + m1_06*m2_13 + m1_10*m2_14 + m1_14*m2_15;
+    m1[15] =  m1_03*m2_12 + m1_07*m2_13 + m1_11*m2_14 + m1_15*m2_15;
 
     return this;
   },
   multiplyVector4:function(v){
-    var m = this.m;
-    var x = v.x, y = v.y, z = v.z,w = v.w;
+    var x = v.x, y = v.y, z = v.z, w = v.w;
+    var m = this.elements;
 
-    return new $V4(
-      m[0] * x + m[4] * y + m[8] * z + m[12] * w,
-      m[1] * x + m[5] * y + m[9] * z + m[13] * w,
-      m[2] * x + m[6] * y + m[10] * z + m[14] * w,
-      m[3] * x + m[7] * y + m[11] * z + m[15] * w   
+    return new v.constructor(
+      m[0]*x + m[4]*y + m[8]*z + m[12]*w,
+      m[1]*x + m[5]*y + m[9]*z + m[13]*w,
+      m[2]*x + m[6]*y + m[10]*z + m[14]*w,
+      m[3]*x + m[7]*y + m[11]*z + m[15]*w
     );
   },
+  rotateX: function(radians){
+    var m = this.elements;
+    
+    var c = Math.cos(radians);
+    var s = Math.sin(radians);
+    var m04 = m[4], m05 = m[5], m06 = m[6],  m07 = m[7],
+        m08 = m[8], m09 = m[9], m10 = m[10], m11= m[11];
+    
+    
+    m[4] = m04 * c + m08 * s; m[5] = m05 * c + m09 * s; m[6] = m06 * c + m10 * s; m[7] = m07 * c + m11 * s;
+    m[8] = m04 * -s + m08 * c; m[9] = m05 * -s + m09 * c; m[10] = m06 * -s + m10 * c; m[11] = m07 * -s + m11 * c;
+    
+    return this;
+  },
+  rotateY: function(radians){
+    var m = this.elements;
+    
+    var c = Math.cos(radians);
+    var s = Math.sin(radians);
+    var m00 = m[0], m01 = m[1], m02 = m[2], m03 = m[3],
+        m08 = m[8], m09 = m[9], m10= m[10], m11= m[11];
+    
+    m[0] = m00 * c + m02 * -s; m[1] = m01 * c + m09 * -s; m[2] = m02 * c + m10* -s; m[3] = m03 * c + m11* -s;
+    
+    m[8] = m00 * s + m02 * c; m[9] = m01 * s + m09 * c; m[10]= m02 * s + m10* c; m[11] = m03 * s + m11* c;    
+
+    return this;
+  },
+  rotateZ: function(radians){
+    var m = this.elements;
+    
+    var c = Math.cos(radians);
+    var s = Math.sin(radians);
+    var m00 = m[0], m01 = m[1], m02 = m[2],  m03 = m[3],
+        m04 = m[4], m05 = m[5], m06 = m[6],  m07 = m[7];
+    
+    m[0] = m00 * c + m04 * s; m[1] = m01 * c + m05 * s; m[2] = m02 * c + m06* s; m[3] = m03 * c + m07* s;
+    m[4] = m00 * -s + m04 * c; m[5] = m01 * -s + m05 * c; m[6] = m02 * -s + m06* c; m[7] = m03 * -s + m07* c;
+
+    return this;
+  },  
+  scale:function(x,y,z){
+    var m = this.elements;
+    
+    m[0] = m[0]*x;  m[4] = m[4]*y;  m[8] = m[8]*z;         
+    m[1] = m[1]*x;  m[5] = m[5]*y;  m[9] = m[9]*z;
+    m[2] = m[2]*x;  m[6] = m[6]*y;  m[10]= m[10]*z;
+    m[3] = m[3]*x;  m[7] = m[7]*y;  m[11]= m[11]*z;   
+    
+    return this;
+  },
+  translate:function(x,y,z){
+    var m = this.elements;
+    
+    m[12] = m[0]*x + m[4]*y + m[8]*z + m[12];
+		m[13] = m[1]*x + m[5]*y + m[9]*z + m[13];
+		m[14] = m[2]*x + m[6]*y + m[10]*z + m[14];
+		m[15] = m[3]*x + m[7]*y + m[11]*z + m[15];
+    
+    return this;
+  },
   transpose:function(){
-    var m = this.m;
-    var a01 = m[1], a02 = m[2], a03 = m[3];
-    var a12 = m[6], a13 = m[7];
-    var a23 = m[11];
+    var m = this.elements;
+    var a01 = m[1], a02 = m[2], a03 = m[3],
+        a12 = m[6], a13 = m[7],
+        a23 = m[11];
                 
     m[1] = m[4]; m[2] = m[8]; m[3] = m[12];
     m[4] = a01;  m[6] = m[9]; m[7] = m[13];
@@ -134,164 +376,13 @@ N3D.Math.Matrix4.prototype = {
     
     return this;  
   },
-  scale:function(x,y,z){
-    var m = this.m;
-    m[0] *= x; m[1] *= y; m[2] *= z;
-		m[4] *= x; m[5] *= y; m[6] *= z;
-		m[8] *= x; m[9] *= y; m[10] *= z;
-		m[11] *= x; m[12] *= y; m[13] *= z;  
-    
-    return this;
-  },
-  rotateX: function(angle){
-    var m = this.m;
-    
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
-    
-    var m1 = m[1], m5 = m[5], m9 = m[9],  m13 = m[13],
-        m2 = m[2], m6 = m[6], m10= m[10], m14= m[14];
-
-    m[1] = m1 * c + m2 *s;
-    m[5] = m5 * c + m6 *s;
-    m[9] = m9 * c + m10*s;
-    m[13] = m13 * c + m14*s;
-    m[2] = m1 * -s + m2 * c;
-    m[6] = m5 * -s + m6 * c;
-    m[10]= m9 * -s + m10* c;
-    m[14]= m13 * -s + m14* c;
-
-    return this;
-  },
-  rotateY: function(angle){
-    var m = this.m;
-    
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
-    var m0 = m[0], m4 = m[4], m8 = m[8],  m12 = m[12],
-        m2 = m[2], m6 = m[6], m10= m[10], m14= m[14];
-    
-    m[0] = m0 * c + m2 * -s;
-    m[4] = m4 * c + m6 * -s;
-    m[8] = m8 * c + m10* -s;
-    m[12] = m12 * c + m14* -s;
-    m[2] = m0 *s + m2 * c;
-    m[6] = m4 *s + m6 * c;
-    m[10]= m8 *s + m10* c;
-    m[14]= m12 *s + m14* c;
-    
-
-    return this;
-  },
-  rotateZ: function(angle){
-    var m = this.m;
-    
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
-    var m0 = m[0], m4 = m[4], m8 = m[8],  m12 = m[12],
-        m1 = m[1], m5 = m[5], m9 = m[9],  m13 = m[13];
-
-    m[0] = m0 * c + m1 *s;
-    m[4] = m4 * c + m5 *s;
-    m[8] = m8 * c + m9 *s;
-    m[12] = m12 * c + m13 *s;
-    m[1] = m0 * -s + m1 * c;
-    m[5] = m4 * -s + m5 * c;
-    m[9] = m8 * -s + m9 * c;
-    m[13] = m12 * -s + m13 * c;
-
-    return this;
-  },
-  rotateAroundAxis:function(angle,v){
-    var x = v.x,y = v.y, z = v.z;
-    var v = 1/Math.sqrt(x*x + y*y + z*v.z);
-    var c = Math.cos(angle),    // cosine
-        s = Math.sin(angle),    // sine
-        x = x*v, y = y*v, z = z*v,
-        xy = x * y,
-        xz = x * z,
-        yz = y * z,
-        xs = x * s,
-        ys = y * s,
-        zs = z * s,      
-        t = 1 - c;
-        
-    var m = this.m,
-        m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
-        m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
-        m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
-        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
-        n0 = x*x * t + c, n1 = xy * t + zs, n2 = xz * t - ys,
-        n4 = xy * t - zs, n5 = y*y * t + c, n6 = yz * t + xs,
-        n8 = xz * t + ys, n9 = yz * t - xs, n10 = z*z * t + c;
-
-    m[0] = m0*n0 + m1*n4 + m2*n8;
-    m[1] = m0*n1 + m1*n5 + m2*n9;
-    m[2] = m0*n2 + m1*n6 + m2*n10;
-    
-    m[4] = m4*n0 + m5*n4 + m6*n8;
-    m[5] = m4*n1 + m5*n5 + m6*n9;
-    m[6] = m4*n2 + m5*n6 + m6*n10;
-    
-    m[8] = m8*n0 + m9*n4 + m10*n8;
-    m[9] = m8*n1 + m9*n5 + m10*n9;
-    m[10] = m8*n2 + m9*n6 + m10*n10;
-     
-    return this;
-  },
-  translate:function(v){
-    var m = this.m, 
-        m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
-        x = v.x,y = v.y,z = v.z,w = 1;
-
-    m[0]  += m12*x;   m[1]  += m12*y;   m[2]  += m12*z;
-    m[4]  += m13*x;   m[5]  += m13*y;   m[6]  += m13*z;
-    m[8]  += m14*x;   m[9]  += m14*y;   m[10] += m14*z;
-    m[12] += m15*x;   m[13] += m15*y;   m[14] += m15*z;
-
-    return this;
-  },
   toString:function(){
-    var m = this.m;
-    return m[0].toFixed(4)+", "+m[1].toFixed(4)+", "+m[2].toFixed(4)+", "+m[3].toFixed(4) + "\n" +
-           m[4].toFixed(4)+", "+m[5].toFixed(4)+", "+m[6].toFixed(4)+", "+m[7].toFixed(4) + "\n" + 
-           m[8].toFixed(4)+", "+m[9].toFixed(4)+", "+m[10].toFixed(4)+", "+m[11].toFixed(4) + "\n" + 
-           m[12].toFixed(4)+", "+m[13].toFixed(4)+", "+m[14].toFixed(4)+", "+m[15].toFixed(4); 
+    var e = this.elements;
+    return '01: '+e[0].toFixed(3)+', 04: '+e[4].toFixed(3)+', 08: '+e[8].toFixed(3)+', 12: '+e[12].toFixed(3) + '\n' + 
+           '02: '+e[1].toFixed(3)+', 05: '+e[5].toFixed(3)+', 09: '+e[9].toFixed(3)+', 13: '+e[13].toFixed(3) + '\n' + 
+           '03: '+e[2].toFixed(3)+', 06: '+e[6].toFixed(3)+', 10: '+e[10].toFixed(3)+', 14: '+e[14].toFixed(3) + '\n' + 
+           '04: '+e[3].toFixed(3)+', 07: '+e[7].toFixed(3)+', 11: '+e[11].toFixed(3)+', 15: '+e[15].toFixed(3);
   }
-};
-
-N3D.Math.Matrix4.Multiply = function(m,n){
-  var m = m.m, n = n.m,   
-  m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3],
-  m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7],
-  m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11],
-  m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15],
-  n0 = n[0], n1 = n[1], n2 = n[2], n3 = n[3],
-  n4 = n[4], n5 = n[5], n6 = n[6], n7 = n[7],
-  n8 = n[8], n9 = n[9], n10 = n[10], n11 = n[11],
-  n12 = n[12], n13 = n[13], n14 = n[14], n15 = n[15];
-      
-  return new N3D.Math.Matrix4(
-    m0*n0 + m1*n4 + m2*n8 + m3*n12,
-    m0*n1 + m1*n5 + m2*n9 + m3*n13,
-    m0*n2 + m1*n6 + m2*n10 + m3*n14,
-    m0*n3 + m1*n7 + m2*n11 + m3*n15,
-    
-    m4*n0 + m5*n4 + m6*n8 + m7*n12,
-    m4*n1 + m5*n5 + m6*n9 + m7*n13,
-    m4*n2 + m5*n6 + m6*n10 + m7*n14,
-    m4*n3 + m5*n7 + m6*n11 + m7*n15,
-    
-    m8*n0 + m9*n4 + m10*n8 + m11*n12,
-    m8*n1 + m9*n5 + m10*n9 + m11*n13,
-    m8*n2 + m9*n6 + m10*n10 + m11*n14,
-    m8*n3 + m9*n7 + m10*n11 + m11*n15,
-    
-    m12*n0 + m13*n4 + m14*n8 + m15*n12,
-    m12*n1 + m13*n5 + m14*n9 + m15*n13,
-    m12*n2 + m13*n6 + m14*n10 + m15*n14,
-    m12*n3 + m13*n7 + m14*n11 + m15*n15
-  );
 };
 
 N3D.Math.Matrix4.Identity = function(){
@@ -299,14 +390,104 @@ N3D.Math.Matrix4.Identity = function(){
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
-    0,0,0,1  
+    0,0,0,1
   );
 };
 
-N3D.Math.Matrix4.CreateRotationX = function(angle){
-  var c = Math.cos(angle);
-  var s = Math.sin(angle);
 
+N3D.Math.Matrix4.Multiply = function(m1,m2){
+  var m1 = m1.elements,
+      m2 = m2.elements, 
+      
+      m1_00 = m1[0],  m1_04 = m1[4],  m1_08 = m1[8],  m1_12 = m1[12],
+      m1_01 = m1[1],  m1_05 = m1[5],  m1_09 = m1[9],  m1_13 = m1[13],
+      m1_02 = m1[2],  m1_06 = m1[6],  m1_10 = m1[10], m1_14 = m1[14],
+      m1_03 = m1[3],  m1_07 = m1[7],  m1_11 = m1[11], m1_15 = m1[15], 
+                                                   
+      m2_00 = m2[0],  m2_04 = m2[4],  m2_08 = m2[8],  m2_12 = m2[12],
+      m2_01 = m2[1],  m2_05 = m2[5],  m2_09 = m2[9],  m2_13 = m2[13],
+      m2_02 = m2[2],  m2_06 = m2[6],  m2_10 = m2[10], m2_14 = m2[14],
+      m2_03 = m2[3],  m2_07 = m2[7],  m2_11 = m2[11], m2_15 = m2[15];
+      
+  return new this(
+    m1_00*m2_00 + m1_01*m2_04 + m1_02*m2_08 + m1_03*m2_12,
+    m1_04*m2_00 + m1_05*m2_04 + m1_06*m2_08 + m1_07*m2_12,
+    m1_08*m2_00 + m1_09*m2_04 + m1_10*m2_08 + m1_11*m2_12,
+    m1_12*m2_00 + m1_13*m2_04 + m1_14*m2_08 + m1_15*m2_12,
+    
+    m1_00*m2_01 + m1_01*m2_05 + m1_02*m2_09 + m1_03*m2_13,
+    m1_04*m2_01 + m1_05*m2_05 + m1_06*m2_09 + m1_07*m2_13,
+    m1_08*m2_01 + m1_09*m2_05 + m1_10*m2_09 + m1_11*m2_13,
+    m1_12*m2_01 + m1_13*m2_05 + m1_14*m2_09 + m1_15*m2_13,
+    
+    m1_00*m2_02 + m1_01*m2_06 + m1_02*m2_10 + m1_03*m2_14,
+    m1_04*m2_02 + m1_05*m2_06 + m1_06*m2_10 + m1_07*m2_14,
+    m1_08*m2_02 + m1_09*m2_06 + m1_10*m2_10 + m1_11*m2_14,
+    m1_12*m2_02 + m1_13*m2_06 + m1_14*m2_10 + m1_15*m2_14,
+    
+    m1_00*m2_03 + m1_01*m2_07 + m1_02*m2_11 + m1_03*m2_15,
+    m1_04*m2_03 + m1_05*m2_07 + m1_06*m2_11 + m1_07*m2_15,
+    m1_08*m2_03 + m1_09*m2_07 + m1_10*m2_11 + m1_11*m2_15,
+    m1_12*m2_03 + m1_13*m2_07 + m1_14*m2_11 + m1_15*m2_15
+    
+    
+   );   
+};
+
+N3D.Math.Matrix4.MultiplyTranspose = function(m1,m2){
+  var m1 = m1.elements,
+      m2 = m2.elements, 
+      
+      m1_00 = m1[0],  m1_04 = m1[4],  m1_08 = m1[8],  m1_12 = m1[12],
+      m1_01 = m1[1],  m1_05 = m1[5],  m1_09 = m1[9],  m1_13 = m1[13],
+      m1_02 = m1[2],  m1_06 = m1[6],  m1_10 = m1[10], m1_14 = m1[14],
+      m1_03 = m1[3],  m1_07 = m1[7],  m1_11 = m1[11], m1_15 = m1[15], 
+                                                   
+      m2_00 = m2[0],  m2_04 = m2[4],  m2_08 = m2[8],  m2_12 = m2[12],
+      m2_01 = m2[1],  m2_05 = m2[5],  m2_09 = m2[9],  m2_13 = m2[13],
+      m2_02 = m2[2],  m2_06 = m2[6],  m2_10 = m2[10], m2_14 = m2[14],
+      m2_03 = m2[3],  m2_07 = m2[7],  m2_11 = m2[11], m2_15 = m2[15];
+    
+  return new this(        
+    m1_00*m2_00 + m1_04*m2_01 + m1_08*m2_02 + m1_12*m2_03,
+    m1_00*m2_04 + m1_04*m2_05 + m1_08*m2_06 + m1_12*m2_07,
+    m1_00*m2_08 + m1_04*m2_09 + m1_08*m2_10 + m1_12*m2_11,
+    m1_00*m2_12 + m1_04*m2_13 + m1_08*m2_14 + m1_12*m2_15,
+    
+    m1_01*m2_00 + m1_05*m2_01 + m1_09*m2_02 + m1_13*m2_03,
+    m1_01*m2_04 + m1_05*m2_05 + m1_09*m2_06 + m1_13*m2_07,
+    m1_01*m2_08 + m1_05*m2_09 + m1_09*m2_10 + m1_13*m2_11,
+    m1_01*m2_12 + m1_05*m2_13 + m1_09*m2_14 + m1_13*m2_15,
+    
+    m1_02*m2_00 + m1_06*m2_01 + m1_10*m2_02 + m1_14*m2_03,
+    m1_02*m2_04 + m1_06*m2_05 + m1_10*m2_06 + m1_14*m2_07,
+    m1_02*m2_08 + m1_06*m2_09 + m1_10*m2_10 + m1_14*m2_11,
+    m1_02*m2_12 + m1_06*m2_13 + m1_10*m2_14 + m1_14*m2_15,
+    
+    m1_03*m2_00 + m1_07*m2_01 + m1_11*m2_02 + m1_15*m2_03,
+    m1_03*m2_04 + m1_07*m2_05 + m1_11*m2_06 + m1_15*m2_07,
+    m1_03*m2_08 + m1_07*m2_09 + m1_11*m2_10 + m1_15*m2_11,
+    m1_03*m2_12 + m1_07*m2_13 + m1_11*m2_14 + m1_15*m2_15 
+  );  
+};
+
+N3D.Math.Matrix4.CreateLookAt = function(eye,target,up){
+  var f = $V3.Sub(eye,target).normalize();   //osa Z
+  var s = $V3.Cross(up,f).normalize();   //osa X
+  var u = $V3.Cross(f,s);   //osa Y
+  
+  return new this(
+    s.x,  u.x,  f.x,  -eye.x,
+    s.y,  u.y,  f.y,  -eye.y,
+    s.z,  u.z,  f.z,  -eye.z,
+    0,    0,    0,    1 
+  );
+};
+
+N3D.Math.Matrix4.CreateRotationX = function(r){
+  var c = Math.cos(r);
+  var s = Math.sin(r);
+  
   return new this(
     1,0,0,0,
     0,c,-s,0,
@@ -315,181 +496,80 @@ N3D.Math.Matrix4.CreateRotationX = function(angle){
   );
 };
 
-N3D.Math.Matrix4.CreateRotationY = function(angle){
-  var c = Math.cos(angle);
-  var s = Math.sin(angle);
 
+N3D.Math.Matrix4.CreateRotationY = function(r){
+  var c = Math.cos(r);
+  var s = Math.sin(r);
+  
   return new this(
     c,0,s,0,
     0,1,0,0,
     -s,0,c,0,
     0,0,0,1
-  );  
+  );
 };
-
-N3D.Math.Matrix4.CreateRotationZ = function(angle){
-  var c = Math.cos(angle);
-  var s = Math.sin(angle);
-
+N3D.Math.Matrix4.CreateRotationZ = function(r){
+  var c = Math.cos(r);
+  var s = Math.sin(r);
+  
   return new this(
     c,-s,0,0,
     s,c,0,0,
     0,0,1,0,
     0,0,0,1
-  );   
+  );
 };
-N3D.Math.Matrix4.CreateTranslation = function(x,y,z){
-  return new this(
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    x,y,z,1
-  );   
-};
+
+
 N3D.Math.Matrix4.CreateScale = function(x,y,z){
   return new this(
     x,0,0,0,
     0,y,0,0,
     0,0,z,0,
     0,0,0,1
-  );   
+  );
 };
 
-N3D.Math.Matrix4.CreateRotationAroundAxis = function(angle,v){
-  var x = v.x,y = v.y, z = v.z;
-  var v = 1/Math.sqrt(x*x + y*y + z*v.z),
-      c = Math.cos(angle),
-      s = Math.sin(angle),   
-      t = 1 - c;
-      
-  x *= v; y *= v; z *= v;
-  
+N3D.Math.Matrix4.CreateTranslation = function(x,y,z){
   return new this(
-    x*x * t + c,x*y * t + z*s,x*z * t - y*s,0, 
-    x*y * t - z*s,y*y * t + c,y*z * t + x*s,0, 
-    x*z * t + y*s,y*z * t - x*s,z*z * t + c,0, 
+    1,0,0,x,
+    0,1,0,y,
+    0,0,1,z,
     0,0,0,1
   );
 };
 
-N3D.Math.Matrix4.CreateFrustum = function(left, right, bottom, top, near, far){
-  var near2 = 2*near;
-  var rl = right-left,
-      tb = top-bottom
-      fn = far-near;
-      a = near2/rl,
-      b = (right+left)/rl,
-      c = near2/tb,
-      d = (top+bottom)/tb,
-      e = -(far+near)/fn,
-      f = -(2*far*near)/fn;
+N3D.Math.Matrix4.CreateFrustum = function(left,right,bottom,top,near,far){
+  var rl = right - left,
+      tb = top - bottom,
+      fn = far - near,
+      n2 = 2 * near;
+  return new this(
+    n2/rl,            0,                0,                0,
+    0,                n2/tb,            0,                0,
+    (right+left)/rl,  (top+bottom)/tb,  -(far+near)/fn,   -1,
+    0,                0,                -n2*far/fn,         0
+  );
+};
+
+N3D.Math.Matrix4.CreatePerspective = function(angle,aspectRatio,near,far){
+  var scale = Math.tan(angle * $Math.PiOver360) * near,
+      right = aspectRatio * scale;
+
+  return this.CreateFrustum(-right,right,-scale,scale,near,far);
+};
+
+N3D.Math.Matrix4.CreateOrthographic = function(l,r,b,t,n,f){
+  var rl = (r - l),
+	    tb = (t - b),
+	    fn = (f - n);
   
   return new this(
-    a,0,0,0,
-    0,c,0,0,
-    b,d,e,-1,
-    0,0,f,0  
+    2/rl,       0,          0,          0,
+    0,          2/tb,       0,          0,
+    0,          0,          -2/fn,      0,
+    -(l+r)/rl,  -(t+b)/tb,  -(f+n)/fn,  1
   );
 };
 
-N3D.Math.Matrix4.CreatePerspectiveProjection = function(fov,aspect,near,far){
-  var ymax = near*Math.tan(fov * N3D.Math.PiOver360);
-  var ymin = -ymax;
-  var xmin = ymin*aspect;
-  var xmax = ymax*aspect;
-
-  return this.CreateFrustum(xmin,xmax,ymin,ymax,near,far);
-};
-
-N3D.Math.Matrix4.CreateOrthographicProjection = function(left, right, bottom, top, near, far){
-  var rl = right-left,
-      tb = top-bottom,
-      fn = far-near;
-  return new this(
-    2/rl,             0,                0,              0,
-    0,                2/tb,             0,              0,
-    0,                0,                -2/fn,          0,
-    -(right+left)/rl, -(top+bottom)/tb, -(far+near)/fn, 1
-  );
-};
-
-N3D.Math.Matrix4.CreateLookAt = function(eye,center,up){
-  var zaxis = $V3.Sub(eye,center).normalize();
-  var xaxis = $V3.Cross(up,zaxis).normalize();
-  var yaxis = $V3.Cross(zaxis, xaxis);
-  return new this(
-    xaxis.x, yaxis.x, zaxis.x, 0,
-    xaxis.y, yaxis.y, zaxis.y, 0,
-    xaxis.z, yaxis.z, zaxis.z, 0,
-    -$V3.Dot(xaxis, eye), -$V3.Dot(yaxis, eye), -$V3.Dot(zaxis, eye), 1
-  );
-};
-
-N3D.Math.Matrix4.CreateFromQuaternion = function(q){
-  var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
-
-  var sqw = qw*qw;
-  var sqx = qx*qx;
-  var sqy = qy*qy;
-  var sqz = qz*qz;
-
-  var invs = 1 / (sqx + sqy + sqz + sqw);
-  
-  var tmp1 = qx*qy, tmp2 = qz*qw, tmp3 = qx*qz,
-      tmp4 = qy*qw, tmp5 = qy*qz, tmp6 = qx*qw;
-
-  return new this(
-    ( sqx - sqy - sqz + sqw)*invs,  2 * (tmp1 - tmp2)*invs,       2 * (tmp3 + tmp4)*invs,     0,
-    2 * (tmp1 + tmp2)*invs,       (-sqx + sqy - sqz + sqw)*invs,  2 * (tmp5 - tmp6)*invs,     0,
-    2 * (tmp3 - tmp4)*invs,       2 * (tmp5 + tmp6)*invs,       (-sqx - sqy + sqz + sqw)*invs,0,
-    0,0,0,1  
-  );
-};
-
-N3D.Math.Matrix4.CreateBias = function(){
-  return new this(
-    0.5, 0.0, 0.0, 0.0,
-    0.0, 0.5, 0.0, 0.0,
-    0.0, 0.0, 0.5, 0.0,
-    0.5, 0.5, 0.5, 1.0
-  );
-};
-N3D.Math.Matrix4.CreateShadow = function(plane,light){
-  var px = plane.x, py = plane.y, pz = plane.z, pw = plane.w,
-      lx = light.x, ly = light.y, lz = light.z, lw = light.w;
-  
-  var dot = px * lx + py * ly + pz * lz + pw * lw,
-  
-  m0 = dot - lx * px,
-  m4 = -lx * py,
-  m8 = -lx * pz,
-  m12 = -lx * pw,
-
-  m1 = -ly * px,
-  m5 = dot - ly * py,
-  m9 = -ly * pz,
-  m13 = -ly * pw,
-
-  m2 = -lz * px,
-  m6 = -lz * py,
-  m10 = dot - lz * pz,
-  m14 = -lz * pw,
-
-  m3 = -lw * px,
-  m7 = -lw * py,
-  m11 = -lw * pz,
-  m15 = dot - lw * pw;
-        
-  return new this(
-    m0,m1,m2,m3,
-    m4,m5,m6,m7,
-    m8,m9,m10,m11,
-    m12,m13,m14,m15    
-  );
-};
-
-N3D.Math.Matrix4.toString = function(){
-  return 'N3D.Math.Matrix4, for more information Execute the N3D.Help("Math.Matrix4")';
-};
-
-$M4 = N3D.Math.Matrix4;
+$Math_Matrix4 = N3D.Math.Matrix4;
