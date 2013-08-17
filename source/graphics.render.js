@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 N3D.Graphics.Render = function(){};
 N3D.Graphics.Render.prototype = {
   backfaceCulling: true,

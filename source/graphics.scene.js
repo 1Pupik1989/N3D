@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 N3D.Graphics.Scene = function(){
   this.models = [];
   this.polygons = [];
@@ -27,9 +29,9 @@ N3D.Graphics.Scene3D.prototype.update = function(){
 
     gl.uniformMatrix4fv(render.shaders["modelMatrix"], false, new Float32Array(shape.matrix.elements));
     
-    gl.uniformMatrix4fv(render.shaders["normalMatrix"], false, new Float32Array($Math_Matrix4.Multiply(shape.matrix,camera.viewMatrix).inverse().transpose().elements));   
+    gl.uniformMatrix4fv(render.shaders["normalMatrix"], false, new Float32Array($M4.Multiply(shape.matrix,camera.viewMatrix).inverse().transpose().elements));   
     
-    console.log(''+$Math_Matrix4.Multiply(camera.viewMatrix,shape.matrix).inverse());
+    console.log(''+$M4.Multiply(camera.viewMatrix,shape.matrix).inverse());
     
     gl.bindBuffer(gl.ARRAY_BUFFER, shape.buffer_position);
     gl.vertexAttribPointer(render.shaders["aVertexPosition"], 3, gl.FLOAT, false, 0, 0);

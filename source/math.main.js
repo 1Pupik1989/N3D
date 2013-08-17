@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 N3D.Math = (function(n){
   var obj = {};
   var random = n.random;

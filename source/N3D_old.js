@@ -1,201 +1,277 @@
-if(typeof Float32Array === "undeifned"){
-  Float32Array = WebGLFloatArray;
-} 
+var N3D = {};
 
-var N3D = {}; 
-
-N3D.Support = {};
-N3D.Support.WebGL = (function(){
-  if(typeof WebGLRenderingContext !== 'undefined'){ return true; }
-
-  var canvas = document.createElement('canvas');
-  var types = ['webgl','experimental-webgl'];
-  var length = types.length;
-  for(var i=0;i<length;i++){
-    try{
-      canvas.getContext(types[i]);
-      return true;
-    }catch(e){}  
-  }
-  
-  return false;
-
-})();
-
-N3D.Support.Context2D = (function(){
-  var canvas = document.createElement('canvas');
-  if(typeof CanvasRenderingContext2D !== 'undefined'){ return true; }
-  
-  try{
-    canvas.getContext("2d");
-    return true;
-  }catch(e){}
-
-  return false;
-})();
-
-
-N3D.Modules = {
-  Help:[""],
-  Variable:["Main","RegExp"],
-  Math:["Main","Matrix3","Matrix4","Units","Vector2","Vector3","Vector4"],
-  Audio:["Main"],
-  Utils:["Keys","Ajax"],
-  Store:["Cookie"],  
-  Graphics:["Camera","Color","Scene","Material","Render","Light","Shader"],
-  Geometry:["Lightning","Shapes","Trees","Shapes_old"],
-  Game:["Main"],
-  Files:["Main"]    
+function extend(child,parent){
+  var F = function(){};
+  F.prototype = parent.prototype;
+  child.prototype = new F(); 
+  child.prototype.constructor = child; 
+  return child.prototype;                                   
 };
 
-(function(n){
-  var callback = {
-    complete : function(f){  this.complete = f || this.complete; return this; },
-    error : function(f){ this.error = f || this.error; return this; },
-    success : function(f){ this.success = f || this.success; return this; },
-    loaded:0,
-    unloaded:0,
-    total:0
-  };
+/* >>>> Detect support graphics render >>>> */ 
+(function(){
+  var canvas = document.createElement('canvas');
+  var isCanvas = false, isWebGL = false, isSVG = false, isVML = false;
 
-  var path = (function(){
-    var scripts= document.getElementsByTagName('script');
-
-    var path = scripts[scripts.length-1].src.match(/.*\//);
-    if(path){ return path[0]; }
-  
-    return ""; 
-  })();
-  
-  var modules = N3D.Modules;
- 
-  var p_i=0;
-  for(var i in modules){
-    var mod = modules[i];
-    mod.priority = p_i;
-    mod.all = mod.join(";");
-    n[i] = {};
-
-    p_i++;
+  //Support Canvas
+  if(typeof CanvasRenderingContext2D !== 'undefined'){ 
+    isCanvas = true; 
+  }else{
+    try{
+      canvas.getContext("2d");
+      isCanvas = true;
+    }catch(e){}
   }
-  function loader(callback){
-    if(window.addEventListener) {
-      window.addEventListener("load",callback,false);
-    }else if(window.attachEvent) {
-      window.attachEvent("onload",callback);
-    }else{
-      window.onload=callback;
+  
+  //Support WebGL
+  var types = ['webgl','experimental-webgl'];
+  var length = types.length;
+  if(typeof WebGLRenderingContext !== 'undefined'){
+    isWebGL = true;
+  }else{
+    for(var i=0;i<length;i++){
+      try{
+        var ctx = canvas.getContext(types[i]);
+      
+        isWebGL = true;
+        break;
+      }catch(e){}  
     }
+  }
+  
+  //Support SVG
+  if(typeof SVGSVGElement !== 'undefined'){
+    isSVG = true;
+  }else if(document.createElement('svg').getAttributeNS){
+    isSVG = true;
+  }else if(document.createElementNS && document.createElementNS('http://www.w3.org/2000/svg', "svg").createSVGRect){
+    isSVG = true;
+  }
+ 
+  //Support VML
+  var body = document.body || document.createElement('body');
+  var a = body.appendChild(document.createElement('div'));
+  a.innerHTML = '<v:shape id="vml_flag1" adj="1" />';
+  var b = a.firstChild;
+  b.style.behavior = "url(#default#VML)";
+  isVML = b ? typeof b.adj == "object": true;
+  a.parentNode.removeChild(a);
+
+  N3D.Support = {
+    SVG:isSVG,
+    Canvas:isCanvas,
+    WebGL:isWebGL,
+    VML:isVML,
+    toString:function(){
+      return 'Context 2D: '+isCanvas+'\n' + 
+             'WebGL: '+isWebGL+'\n' + 
+             'SVG: '+isSVG+'\n' +
+             'VML: '+isVML;
+    }  
+  };
+/* <<<< Detect support graphics render <<<< */
+
+  var head = document.getElementsByTagName("head")[0];
+  var master_script = document.getElementsByTagName('script');
+  master_script = master_script[master_script.length-1];
+  var abs_path = master_script.src.match(/.*\//);
+  abs_path = abs_path!=null ? abs_path[0] : '/';
+  
+  function getAttr(el, attr) {
+    var result;
+    if(result = el[attr]){ return result; }
+    if(el.getAttribute && (result = el.getAttribute(attr))){ return result;}
+    var attrs = el.attributes;
+    var length = attrs.length;
+
+    for(var i = 0; i < length; i++){
+      if(attrs[i].nodeName === attr){
+        return attrs[i].nodeValue;
+      }
+    }
+    return false;
   };
   
-  function getModules(urls){
-    urls.sort();
-    urls = urls.join(";");
-    
-    var regex = /(\w+)\.?(.*?)(?=;|$)/g;
-    var ignore = {};
-    var complete = [];
-    
-    var c,result,name,sub_name;
-    while((result = regex.exec(urls)) !== null){
-      name = result[1];
-      sub_name = result[2];
-      major = modules[name];
-      if(typeof major == "undefined"){ continue; }
-      if(typeof ignore[name] !== "undefined"){ continue; }
+  N3D.settings = {
+    abs_path: abs_path,
+    autoload:(getAttr(master_script,'autoload') == 'true'),
+    require_lib:getAttr(master_script,'require'),
+    master_script:master_script,
+    head:head
+  };
+  
+  /* >>>> Controller for modules >>>> */
+  var store_modules = {};
+  
+  var total_modules = [];
+  var major_modules = {};
+  
+  var priority = {};
+  var priority_i = 0;
+  
+  var mods = N3D.Modules = {
+    add:function(name,sub_lib){
+      var p = major_modules[name] = [];
+      var func = N3D[name] = function(){
+        throw new Error(lib+' not loaded');
+      };
       
-      c = complete[major.priority];
-      if(typeof c == "undefined"){ c = complete[major.priority] = [] }
-      if(sub_name == "*"){
-        ignore[name] = true;
-        var length = major.length;
+      if(sub_lib instanceof Array){
+        var libs_lib;
+        var o = store_modules[name+'.*'] = [];
+        
+        var sub_priority_i = 0;
+        for(var i=0,length=sub_lib.length;i<length;i++){
+          s_lib = sub_lib[i];
+          lib = name+'.'+s_lib;
 
-        for(var i=0;i<length;i++){
-          c.push(name+"."+major[i]);
+          store_modules[lib] = true;
+          o.push(lib);
+
+          p.push(s_lib);
+          func[s_lib] = (function(name,lib){
+            return function(){
+              throw new Error('N3D.'+name+'.'+lib+' not loaded.');
+            }
+          })(name,s_lib);
+          priority[lib] = priority_i+sub_priority_i;
+          sub_priority_i += 0.00001;         
         }
-      }else if(major.all.indexOf(sub_name) !== -1){
-        c.push(result[0]);
+        total_modules = total_modules.concat(o);
+      }else if(typeof sub_lib == 'undefined'){
+        store_modules[name] = true;
+        priority[name] = priority_i;
+        total_modules.push(name);
       }
-    }
 
-    var store = [];
-    
-    for(var i in complete){
-      Array.prototype.push.apply(store,complete[i]);
-    }
+      
+      priority_i++;
+    },
+    get:function(name){
+      var s_name = name.split(/\./);
+      var mod = store_modules[name];
+      
+      if(typeof mod !== 'undefined'){ return (mod == true ? [name] : mod); }
+      
+      if(name == '*'){ 
+        return total_modules; 
+      }
+      
+      if(name == 'RegExp'){
+        var regex = [];
+        for(var i in major_modules){
+          var m = major_modules[i];
+          regex.push(i);              
+        }
 
-    return store;
+        return 'N3D\\.('+regex.join('\|')+')\\.?(\\w*)';
+      }
+      
+      return [];
+    }
   };
-  
-  n.require = function(){
-    
-    var urls = getModules(Array.prototype.slice.call(arguments));
-    var head = document.getElementsByTagName("head")[0];
-    var length = urls.length;
-    var errors = [];
-    callback.total += length;
-    
-    if(length == 0){
-      //loader(function(){
-        callback.error(0,"No script");
-        callback.complete(callback.loaded,callback.unloaded);
-        
-      //});
-      return callback;
-    }
-        
-    function load(){
-      
-      if(urls.length == 0){ 
-        //loader(function(){
-          if(callback.unloaded !== 0){ 
-            callback.error.call(n,callback.unloaded,errors.join(","));
-          }else{
-            callback.success.call(n);
-          } 
-        
-          callback.complete(callback.loaded,callback.unloaded);
-        //});
-        return false; 
+  /* <<<< Controller for modules <<<< */
+
+  /* >>>> Require files to DOM >>>> */  
+  function require(urls,callback){
+    var is_loaded = {};
+    function loader(){
+      if(urls.length == 0){
+        callback(true);
+        return false;
       }
       
-      var name = urls[0];
-      urls.splice(0,1);
-      if(document.getElementById(name) !== null){ load(); return false;}
+      var src = urls[0];
+      urls.splice(0,1);      
+            
+      if(script = document.getElementById(src)){ loader(); return false; }
       
-      var script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = path+name.toLowerCase()+".js";
-      script.id = name;  
-
-      
-      
-      script.onerror = (function(n){
-        return function(){
-          errors.push(n);
-          head.removeChild(this);
-          callback.unloaded++;
-          load(urls);
-         };
-      })(name);
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = src;
+      script.src = abs_path+src.toLowerCase()+'.js';
       
       script.onreadystatechange = function(){
-        if(this.readyState == "loaded"){
-          callback.loaded++;
-          load();        
+        if(script.readyState == 'loaded' || script.readyState == 'complete'){
+          script.onreadystatechange = null;
+          /*Je načtený opravdu?*/
+          loader();
         }
-      } 
+      };
       
       script.onload = function(){
-        callback.loaded++;
-        load();
-      }       
+        //Pokud sub-knihovna je závislá na jiné, tak jí tady vložit.
+        loader();
+      };        
+      
       head.appendChild(script);
     };
-    
-    load(urls);
-    
-    
-    return callback;
+
+    loader(urls);
   };
-})(N3D);
+  
+  
+  N3D.require = function(){
+    var urls = Array.prototype.slice.call(arguments);
+    var callback = {
+      complete: function(f){ this.complete = f || this.complete; },
+      success: function(f){ this.success = f || this.success; },
+      error: function(f){ this.error = f || this.error; },
+    };
+        
+    var load_lib = [];
+
+    for(var i=0,length=urls.length;i<length;i++){
+      name = urls[i];
+      load_lib = load_lib.concat(mods.get(name));
+    }   
+    
+    load_lib.sort(function(a,b){
+      return priority[a] - priority[b];  
+    });     
+        
+    require(load_lib,function(isOk){
+      if(isOk){
+        callback.success();
+      }else{
+        callback.error();
+      }
+      callback.complete();
+    });
+
+    return callback; 
+  };
+  /* <<<< Require files to DOM <<<< */
+})();
+
+/* >>>> Add available library >>>> */   
+N3D.Modules.add('Help');
+N3D.Modules.add('Variable',["Main","RegExp"]);
+N3D.Modules.add('Math',["Main","Matrix3","Matrix4","Units","Vector2","Vector3","Vector4"]);
+N3D.Modules.add('Audio',["Main"]);
+N3D.Modules.add('Utils',["Keys","Ajax"]);
+N3D.Modules.add('Graphics',["FPSCamera","Color","Scene","Material","Render","Light","Shader"]);
+N3D.Modules.add('Geometry',["Lightning","Shapes","Trees"]);
+N3D.Modules.add('World',["Main"]);
+//N3D.Modules.add('Files',["Main"]);
+/* <<<< Add available library <<<< */  
+
+(function(){
+  var mods = N3D.Modules;
+  var settings = N3D.settings;  
+  var master_script = settings.master_script;
+  
+  if(settings.require_lib !== false){ //If set "require" attribute
+    var load = N3D.require.apply(null,settings.require_lib.split(','));
+    load.success(function(){
+      var script = document.createElement('script');
+      
+      
+      script.type = 'text/javascript';
+      script.innerHTML = master_script.innerHTML;
+                                              
+      master_script.parentNode.removeChild(master_script);
+      settings.head.appendChild(script);
+    });
+  }
+})();

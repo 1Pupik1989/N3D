@@ -1,17 +1,8 @@
-N3D.Math.Matrix3 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8){
-  this.store = [];
-  if(typeof n8 !== "undefined"){
-    this.m = ([n0,n1,n2,n3,n4,n5,n6,n7,n8]);
+N3D.isLoaded = true;
 
-    return this;
-  }else{
-    this.m = [
-      1,0,0,
-      0,1,0,
-      0,0,1
-    ]; 
-  }
-  
+var $M3 = N3D.Math.Matrix3 = function(n0,n1,n2,n3,n4,n5,n6,n7,n8){
+  this.m = [n0,n1,n2,n3,n4,n5,n6,n7,n8];
+
   return this;
 };
 N3D.Math.Matrix3.prototype = {
@@ -171,7 +162,9 @@ N3D.Math.Matrix3.prototype = {
            m[6].toFixed(4)+", "+m[7].toFixed(4)+", "+m[8].toFixed(4) + "\n"; 
   }
 };
-
+N3D.Math.Matrix3.Identity = function(){
+  return new this(1,0,0,0,1,0,0,0,1);
+};
 
 N3D.Math.Matrix3.FromMatrix4 = function(m){
   var m = m.m;
@@ -202,5 +195,3 @@ N3D.Math.Matrix3.Inverse = function(m){
 
     return this;
 };
-
-$M3 = N3D.Math.Matrix3;

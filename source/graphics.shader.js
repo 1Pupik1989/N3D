@@ -1,3 +1,4 @@
+N3D.isLoaded = true;
 
 (function(){
 function parsing(that,shaderName,url){

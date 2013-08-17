@@ -1,3 +1,4 @@
+N3D.isLoaded = true;
 /*
 00,04,08,12,
 01,05,09,13,
@@ -121,6 +122,10 @@ var $M4 = N3D.Math.Matrix4 = function(a00,a04,a08,a12,
 };
 N3D.Math.Matrix4.prototype = {
   constructor:N3D.Math.Matrix4,
+  getTranslate:function(){
+    var m = this.elements;
+    return new $V4(m[12],m[13],m[14],m[15]);
+  },
   clone:function(){  
     var m = this.elements;
     return new this.constructor(
@@ -138,86 +143,75 @@ N3D.Math.Matrix4.prototype = {
         m03 = m[3],  m07 = m[7],  m11 = m[11], m15 = m[15];
         
     
-    var n0 =  m05 * (m10*m15 - m14*m11) - 
-              m09 * (m06*m15 - m14*m07) + 
-              m13 * (m06*m15 - m14*m07),
-    
-        n1 = m04 * (m10*m15 - m11*m14) - 
-              m08 * (m06*m15 - m07*m14) + 
-              m12 * (m06*m11 - m07*m10),
-    
-        n2 =  m04 * (m09*m15 - m13*m11) - 
-              m08 * (m05*m15 - m13*m07) + 
-              m12 * (m05*m11 - m09*m07),
-              
-        n3 = m04 * (m09*m14 - m13*m10) -
-              m08 * (m05*m14 - m13*m06) + 
-              m12 * (m05*m10 - m09*m06),  
+    var n0 =  m05 * (m10*m15 - m11*m14) - m06 * (m09*m15 - m11*m13) + m07 * (m09*m14 - m10*m13),
+        n1 =  m04 * (m10*m15 - m11*m14) - m06 * (m08*m15 - m11*m12) + m07 * (m08*m14 - m10*m12),
+        n2 =  m04 * (m09*m15 - m11*m13) - m05 * (m08*m15 - m11*m12) + m07 * (m08*m13 - m09*m12),
+        n3 =  m04 * (m09*m14 - m10*m13) - m05 * (m08*m14 - m10*m12) + m06 * (m08*m13 - m09*m12),  
               
         invDet = 1/(m00*n0 - m01*n1 + m02*n2 - m03*n3);
-    ¨/*Opravit, páč je to v řiti.*/          
-    console.log(m00*n0 - m01*n1 + m02*n2 - m03*n3);
+    
+    m[0]  =  n0*invDet;
+    m[1]  = -n1*invDet;
+    m[2]  =  n2*invDet;
+    m[3]  = -n3*invDet;     
+    
+    m[4]  = -(m01 * (m10*m15 - m11*m14) - m02 * (m09*m15 - m11*m13) + m03 * (m09*m14 - m10*m13))*invDet;  
+    m[5]  =  (m00 * (m10*m15 - m11*m14) - m02 * (m08*m15 - m11*m12) + m03 * (m08*m14 - m10*m12))*invDet;
+    m[6]  = -(m00 * (m09*m15 - m11*m13) - m01 * (m08*m15 - m11*m12) + m03 * (m08*m13 - m09*m12))*invDet;
+    m[7]  =  (m00 * (m09*m14 - m10*m13) - m01 * (m08*m14 - m10*m12) + m02 * (m08*m13 - m09*m12))*invDet;
+    
+    m[8]  =  (m01 * (m06*m15 - m07*m14) - m02 * (m05*m15 - m07*m13) + m03 * (m05*m14 - m06*m13))*invDet;
+    m[9]  = -(m00 * (m06*m15 - m07*m14) - m02 * (m04*m15 - m07*m12) + m03 * (m04*m14 - m06*m12))*invDet;
+    m[10] =  (m00 * (m05*m15 - m07*m13) - m01 * (m04*m15 - m07*m12) + m03 * (m04*m13 - m05*m12))*invDet;
+    m[11] = -(m00 * (m05*m14 - m06*m13) - m01 * (m04*m14 - m06*m12) + m02 * (m04*m13 - m05*m12))*invDet;
+    
+    m[12] = -(m01 * (m06*m11 - m07*m10) - m02 * (m05*m11 - m07*m09) + m03 * (m05*m10 - m06*m09))*invDet;
+    m[13] =  (m00 * (m06*m11 - m07*m10) - m02 * (m04*m11 - m07*m08) + m03 * (m04*m10 - m06*m08))*invDet;
+    m[14] = -(m00 * (m05*m11 - m07*m09) - m01 * (m04*m11 - m07*m08) + m03 * (m04*m09 - m05*m08))*invDet;
+    m[15] =  (m00 * (m05*m10 - m06*m09) - m01 * (m04*m10 - m06*m08) + m02 * (m04*m09 - m05*m08))*invDet; 
+
+    return this;
+  },
+  inverseFast:function(){
+    var m = this.elements, 
+        m00 = m[0],  m04 = m[4],  m08 = m[8],  m12 = m[12],
+        m01 = m[1],  m05 = m[5],  m09 = m[9],  m13 = m[13],
+        m02 = m[2],  m06 = m[6],  m10 = m[10], m14 = m[14],
+        m03 = m[3],  m07 = m[7],  m11 = m[11], m15 = m[15];
     
     
-    m[0] =  n0*invDet;
-    m[4] =  n1*invDet;
-    m[8] =  n2*invDet;
-    m[12] = n3*invDet;     
+    var a0813 = m08 * m13, a0814 = m08 * m14, a0815 = m08 * m15,
+        a0912 = m09 * m12, a0914 = m09 * m14, a0915 = m09 * m15,
+        a1012 = m10 * m12, a1013 = m10 * m13, a1015 = m10 * m15,
+        a1112 = m11 * m12, a1113 = m11 * m13, a1114 = m11 * m14;
+        
+    var n0 =  m05 * (a1015 - a1114) - m06 * (a0915 - a1113) + m07 * (a0914 - a1013),
+        n1 =  m04 * (a1015 - a1114) - m06 * (a0815 - a1112) + m07 * (a0814 - a1012),
+        n2 =  m04 * (a0915 - a1113) - m05 * (a0815 - a1112) + m07 * (a0813 - a0912),
+        n3 =  m04 * (a0914 - a1013) - m05 * (a0814 - a1012) + m06 * (a0813 - a0912),  
+              
+        invDet = 1/(m00*n0 - m01*n1 + m02*n2 - m03*n3);
     
-    m[1] =  (-m01 * (m10*m15 - m14*m11) + m09 * (m02*m15 - m14*m03) - m13 * (m02*m11 - m10*m03))*invDet;  
-    m[5] =  ( m00 * (m10*m15 - m14*m11) - m08 * (m02*m15 - m14*m03) + m12 * (m02*m11 - m10*m03))*invDet;
-    m[9] =  (-m00 * (m09*m15 - m13*m11) + m08 * (m01*m15 - m13*m03) - m12 * (m01*m11 - m09*m03))*invDet; 
-    m[13] = ( m00 * (m09*m14 - m13*m10) - m08 * (m01*m14 - m13*m02) + m12 * (m01*m10 - m13*m02))*invDet;
-                                                                                                       
-    m[2] =  ( m01 * (m06*m15 - m14*m07) + m05 * (m02*m15 - m14*m03) - m13 * (m02*m07 - m06*m03))*invDet;
-    m[6] =  (-m00 * (m06*m15 - m14*m07) - m04 * (m02*m15 - m14*m03) + m12 * (m02*m06 - m03*m07))*invDet;
-    m[10] = ( m00 * (m05*m15 - m13*m07) + m04 * (m01*m15 - m13*m03) - m12 * (m01*m07 - m05*m03))*invDet;         
-    m[14] = (-m00 * (m05*m14 - m13*m06) - m04 * (m01*m14 - m13*m02) + m12 * (m01*m06 - m05*m02))*invDet;
-                                                                                                       
-    m[3] =  (-m01 * (m06*m11 - m10*m07) + m05 * (m02*m11 - m10*m03) - m09 * (m02*m07 - m06*m03))*invDet;  
-    m[7] =  ( m00 * (m06*m11 - m10*m07) - m04 * (m02*m11 - m10*m03) + m08 * (m02*m07 - m06*m03))*invDet;
-    m[11] = (-m00 * (m05*m11 - m09*m07) + m04 * (m01*m11 - m09*m03) - m08 * (m01*m07 - m05*m03))*invDet;
-    m[15] = ( m00 * (m05*m10 - m09*m06) - m04 * (m01*m10 - m09*m02) + m08 * (m01*m06 - m05*m02))*invDet;                  
-/*    
-00,04,08
-01,05,09
-02,06,10
-  
-00,04,08,12,
-01,05,09,13,
-02,06,10,14,
-03,07,11,15  
-*/    
+    m[0]  =  n0*invDet;
+    m[1]  = -n1*invDet;
+    m[2]  =  n2*invDet;
+    m[3]  = -n3*invDet;     
     
-  /*  
-  
-	
-	m[0] = (a11*b11 - a12*b10 + a13*b09)*invDet;
-	m[4] = (-a10*b11 + a12*b08 - a13*b07)*invDet;
-  m[8] = (a10*b10 - a11*b08 + a13*b06)*invDet;
-  m[12] = (-a10*b09 + a11*b07 - a12*b06)*invDet;
-  
-  m[1] = (-a01*b11 + a02*b10 - a03*b09)*invDet;
-	m[2] = (a31*b05 - a32*b04 + a33*b03)*invDet;
-	m[3] = (-a21*b05 + a22*b04 - a23*b03)*invDet;
-  
-	
-	m[5] = (a00*b11 - a02*b08 + a03*b07)*invDet;
-	m[6] = (-a30*b05 + a32*b02 - a33*b01)*invDet;
-	m[7] = (a20*b05 - a22*b02 + a23*b01)*invDet;
-	
-	m[9] = (-a00*b10 + a01*b08 - a03*b06)*invDet;
-	m[10] = (a30*b04 - a31*b02 + a33*b00)*invDet;
-	m[11] = (-a20*b04 + a21*b02 - a23*b00)*invDet;
-	
-	m[13] = (a00*b09 - a01*b07 + a02*b06)*invDet;
-	m[14] = (-a30*b03 + a31*b01 - a32*b00)*invDet;
-	m[15] = (a20*b03 - a21*b01 + a22*b00)*invDet;
-  
- 
-  console.log(m[0],m[4],m[8],m[12]);
-                 */
-  
+    m[4]  = -(m01 * (a1015 - a1114) - m02 * (a0915 - a1113) + m03 * (a0914 - a1013))*invDet;  
+    m[5]  =  (m00 * (a1015 - a1114) - m02 * (a0815 - a1112) + m03 * (a0814 - a1012))*invDet;
+    m[6]  = -(m00 * (a0915 - a1113) - m01 * (a0815 - a1112) + m03 * (a0813 - a0912))*invDet;
+    m[7]  =  (m00 * (a0914 - a1013) - m01 * (a0814 - a1012) + m02 * (a0813 - a0912))*invDet;
+    
+    m[8]  =  (m01 * (m06*m15 - m07*m14) - m02 * (m05*m15 - m07*m13) + m03 * (m05*m14 - m06*m13))*invDet;
+    m[9]  = -(m00 * (m06*m15 - m07*m14) - m02 * (m04*m15 - m07*m12) + m03 * (m04*m14 - m06*m12))*invDet;
+    m[10] =  (m00 * (m05*m15 - m07*m13) - m01 * (m04*m15 - m07*m12) + m03 * (m04*m13 - m05*m12))*invDet;
+    m[11] = -(m00 * (m05*m14 - m06*m13) - m01 * (m04*m14 - m06*m12) + m02 * (m04*m13 - m05*m12))*invDet;
+    
+    m[12] = -(m01 * (m06*m11 - m07*m10) - m02 * (m05*m11 - m07*m09) + m03 * (m05*m10 - m06*m09))*invDet;
+    m[13] =  (m00 * (m06*m11 - m07*m10) - m02 * (m04*m11 - m07*m08) + m03 * (m04*m10 - m06*m08))*invDet;
+    m[14] = -(m00 * (m05*m11 - m07*m09) - m01 * (m04*m11 - m07*m08) + m03 * (m04*m09 - m05*m08))*invDet;
+    m[15] =  (m00 * (m05*m10 - m06*m09) - m01 * (m04*m10 - m06*m08) + m02 * (m04*m09 - m05*m08))*invDet; 
+
     return this;
   },
   multiply:function(m2){
@@ -571,5 +565,3 @@ N3D.Math.Matrix4.CreateOrthographic = function(l,r,b,t,n,f){
     -(l+r)/rl,  -(t+b)/tb,  -(f+n)/fn,  1
   );
 };
-
-$Math_Matrix4 = N3D.Math.Matrix4;

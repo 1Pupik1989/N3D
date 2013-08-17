@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 (function(){
   var xml_obj = false, parameter = null;
 

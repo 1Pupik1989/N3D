@@ -1,4 +1,6 @@
-N3D.Math.Vector4 = function(x,y,z,w){
+N3D.isLoaded = true;
+
+var $V4 = N3D.Math.Vector4 = function(x,y,z,w){
   this.x = x;
   this.y = y;
   this.z = z;
@@ -180,5 +182,3 @@ N3D.Math.Vector4.Projection = function(p,viewport){
   
   return false;
 };
-
-$V4 = N3D.Math.Vector4;

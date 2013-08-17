@@ -1,3 +1,4 @@
+N3D.isLoaded = true;
 N3D.Geometry.Shapes = function(){
   this.matrix = $M4.Identity();
 

@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 N3D.Graphics.Material = function(opts){
   if(typeof opts !== 'object'){ return this; }
   

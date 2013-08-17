@@ -1,4 +1,5 @@
-// Graphics.Color
+N3D.isLoaded = true;
+
 N3D.Color = function(r,g,b){
   if(typeof r == "string"){
     if(typeof N3D.Color.standart16[r] !== "undefined"){

@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 var $V2 = N3D.Math.Vector2 = function(x,y){
   this.x = x;
   this.y = y;
@@ -101,3 +103,5 @@ N3D.Math.Vector2.Cross = function(v1,v2){
     v1.x*v2.y - v1.y*v2.x
   );
 };
+
+$V2 = N3D.Math.Vector2;

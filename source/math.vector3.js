@@ -1,4 +1,6 @@
-N3D.Math.Vector3 = function(x,y,z){
+N3D.isLoaded = true;
+
+var $V3 = N3D.Math.Vector3 = function(x,y,z){
   this.x = x;
   this.y = y;
   this.z = z;
@@ -198,5 +200,3 @@ N3D.Math.Vector3.SmoothStep = function(v1,v2,a){
     MathHelper.SmoothStep(v1.z, v2.z, a)
   );
 };
-
-$V3 = N3D.Math.Vector3;

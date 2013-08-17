@@ -1,3 +1,4 @@
+N3D.isLoaded = true;
 N3D.Graphics.Camera = function(){
   this.position = new N3D.Math.Vector3(0,0,10);
   this.target = new N3D.Math.Vector3(0,0,0);

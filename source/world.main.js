@@ -1,3 +1,5 @@
+N3D.isLoaded = true;
+
 N3D.Viewport = function(){
   this.width = 800;
   this.height = 600;
@@ -13,7 +15,7 @@ N3D.Viewport.prototype = {
   }
 };
 
-var World = function(attr){
+N3D.World = function(attr){
   var settings = attr || {};
   settings.type = settings.type || '2D';
   
@@ -24,7 +26,7 @@ var World = function(attr){
   this.setMode(attr.type);
   
 };
-World.prototype = {
+N3D.World.prototype = {
   render:null,
   scene:null,
   destruct:function(){

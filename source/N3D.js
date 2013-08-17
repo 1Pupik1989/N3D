@@ -1,6 +1,64 @@
-var N3D = {
-  Support:{}  
-};
+var N3D = {};  
+
+N3D.Modules = (function(){
+  var mods = {};
+  var priority = 0;
+  return {
+    add:function(name,libs){
+      var n = N3D[name] = (function(name){
+        return function(){
+          throw new Error(name+' not loaded');
+        }
+      })(name);
+
+      if(libs instanceof Array){
+        var f,llib;
+        var sub_priority = 0;
+        var arr = mods[name+'.*'] = [];
+        
+        for(var i=0,length=libs.length;i<length;i++){
+          l = libs[i];
+          lib = name+'.'+l;
+           
+          arr.push(mods[lib] = {
+            name:lib,
+            src:lib.toLowerCase(),
+            priority:priority+sub_priority
+          });
+          f = n[l] = (function(name){
+            return function(){
+              throw new Error(name+' not loaded');
+            }
+          })(l);
+          sub_priority += 0.00001;
+        } 
+      }else{
+        mods[name] = {
+          name:name,
+          src:name.toLowerCase(),
+          priority:priority
+        };
+      }
+      priority++;
+    },
+    set:function(name,arr){
+      var mod = mods[name];
+
+      if(mod instanceof Array){
+        Array.prototype.push.apply(arr,mod);
+      }else if(typeof mod !== 'undefined'){
+        arr.push(mod);
+      }          
+    }
+  }
+})();
+
+N3D.Modules.add('Help');
+N3D.Modules.add('Math',["Main","Matrix3","Matrix4","Vector2","Vector3","Vector4"]);
+N3D.Modules.add('Utils',["Ajax"]);
+N3D.Modules.add('Graphics',["Color","FPSCamera","Material","Render","Scene","Shader"]);
+N3D.Modules.add('Geometry',["Shapes"]);
+N3D.Modules.add('World',["Main"]);
 
 function extend(child,parent){
   var F = function(){};
@@ -10,237 +68,161 @@ function extend(child,parent){
   return child.prototype;                                   
 };
 
-(function(o){
-  var canvas = document.createElement('canvas');
-  var is2D = false, isWebGL = false, isSVG = false, isVML = false;
-
-  //Support Canvas
-  if(typeof CanvasRenderingContext2D !== 'undefined'){ 
-    is2D = true; 
-  }else{
-    try{
-      canvas.getContext("2d");
-      is2D = true;
-    }catch(e){}
-  }
+(function(){   
+  /* >>>> Detect support render >>>> */           
+  var supp = N3D.Support = {
+    Canvas:false,
+    WebGL:false,
+    SVG:false,
+    VML:false,
+    toString:function(){
+      return 'Context 2D: '+this.Canvas+'\n' + 
+             'WebGL: '+this.WebGL+'\n' + 
+             'SVG: '+this.SVG+'\n' +
+             'VML: '+this.VML;
+    } 
+  };
   
-  //Support WebGL
-  var types = ['webgl','experimental-webgl'];
-  var length = types.length;
+  var canvas = document.createElement('canvas');
+  
+  /* Support Canvas */
+  try{
+    canvas.getContext('2d');    
+    supp.Canvas = true; 
+  }catch(e){} 
+  
+  
+  /* Support WebGL */                            
   if(typeof WebGLRenderingContext !== 'undefined'){
-    isWebGL = true;
+    supp.WebGL = true;
   }else{
+    var types = ['webgl','experimental-webgl'];
     for(var i=0;i<length;i++){
       try{
         var ctx = canvas.getContext(types[i]);
       
-        isWebGL = true;
+        supp.WebGL = true;
         break;
       }catch(e){}  
     }
   }
   
-  //Support SVG
-  if(typeof SVGSVGElement !== 'undefined'){
-    isSVG = true;
-  }else if(document.createElement('svg').getAttributeNS){
-    isSVG = true;
-  }else if(document.createElementNS && document.createElementNS('http://www.w3.org/2000/svg', "svg").createSVGRect){
-    isSVG = true;
-  }
- 
-  var body = document.body || document.createElement('body');
- 
-  var a = body.appendChild(document.createElement('div'));
-  a.innerHTML = '<v:shape id="vml_flag1" adj="1" />';
+  /* Support SVG */
+  supp.SVG = document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
+  
+  /* Support VML */
+  var a = document.createElement('div');
+  a.innerHTML = '<v:shape adj="1" />';
   var b = a.firstChild;
   b.style.behavior = "url(#default#VML)";
-  isVML = b ? typeof b.adj == "object": true;
-  a.parentNode.removeChild(a);
+  supp.VML = b ? typeof b.adj == "object": true;
+  /* <<<< Detect support render <<<< */  
   
-  
-  o.SVG = isSVG; 
-  o.Context2D = is2D;
-  o.WebGL = isWebGL;
-  o.VML = isVML;
-  
-  o.toString = function(){
-    return 'Context 2D: '+is2D+'\n' + 
-           'WebGL: '+isWebGL+'\n' + 
-           'SVG: '+isSVG+'\n' +
-           'VML: '+isVML;
-  };
-})(N3D.Support);
-
-(function(){
-  var priority = 0;
-  
-  function Module(name,o){
-    var ch = this.children = {};
-    this.childrenArray = o;
-    if(o instanceof Array){
-      var length = o.length;
-      for(var i=0;i<length;i++){
-        ch[o[i]] = i;
-      }
-    }
-    this.name = name;
-    this.priority = priority++;
-  };
-  Module.prototype = {
-    get:function(name){
-      var o = [];
-      var that_name = this.name;
-      if(name == '*'){ 
-        for(var i in this.children){
-          o.push(that_name+'.'+i);
-        }
-        return o; 
-      }else if(typeof this.children[name] !== 'undefined'){
-        o.push(that_name+'.'+name);
-      }
-      
-      return o;
-    }
-  };
-  N3D.Modules = function(){
-    this.children = {};
-    this.act = {};
-    this.toLoad = [];
-  };
-  N3D.Modules.prototype = {
-    add:function(name,children){
-      this.children[name] = new Module(name,children);
-      N3D[name] = {};
-    },
-    get:function(name){
-      var name = name.split('.');
-      var lib = this.children[name[0] ];
-      if(typeof lib == 'undefined'){ return false; }
-      
-      if(name.length == 2){
-        var o = lib.get(name[1]);
-        this.toLoad = this.toLoad.concat(o);
-        return o.length !== 0;
-      }
-      
-      return true;
-    }
-  };
-  
-  N3D.Modules = new N3D.Modules;
-
   var head = document.getElementsByTagName("head")[0];
   var master_script = document.getElementsByTagName('script');
   master_script = master_script[master_script.length-1];
   var abs_path = master_script.src.match(/.*\//);
   abs_path = abs_path ? abs_path[0] : '/';
-  
-  var slice = Array.prototype.slice;
-  var mods = N3D.Modules.children;
-  
-  N3D.require = function(){
-    var urls = slice.call(arguments);
-    var length = urls.length;
 
-    urls.sort(function(a,b){
-      
-      var name_a = a.split(".");
-      var name_b = b.split(".");
-      var a = mods[name_a[0]];
-      var b = mods[name_b[0]];
-
-      
-      if(a.priority == b.priority){
-        return a.children[ name_a[1] ] - b.children[ name_b[1] ];
+  var mods = N3D.Modules;
+  
+  function loader(urls,callbacks,error){
+    if(urls.length == 0){ 
+      if(callbacks.unloaded.length == 0){
+        callbacks.success();
+      }else{                        
+        callbacks.error(callbacks.unloaded.join(','));
       }
-
-      return a-b;
-    });
-
-
-    for(var i=0;i<length;i++){
-      N3D.Modules.get(urls[i]);  
+      
+      callbacks.complete();
+      return;
     }
-
-    urls = N3D.Modules.toLoad;
-    length = urls.length;
     
-    var callback = {
-      complete : function(f){  this.complete = f || this.complete; return this; },
-      error : function(f){ this.error = f || this.error; return this; },
-      success : function(f){ this.success = f || this.success; return this; },
-      loaded:[],
-      unloaded:[],
-      total:length
+    var mod = urls[0];
+    urls.shift();
+    
+    if(document.getElementById(mod.name) != null){ loader(urls,callbacks); return false;}
+
+    N3D.isLoaded = false;
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.id = mod.name;
+    script.src = abs_path+mod.src+'.js';
+    
+    head.appendChild(script);
+
+    script.onreadystatechange = function(){
+      if(script.readyState == 'loaded' || script.readyState == 'complete'){
+        if(!N3D.isLoaded){
+          callbacks.unloaded.push(this.id+' missing library file,'+this.src+' not a file');      
+          head.removeChild(this);          
+        }
+        this.onreadystatechange = null; 
+        loader(urls,callbacks);        
+      }
     };
     
-    function loader(){
-      if(urls.length == 0){
-        if(callback.loaded.length == length && callback.unloaded.length == 0){
-          callback.success();
-        }else{
-          callback.error('Not loaded scripts: '+callback.unloaded.join(', '),callback.unloaded.length);
-        }
-        callback.complete();
-        return false;
-      }
-      var src = urls[0];
-      urls.splice(0,1);
-      
-      if(document.getElementById(src) !== null){ loader(); return false; }
-     
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.id = src;
-      script.src = abs_path+src.toLowerCase()+'.js';
-      
-      script.onerror = function(){
-        callback.unloaded++;
-        loader();
-      };  
-      
-      if(script.readyState){
-        script.onreadystatechange = function(){
-          if(script.readyState == 'loaded' || script.readyState == 'complete'){
-            script.onreadystatechange = null;
-            var name = src.split('.');
-
-            if(name[1] == 'Main'){ callback.loaded.push(src); loader(); return false; } //pokud je sub-knihovna 'Main'
-
-            if(typeof N3D[name[0]][ name[1] ] !== 'undefined'){  
-              callback.loaded.push(src);
-            }else{
-              callback.unloaded.push(src); 
-            }
-            loader();
-          }
-        };
-      }else{
-        script.onload = function(){
-          callback.loaded.push(src);
-          loader();
-        };
-      }
-      
-                                         
-      
-      head.appendChild(script);
-    }
+    script.onerror = function(){
+      callbacks.unloaded.push(this.id+' missing library file,'+this.src+' not a file');      
+      loader(urls,callbacks);
+      head.removeChild(this);
+      return false;
+    };
     
-    loader();
-    return callback;
+    script.onload = function(){
+      loader(urls,callbacks);
+    };
   };
   
+  N3D.require = function(){
+    var urls = Array.prototype.slice.call(arguments);
+    var load_urls = [];    
+    var callbacks = {
+      complete: function(f){ this.complete = f || this.complete; },
+      success: function(f){ this.success = f || this.success; },
+      error: function(f){ this.error = f || this.error; },
+      unloaded:[]
+    };
+    
+    for(var i=0,length=urls.length;i<length;i++){
+      mods.set(urls[i],load_urls);
+    }
+    
+    loader(load_urls.sort(function(a,b){
+      return a.priority-b.priority;
+    }),callbacks);
+    
+    return callbacks;
+  };   
+  
+  function getAttr(el, attr) {
+    var result;
+    if(result = el[attr]){ return result; }
+    if(el.getAttribute && (result = el.getAttribute(attr))){ return result;}
+    var attrs = el.attributes;
+    var length = attrs.length;
+
+    for(var i = 0; i < length; i++){
+      if(attrs[i].nodeName === attr){
+        return attrs[i].nodeValue;
+      }
+    }
+    return null;
+  };
+  
+  var require = getAttr(master_script,'require');
+  
+  if(require !== null){
+    var load = N3D.require.apply(null,require.split(','));
+    load.success(function(){
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+     
+      script.textContent = master_script.innerHTML;
+      head.appendChild(script);
+      master_script.parentNode.removeChild(master_script);
+    });
+  }
+  
 })();
-
-
-N3D.Modules.add('Help');
-N3D.Modules.add('Variable',["Main","RegExp"]);
-N3D.Modules.add('Math',["Main","Matrix3","Matrix4","Units","Vector2","Vector3","Vector4"]);
-N3D.Modules.add('Audio',["Main"]);
-N3D.Modules.add('Utils',["Keys","Ajax"]);
-N3D.Modules.add('Graphics',["Camera","Color","Scene","Material","Render","Light","Shader"]);
-N3D.Modules.add('Geometry',["Lightning","Shapes","Trees"]);
-N3D.Modules.add('Game',["Main"]);
-N3D.Modules.add('Files',["Main"]);
