@@ -1,22 +1,12 @@
-N3D.isLoaded = true;
 N3D.Geometry.Shapes = function(){
   this.matrix = $M4.Identity();
 
   this.vectors_position = [];
   this.vectors_texture = [];
   this.vectors_normal = [];
-  
-  this._vectors_position = [];
-  this._vectors_position.id = 3;
-  this.vectors_position.id = 8;
-  
+
   this.transform = {};
-  this.backface_culling = false;
-  
-  
-   
-  this.add(new N3D.Graphics.Material());                 
-  
+ 
   if(N3D.Support.WebGL){
     this.array_position = new Float32Array();
     this.array_texture = new Float32Array();
@@ -28,13 +18,16 @@ N3D.Geometry.Shapes = function(){
 };
 
 N3D.Geometry.Shapes.prototype = {
-  gl_draw_type:"LINES",
+  gl_draw_type:1,
   constructor:N3D.Geometry.Shapes,
+  textured:false,
+  backface_culling:false,
+  specular_texture:false,
   add:function(o){
     o.parent = this;
     o.world_parent = this.parent;
-    if(o instanceof N3D.Graphics.Material){
-      this.material = o;
+    if(o instanceof N3D.Graphics.SpecularMap){
+      this.specular_map = o;
     }
   },
   updateTransform:function(){
@@ -71,48 +64,20 @@ N3D.Geometry.Shapes.prototype = {
     var MVP = this.matrix.multiply(camera.projectionViewMatrix),
         vp = this.vectors_position,
         _vp = this._vectors_position,
-        vp_length = vp.length;
+        i,vp_length = vp.length,
+        
+        screen_width = this.parent.viewport.width,
+        screen_height = this.parent.viewport.height;
 
-    var width = this.parent.viewport.width,
-        height = this.parent.viewport.height;
-
-    for(var i=0;i<vp_length;i++){
-      vp[i].copyFromVector4(_vp[i]).multiplyMatrix4(MVP).toHomogenous(width,height);
+    for(i=0;i<vp_length;i++){
+      vp[i].copyFromVector4(_vp[i]).multiplyMatrix4(MVP).toHomogenous(screen_width,screen_height);
     }
-    return this;
-  },
-  drawTo2DContext:function(){
-    var render = this.parent.render;
-    var material = this.material;
-    var context = render.context;
-    var backface = render.backfaceCulling;
-    var newPoly = [];
-    var polygons = this.polygons;
-    var length = polygons.length;
-    var i;
-    
-    for(i=0;i<length;i++){
-      poly = polygons[i]; 
-      if(poly.projectSettings(backface) == true){
-        newPoly.push(poly);
-      }      
-    }
-    newPoly.sort(function sort(a,b){
-      return (b.depthInt - a.depthInt);
-    });
-    
-    length = newPoly.length;
-
-    for(i=0;i<length;i++){
-      newPoly[i].draw(context,material,i);
-    }
-
     return this;
   },
   bindBuffer:function(){
     var gl = this.parent.render.context;
     var buffer;
-    if(this.parent.render instanceof N3D.Graphics.Render3D){
+    if(this.parent.render instanceof N3D.Graphics.RenderWebGL){
       buffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.array_texture), gl.STATIC_DRAW);
@@ -134,22 +99,103 @@ N3D.Geometry.Shapes.prototype = {
       this.buffer_indices = buffer; 
     }
     if(this.parent.render instanceof N3D.Graphics.RenderSVG){
-      var polygons = this.polygons;
-      var length = polygons.length;
-      var render = this.parent.render.group;
-      for(var i=0;i<length;i++){
+      var polygons = this.polygons,
+          length = polygons.length,
+          render = this.parent.render.group,
+          i;
+      for(i=0;i<length;i++){
         render.appendChild(polygons[i].triangleSVG);
       }
     }
-    this.material.bind(this.parent.render); 
-    if(this.material.textured){
-      this.gl_draw_type = "TRIANGLES";
-      N3D.Geometry.Shapes.Triangle.prototype.draw = N3D.Geometry.Shapes.Triangle.drawTexture;
-    }else{
-      N3D.Geometry.Shapes.Triangle.prototype.draw = N3D.Geometry.Shapes.Triangle.draw;
-    }
+    
+    
+    N3D.Geometry.Shapes.Triangle.prototype.draw = N3D.Geometry.Shapes.Triangle.draw;
+    
+    var that = this;
+
+    this.specular_map.bind(this.parent.render,function(){ 
+      if(that.specular_texture){
+        var draw = N3D.Geometry.Shapes.Triangle.drawTexture;
+        var i,tr = that.polygons,length=tr.length;
+        for(i=0;i<length;i++){
+          tr[i].draw = draw;
+        }
+      }
+    });
+    
+    return this;
   }  
 };
+
+N3D.Geometry.Shapes.prototype.drawToContext = function(ctx){
+  var render = ctx || this.parent.render;
+  var material = this.material;
+
+  var backface = render.backfaceCulling;
+  var newPoly = [];
+  var polygons = this.polygons;
+  var length = polygons.length;
+  var i;
+  
+  for(i=0;i<length;i++){
+    poly = polygons[i]; 
+    if(poly.projectSettings(backface) == true){
+      newPoly.push(poly);
+    }      
+  }
+  newPoly.sort(function sort(a,b){
+    return (b.depthInt - a.depthInt);
+  });
+  
+  length = newPoly.length;
+
+  for(i=0;i<length;i++){
+    newPoly[i].draw(render,this);
+  }
+
+  return this;  
+};
+
+N3D.Geometry.Shapes.LoaderJSON = function(url){
+  N3D.Geometry.Shapes.call(this);
+  var data = new N3D.Utils.Ajax({
+    url:url,
+    async:false
+  }).text; 
+  
+  data = data.match(/{([\s\S]+)}/gm)[0];
+  data = data.replace(/\n/g,'');
+  data = JSON.parse(data);
+  
+  //data = data.replace(/\s*\/\*([\s\S]+)\*\/\s*(?:var)\s*\w+\s*=\s*|\n+|\s\s+|;$/gm,'');
+  
+  //console.log(JSON.parse(data));  
+  
+  this.data = data; 
+};
+
+N3D.Geometry.Shapes.LoaderJSON.prototype = extend(N3D.Geometry.Shapes.LoaderJSON,N3D.Geometry.Shapes);
+N3D.Geometry.Shapes.LoaderJSON.prototype.init = function(){
+  var data = this.data;
+  
+  //console.log(data);
+  
+  var f0,f1,f2,v0,v1,v2;
+  var result, f_length;
+  var vt = [], vn = [], vp = [],
+      _vp = [], _vn = [], _vt = [],
+      w_ind = [], w_vp = [], w_vt = [], w_vn = [];
+     
+  if(N3D.Support.WebGL){
+    this.array_position = new Float32Array(data.vertices);
+    this.array_texture = new Float32Array(data.uvs);
+    this.array_normal = new Float32Array(data.normals);
+
+    this.array_indices = new Uint16Array(data.faces); 
+    this.indices_length = data.faces.length; 
+  } 
+};
+
 
 N3D.Geometry.Shapes.LoaderOBJ = function(url){
   N3D.Geometry.Shapes.call(this);
@@ -267,12 +313,12 @@ N3D.Geometry.Shapes.LoaderOBJ.prototype.init = function(){
     this.array_position = new Float32Array(w_vp);
     this.array_texture = new Float32Array(w_vt);
     this.array_normal = new Float32Array(w_vn);
-    
-      
-    
+
     this.array_indices = new Uint16Array(w_ind); 
     this.indices_length = w_ind.length; 
   }
+  
+  return this;
 };
 
 N3D.Geometry.Shapes.Cube = function(){
@@ -397,6 +443,11 @@ N3D.Geometry.Shapes.Triangle.prototype = {
     if(this.triangleSVG !== null){
       this.triangleSVG.setAttributeNS(null,'points',(v0.x*512)+" "+((1-v0.y)*512)+" "+(v1.x*512)+" "+((1-v1.y)*512)+" "+(v2.x*512)+" "+((1-v2.y)*512));
     }
+  },
+  setVertexColors:function(c0,c1,c2){
+    this.c0 = c0;
+    this.c1 = c1;
+    this.c2 = c2;
   },
   projectSettings:function(backface){
     var p0 = this.vp0,

@@ -466,9 +466,9 @@ N3D.Math.Matrix4.MultiplyTranspose = function(m1,m2){
 };
 
 N3D.Math.Matrix4.CreateLookAt = function(eye,target,up){
-  var f = $V3.Sub(eye,target).normalize();   //osa Z
-  var s = $V3.Cross(up,f).normalize();   //osa X
-  var u = $V3.Cross(f,s);   //osa Y
+  var f = $V3.Sub(eye,target).normalize(),   //osa Z
+      s = $V3.Cross(up,f).normalize(),   //osa X
+      u = $V3.Cross(f,s);   //osa Y
   
   return new this(
     s.x,  u.x,  f.x,  -eye.x,
@@ -479,8 +479,7 @@ N3D.Math.Matrix4.CreateLookAt = function(eye,target,up){
 };
 
 N3D.Math.Matrix4.CreateRotationX = function(r){
-  var c = Math.cos(r);
-  var s = Math.sin(r);
+  var c = Math.cos(r), s = Math.sin(r);
   
   return new this(
     1,0,0,0,
@@ -492,8 +491,7 @@ N3D.Math.Matrix4.CreateRotationX = function(r){
 
 
 N3D.Math.Matrix4.CreateRotationY = function(r){
-  var c = Math.cos(r);
-  var s = Math.sin(r);
+  var c = Math.cos(r), s = Math.sin(r);
   
   return new this(
     c,0,s,0,
@@ -503,14 +501,28 @@ N3D.Math.Matrix4.CreateRotationY = function(r){
   );
 };
 N3D.Math.Matrix4.CreateRotationZ = function(r){
-  var c = Math.cos(r);
-  var s = Math.sin(r);
+  var c = Math.cos(r), s = Math.sin(r);
   
   return new this(
     c,-s,0,0,
     s,c,0,0,
     0,0,1,0,
     0,0,0,1
+  );
+};
+
+N3D.Math.Matrix4.CreateRotationAroundAxis = function(r,v){
+  var c = Math.cos(r), s = Math.sin(r);
+  var x = v1.x,y = v1.y, z = v1.z,
+      t = 1-c,
+      xyt = x*y*t, xzt = x*z*t, yzt = y*z*t,
+      xs = x*s, ys = y*s, zs = z*s;
+  
+  return new this(
+    c+x*x*t, xyt-zs,  xzt+ys,  0,
+    xyt+zs,  c+y*y*t,  yzt-xs,  0,
+    xzt-ys,  yzt+xs,  c+z*z*t,  0,
+    0,        0,        0,        1
   );
 };
 
@@ -548,15 +560,31 @@ N3D.Math.Matrix4.CreateFrustum = function(left,right,bottom,top,near,far){
 
 N3D.Math.Matrix4.CreatePerspective = function(angle,aspectRatio,near,far){
   var scale = Math.tan(angle * $Math.PiOver360) * near,
+      right = aspectRatio * scale,
+      fn = far - near,
+      tb = scale + scale,
+      rl = right + right,
+      n2 = 2 * near;
+      
+  return new this(
+    n2/rl,  0,      (right-right)/rl,       0,
+    0,      n2/tb,  (scale-scale)/tb,       0,
+    0,      0,      -(far+near)/fn,         -1,
+    0,      0,      -n2*far/fn,             0
+  );
+};
+
+N3D.Math.Matrix4.CreatePerspective2 = function(angle,aspectRatio,near,far){
+  var scale = Math.tan(angle * $Math.PiOver360) * near,
       right = aspectRatio * scale;
 
   return this.CreateFrustum(-right,right,-scale,scale,near,far);
 };
 
 N3D.Math.Matrix4.CreateOrthographic = function(l,r,b,t,n,f){
-  var rl = (r - l),
-	    tb = (t - b),
-	    fn = (f - n);
+  var rl = r - l,
+	    tb = t - b,
+	    fn = f - n;
   
   return new this(
     2/rl,       0,          0,          0,

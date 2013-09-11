@@ -84,7 +84,18 @@ N3D.Math.Vector2.prototype = {
   },
   negative:function(){
     return this.scale(-1);
+  },
+  equals:function(v){
+    return (this.x == v.x && this.y == v.y);
+  },
+  distance:function(v){
+    var x = this.x-v.x;
+    var y = this.y-v.y;
+    return Math.sqrt(x*x + y*y);
   }  
+};
+N3D.Math.Vector2.Equals = function(){
+  return new this(0,0);
 };
 N3D.Math.Vector2.Identity = function(){
   return new this(0,0);
@@ -92,15 +103,32 @@ N3D.Math.Vector2.Identity = function(){
 N3D.Math.Vector2.Add = function(v1,v2){
   return new this(v2.x+v1.x,v2.y+v1.y);
 };
+
+N3D.Math.Vector2.MultiplyScalar = function(v,n){
+  return new this(v.x*n,v.y*n);
+};
 N3D.Math.Vector2.Dot = function(v1, v2){
   return (v1.x*v2.x + v1.y*v2.y);
 };
 N3D.Math.Vector2.Sub = function(v1,v2){
   return new this(v2.x-v1.x,v2.y-v1.y);
 };
+N3D.Math.Vector2.Distance = function(v1,v2){
+  var x = v1.x-v2.x, y = v1.y-v2.y;
+  return Math.sqrt(x*x+y*y);
+};
 N3D.Math.Vector2.Cross = function(v1,v2){
   return new this(
-    v1.x*v2.y - v1.y*v2.x
+    v1.x*v2.y - v1.y*v2.x,
+    v2.x*v1.y - v2.y*v1.x
+  );
+};
+
+N3D.Math.Vector2.Lerp = function(v1,v2,a){
+  return new this(
+    v1.x + (v2.x-v1.x) * a,
+    v1.y + (v2.y-v1.y) * a,
+    v1.z + (v2.z-v1.z) * a
   );
 };
 

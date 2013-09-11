@@ -76,14 +76,21 @@ N3D.Math.Vector3.prototype = {
     this.z *= -1;
     return this;
   },
-  rotateYaw:function(angle){
-    var x = this.x, y = this.y;
+  rotateY:function(angle){
+    var x = this.x, z = this.z;
     
-    var cos = Math.cos(angle);
-    var sin = Math.sin(angle);
+    var c = Math.cos(angle),
+        s = Math.sin(angle);
     
-    this.x = x*cos - y*sin;
-    this.y = x*sin + y*cos;
+    this.x = z*s + x*c;
+    this.z = z*c - x*s;    
+    
+    return this;
+  },
+  rounded:function(){
+    this.x = ~~this.x;
+    this.y = ~~this.y;
+    this.z = ~~this.z;
     
     return this;
   },
@@ -103,30 +110,30 @@ N3D.Math.Vector3.Forward = new N3D.Math.Vector3(0,0,-1);
 
 N3D.Math.Vector3.Lerp = function(v1,v2,a){
   return new this(
-    MathHelper.Lerp(v1.x, v2.x, a),
-    MathHelper.Lerp(v1.y, v2.y, a),
-    MathHelper.Lerp(v1.z, v2.z, a)
+    $Math.Lerp(v1.x, v2.x, a),
+    $Math.Lerp(v1.y, v2.y, a),
+    $Math.Lerp(v1.z, v2.z, a)
   );
 };
 N3D.Math.Vector3.Max = function(v1,v2){
   return new this(
-    MathHelper.Max(v1.x, v2.x),
-    MathHelper.Max(v1.y, v2.y),
-    MathHelper.Max(v1.z, v2.z)
+    $Math.Max(v1.x, v2.x),
+    $Math.Max(v1.y, v2.y),
+    $Math.Max(v1.z, v2.z)
   );
 };
 N3D.Math.Vector3.Min = function(v1,v2){
   return new this(
-    MathHelper.Min(v1.x, v2.x),
-    MathHelper.Min(v1.y, v2.y),
-    MathHelper.Min(v1.z, v2.z)
+    $Math.Min(v1.x, v2.x),
+    $Math.Min(v1.y, v2.y),
+    $Math.Min(v1.z, v2.z)
   );
 };
 N3D.Math.Vector3.Herminte = function(v1,t1,v2,t2,a){
   return new this(
-    MathHelper.Hermite(v1.x, t1.x, v2.x, t2.x, a),
-    MathHelper.Hermite(v1.y, t1.y, v2.y, t2.y, a),
-    MathHelper.Hermite(v1.z, t1.z, v2.z, t2.z, a)
+    $Math.Hermite(v1.x, t1.x, v2.x, t2.x, a),
+    $Math.Hermite(v1.y, t1.y, v2.y, t2.y, a),
+    $Math.Hermite(v1.z, t1.z, v2.z, t2.z, a)
   );   
 };
 N3D.Math.Vector3.isZero = function(v){
@@ -153,25 +160,25 @@ N3D.Math.Vector3.Cross = function(v1, v2){
 };
 N3D.Math.Vector3.BaryCentric = function(v1,v2,v3,a1,a2,r){
   return new this(
-    MathHelper.Barycentric(v1.x, v2.x, v3.x, a1, a2),
-    MathHelper.Barycentric(v1.y, v2.y, v3.y, a1, a2),
-    MathHelper.Barycentric(v1.z, v2.z, v3.z, a1, a2)
+    $Math.Barycentric(v1.x, v2.x, v3.x, a1, a2),
+    $Math.Barycentric(v1.y, v2.y, v3.y, a1, a2),
+    $Math.Barycentric(v1.z, v2.z, v3.z, a1, a2)
   );
 };
 
 N3D.Math.Vector3.CatmullRom = function(v1,v2,v3,v4,a,r){
   return new this(
-    MathHelper.CatmullRom(v1.x, v2.x, v3.x, v4.x, a),
-    MathHelper.CatmullRom(v1.y, v2.y, v3.y, v4.y, a),
-    MathHelper.CatmullRom(v1.z, v2.z, v3.z, v4.z, a)
+    $Math.CatmullRom(v1.x, v2.x, v3.x, v4.x, a),
+    $Math.CatmullRom(v1.y, v2.y, v3.y, v4.y, a),
+    $Math.CatmullRom(v1.z, v2.z, v3.z, v4.z, a)
   );
 };
 
 N3D.Math.Vector3.Clamp = function(v1, min, max){
   return new this(
-    MathHelper.Clamp(v1.x, min.x, max.x),
-    MathHelper.Clamp(v1.y, min.y, max.y),
-    MathHelper.Clamp(v1.z, min.z, max.z)
+    $Math.Clamp(v1.x, min.x, max.x),
+    $Math.Clamp(v1.y, min.y, max.y),
+    $Math.Clamp(v1.z, min.z, max.z)
   );
 };
 N3D.Math.Vector3.Dot = function(v1, v2){
@@ -185,6 +192,14 @@ N3D.Math.Vector3.Reflect = function(v,n){
     v.z - dT * n.z
   );
 };
+N3D.Math.Vector3.Add = function(v0,v1){
+  return new this(
+    v0.x+v1.x,
+    v0.y+v1.y,
+    v0.z+v1.z  
+  );
+};
+
 N3D.Math.Vector3.Sub = function(v0,v1){
   return new this(
     v0.x-v1.x,
@@ -192,11 +207,18 @@ N3D.Math.Vector3.Sub = function(v0,v1){
     v0.z-v1.z  
   );
 };
+N3D.Math.Vector3.MultiplyScalar = function(v0,n){
+  return new this(
+    v0.x*n,
+    v0.y*n,
+    v0.z*n  
+  );
+};
 
 N3D.Math.Vector3.SmoothStep = function(v1,v2,a){
   return new this(
-    MathHelper.SmoothStep(v1.x, v2.x, a),
-    MathHelper.SmoothStep(v1.y, v2.y, a),
-    MathHelper.SmoothStep(v1.z, v2.z, a)
+    $Math.SmoothStep(v1.x, v2.x, a),
+    $Math.SmoothStep(v1.y, v2.y, a),
+    $Math.SmoothStep(v1.z, v2.z, a)
   );
 };

@@ -157,7 +157,14 @@ N3D.Math.Vector4.Multiply = function(v1,v2){
 N3D.Math.Vector4.Equals = function(v){
   return v instanceof this;
 };
-
+N3D.Math.Vector4.Add = function(v1,v2){
+  return new this(
+    v1.x+v2.x,
+    v1.y+v2.y,
+    v1.z+v2.z,
+    v1.w+v2.w
+  );
+};
 N3D.Math.Vector4.Sub = function(v1,v2){
   return new this(
     v1.x-v2.x,
