@@ -513,7 +513,7 @@ N3D.Math.Matrix4.CreateRotationZ = function(r){
 
 N3D.Math.Matrix4.CreateRotationAroundAxis = function(r,v){
   var c = Math.cos(r), s = Math.sin(r);
-  var x = v1.x,y = v1.y, z = v1.z,
+  var x = v.x,y = v.y, z = v.z,
       t = 1-c,
       xyt = x*y*t, xzt = x*z*t, yzt = y*z*t,
       xs = x*s, ys = y*s, zs = z*s;
