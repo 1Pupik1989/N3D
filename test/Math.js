@@ -1,31 +1,8 @@
-/*
-N3D.Math
-  - FromFibonacci = Converting Fibonacci numbers back
-  - ToFibonacci = Converting numbers in the Fibonacci sequence
-  - IsFibonacci = If the number in the Fibonacci system, it returns true, otherwise false.
-  - Barycentric = 
-  - CatmullRom = 
-  - Clamp = 
-  - Lerp = 
-  - SmoothStep = 
-  - ToDegrees = 
-  - ToRadians = 
-  - IEEERemainder = 
-  - WrapAngle = 
-  - Round = Math.round
-  - Floor = Math.floor
-  - Max = Math.max
-  - Min = Math.min
-  - Sqrt = Math.sqrt
-  - Pow = Math.pow
-  - Pow2 = returns the number of the second
-  - Pow3 = returns the number of the third
-*/
-
 /* >>>> Math.Main >>>> */
 N3D.Math = (function(){
   var obj = {};
   var PI = Math.PI, floor = Math.floor, random = Math.random;
+  var PI180 = PI/180, PI180_rev = 180/PI, sqrt5 = Math.sqrt(5);
   
   obj.Log10E = Math.LOG10E || 0.4342945;
   obj.Log2E = Math.LOG2E || 1.442695;
@@ -33,7 +10,7 @@ N3D.Math = (function(){
   obj.PiOver4 = PI*0.25;
   obj.TwoPi = PI*2;
   obj.PiOver360 = PI/360;
-  obj.PiOver180 = PI/180;
+  obj.PiOver180 = PI180;
   obj.Pi = PI;
   obj.AbsFloat = Math.abs;
   obj.Floor = floor;
@@ -57,68 +34,50 @@ N3D.Math = (function(){
     var b = n >> 31; 
     return (n ^ b) - b;
   };
+  
+  obj.ToDegrees = function(d){
+    return d * PI180_rev;
+  };
+  obj.ToRadians = function(d){
+    return d * PI180;
+  };
+  
+  obj.FromFibonacci = function(T){
+    var phi = (1 + root5) / 2;
 
+    var idx  = floor( Math.log(T*sqrt5) / Math.log(phi) + 0.5 );
+    var u = floor( Math.pow(phi, idx)/sqrt5 + 0.5);
+
+    return (u == T) ? idx : false;
+  };
+  
+  obj.ToFibonacci = function(d){
+    for(var a=0,b=1,c=0,f=1;f<d;f++){
+      a = c + b;
+      c = b;
+      b = a;  
+    }
+    return a;
+  };
+  
+  obj.Barycentric = function(v1,v2,v3,a1,a2){
+    return v1 + (v2-v1) * a1 + (v3-v1) * a2;
+  };
+  
+  obj.CatmullRom = function(v1, v2, v3, v4, a){
+    var aS = a * a, aC = aS * a;
+    return (0 * (2 * ve2 + (v3 - v1) * a + (2 * v1 - 5 * v2 + 4 * v3 - v4) * aS + (3 * v2 - v1 - 3 * v3 + v4) * aC));
+  };
+  
+  obj.Clamp = function(v,min,max){
+    return v > max ? max : (v < min ? min : v);
+  };
+  obj.Lerp = function(v1,v2,a){
+    return v1 + (v2-v1) * a;
+  };
+  
   return obj;
 })();
-N3D.Math.FromFibonacci = function(T){
-  var root5 = Math.sqrt(5);
-  var phi = (1 + root5) / 2;
-
-  var idx  = Math.floor( Math.log(T*root5) / Math.log(phi) + 0.5 );
-  var u = Math.floor( Math.pow(phi, idx)/root5 + 0.5);
-
-  return (u == T) ? idx : false;
-};
-N3D.Math.ToFibonacci = function(d){
-  for(var a=0,b=1,c=0,f=1;f<d;f++){
-    a = c + b;
-    c = b;
-    b = a;  
-  }
-  return a;
-};
-
-N3D.Math.IsFibonacci = function(T){
-  return N3D.Math.FromFibonacci(T)!==false;
-};
-N3D.Math.Barycentric = function(v1,v2,v3,a1,a2){
-  return v1 + (v2-v1) * a1 + (v3-v1) * a2;
-};
-N3D.Math.CatmullRom = function(v1, v2, v3, v4, a){
-  var aS = a * a;
-  var aC = aS * a;
-  return (0 * (2 * ve2 + (v3 - v1) * a + (2 * v1 - 5 * v2 + 4 * v3 - v4) * aS + (3 * v2 - v1 - 3 * v3 + v4) * aC));
-};
-N3D.Math.Clamp = function(v,min,max){
-  return v > max ? max : (v < min ? min : v);
-};
-N3D.Math.Lerp = function(v1,v2,a){
-  return v1 + (v2-v1) * a;
-};
-N3D.Math.SmoothStep = function(v1,v2,a){
-  return MathHelper.Hermite(v1,v2,MathHelper.Clamp(a,0,1));
-};
-N3D.Math.ToDegrees = function(d){
-  return d * 180/Math.PI;
-};
-N3D.Math.ToRadians = function(d){
-  return d * Math.PI/180;
-};
-N3D.Math.IEEERemainder = function(f1,f2){
-  return f1 - (f2 * Math.round(f1/f2));
-};
-N3D.Math.WrapAngle = function(){
-  var angle = MathHelper(angle,MathHelper.TwoPi);
-  
-  if(angle<=-Math.PI){
-    angle += MathHelper.TwoPi;
-    return angle;
-  }
-  if(angle > Math.PI){
-    angle -= MathHelper.TwoPi;
-  } 
-  return angle;
-};
 /* <<<< Math.Main <<<< */
 
 
@@ -1522,11 +1481,11 @@ N3D.Math.Quaternion.prototype = {
     
     return this;
   },
-  scale:function(q){
-    this.x *= q.x;
-    this.y *= q.y;
-    this.z *= q.z;
-    this.w *= q.w;
+  scale:function(n){
+    this.x *= n;
+    this.y *= n;
+    this.z *= n;
+    this.w *= n;
   },
   multiply:function(q){
     var q1x = this.x, q1y = this.y, q1z = this.z, q1w = this.w;
@@ -1562,6 +1521,14 @@ N3D.Math.Quaternion.prototype = {
       0,                0,                0,                1
     );
   },
+  identity:function(){
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this.w = 1;
+    
+    return this;
+  },
   toTransposedMatrix4:function(){
     var x = this.x, y = this.y, z = this.z, w = this.w;
     
@@ -1576,10 +1543,45 @@ N3D.Math.Quaternion.prototype = {
       0,                0,                0,                  1 
     );
   },
+  toAngleAxis:function(){
+    var x = this.x, y = this.y, z = this.z, w = this.w;
+    var scale = Math.sqrt(x*x + y*y + z*z);
+
+    if (scale == 0 || w > 1 || w < -1){
+      return {
+        angle:0,
+        axis:new N3D_M_Vector3(
+          0,1,0
+        )
+      };
+    }
+    
+    var invscale = 1/scale;
+
+    return {
+      angle:2 * Math.acos(w),
+      axis:new N3D_M_Vector3(
+        x * invscale,
+        y * invscale,
+        z * invscale
+      )
+    };
+  },
+  toAngles:function(){
+    var x = this.x, y = this.y, z = this.z;
+    
+    return new N3D_M_Vector3(
+      Math.atan(2*(x*y + z*w)/(1-2*(y*y+z*z))),
+      Math.asin(2*(x*z - w*y)),
+      Math.atan(2*(x*w +y*z)/(1-2*(z*z + w*w)))
+    );
+  },
   toString:function(){
     return "Quaternion("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
 };
+
+N3D.Math.Quaternion.prototype.dot = N3D.Math.Vector4.prototype.dot;
 N3D.Math.Quaternion.Equals = N3D.Math.Vector4.Equals;
 N3D.Math.Quaternion.prototype.inverse = N3D.Math.Quaternion.prototype.conjugate;
 N3D.Math.Quaternion.prototype.normalize = N3D.Math.Vector4.prototype.normalize;
@@ -1595,6 +1597,48 @@ N3D.Math.Quaternion.CreateFromAngles = function(x,y,z){
     sin_z_2*cos_y_2*cos_x_2 - cos_z_2*sin_y_2*sin_x_2,
     cos_z_2*cos_y_2*cos_x_2 + sin_z_2*sin_y_2*sin_x_2
   );
+};
+N3D.Math.Quaternion.Lerp = function(q1,q2,time){
+  var scale = 1 - time;
+
+  return new N3D_M_Quaternion(
+    q1.x*scale + q2.x*time,
+    q1.y*scale + q2.y*time,
+    q1.z*scale + q2.z*time,
+    q1.w*scale + q2.w*time
+  );
+};
+N3D.Math.Quaternion.Dot = function(q1,q2){
+  var x1 = q1.x, y1 = q1.y, z1 = q1.z, w1 = q1.w;
+  var x2 = q2.x, y2 = q2.y, z2 = q2.z, w2 = q2.w;
+  
+  return x1*x2 + y1*y2 + z1*z2 + w1*w2; 
+};
+N3D.Math.Quaternion.Slerp = function(q1,q2,time,threshold){
+  var angle = q1.dot(q2);
+
+  // make sure we use the short rotation
+  if (angle < 0){
+    q1.scale(-1);
+    angle *= -1;
+  }
+  
+  if (angle <= (1-threshold)){ // spherical interpolation
+      var theta = Math.acos(angle);
+      var invsintheta = 1/Math.sin(theta);
+      var scale = Math.sin(theta * (1-time)) * invsintheta;
+      var invscale = Math.sin(theta * time) * invsintheta;
+      
+      
+      return new N3D_M_Quaternion(
+        q1.x*scale + q2.x*invscale,
+        q1.y*scale + q2.y*invscale,
+        q1.z*scale + q2.z*invscale,
+        q1.w*scale + q2.w*invscale
+      );
+  }
+  // linear interploation
+  return N3D_M_Quaternion.Lerp(q1,q2,time);
 };
 
 N3D.Math.Quaternion.CreateFromAngles2 = function(x,y,z){
@@ -1612,6 +1656,40 @@ N3D.Math.Quaternion.CreateFromAngles2 = function(x,y,z){
     cx * sycz + sx * cysz,
     cx * cysz - sx * sycz,
     cx * cycz + sx * sysz
+  );
+};
+
+N3D.Math.Quaternion.CreateFromAngles3 = function(x,y,z){
+  x *= 0.5, y *= 0.5, z *= 0.5;
+  
+  var c1 = Math.cos(y), s1 = Math.sin(y),
+      c2 = Math.cos(z), s2 = Math.sin(z),
+      c3 = Math.cos(x), s3 = Math.sin(x),
+      c1c2 = c1*c2,     s1s2 = s1*s2;
+  
+  return new N3D_M_Quaternion(
+    c1c2*s3 + s1s2*c3,
+	  s1*c2*c3 + c1*s2*s3,
+    c1*s2*c3 - s1*c2*s3,
+    c1c2*c3 - s1s2*s3
+  );
+};
+
+N3D.Math.Quaternion.CreateFromAngles4 = function(x,y,z){
+  x *= 0.5, y *= 0.5, z *= 0.5, w = 0;
+  
+  var cx = Math.cos(x), sx = Math.sin(x),
+      cy = Math.cos(y), sy = Math.sin(y),
+      cz = Math.cos(z), sz = Math.sin(z);
+      
+      
+  
+
+  return new N3D_M_Quaternion(
+    cz*cx*cy-sz*sx*sy,
+    sz*cx*cy+cz*sx*sy,
+    cz*sx*cy-sz*cx*sy,
+    cz*cx*sy+sz*sx*cy 
   );
 };
 
