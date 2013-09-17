@@ -321,115 +321,7 @@ N3D.Math.Matrix3.Inverse = function(m){
 /* <<<< Math.Matrix3 <<<< */
 
 
-/* >>>> Math.MAtrix4 >>>> */
-/*
-00,04,08,12,
-01,05,09,13,
-02,06,10,14,
-03,07,11,15
-
-Vektory - sloupcové
-Column Major
-
-Vysvětlení funkcí:
-
-N3D.Math.Matrix4
-  - Identity = Vytvoří novou identickou matici
-  - Multiply = Vynásobí dvě matice "C = A*B"
-  - MultiplyTranspose = Vynásobí dvě matice transponovaně "C = B*A"
-  - CreateLookAt = Vytvoří View matici
-  - CreateRotationX = Vytvoří matici rotace na ose X
-  - CreateRotationY = Vytvoří matici rotace na ose Y
-  - CreateRotationZ = Vytvoří matici rotace na ose Z
-  - CreateScale = Vytvoří matici pro změnu měřítek
-  - CreateTranslate = Vytvoří matici posunu
-  - CreateFrustum = Vytvoří Viewing frustum
-  - CreatePerspektive = Vytvoří matici perspektivní projekce 
-  - CreateOrthographic = Vytvoří matici orthografické projekce
-  
-  - constructor 
-    - clone = Vytvoří kopii sama sebe
-    - inverse = Přepočítá se do inversního stavu
-    - multiply = Vynásobí sama sebe maticí C = A*B
-    - multiplyTranspose = Vynásobí sama sebe maticí, ale transponovaně C = B*A
-    - mutliplyVector4 = Násobí svoje hodnoty vektor a vrátí nový
-    - rotateX = Otočí se o stanovený počet radiánů na ose X
-    - rotateY = Otočí se o stanovený počet radiánů na ose Y
-    - rotateZ = Otočí se o stanovený počet radiánů na ose Z
-    - scale = Změní svoje měřítko
-    - translate = Posune se o x,y a z jednotek
-    - transpose = Otočí svoje prvky kolem diagonály
-    - toString = Vypíše se jako string 
-
-
-Vstupní parametry:
-
-N3D.Math.Matrix4
-  - Identity = -- žádný --
-  - Multiply 
-    - (Matrix4 m1) = Matice 4x4
-    - (Matrix4 m2) = Matice 4x4
-  - MultiplyTranspose 
-    - (Matrix4 m1) = Matice 4x4
-    - (Matrix4 m2) = Matice 4x4
-  - CreateLookAt
-    - (Vector3 eye) = Pozice kamery
-    - (Vector3 target) = Kam se kamera kouká  
-    - (Vector3 up) = Vektor směřující nahoru 
-  - CreateRotationX
-    - (Float radians) = Úhel otočení v radiánech
-  - CreateRotationY
-    - (Float radians) = Úhel otočení v radiánech
-  - CreateRotationZ
-    - (Float radians) = Úhel otočení v radiánech
-  - CreateScale
-    - (Float x) = Hodnota změny měřítka na ose X
-    - (Float y) = Hodnota změny měřítka na ose Y
-    - (Float z) = Hodnota změny měřítka na ose Z
-  - CreateTranslate
-    - (Float x) = Hodnota posunu na ose X
-    - (Float y) = Hodnota posunu na ose Y
-    - (Float z) = Hodnota posunu na ose Z
-  - CreateFrustum
-    - (Float left) = Levá strana frusta
-    - (Float right) = Pravá strana frusta
-    - (Float bottom) = Spodní strana frusta
-    - (Float top) = Horní strana frusta
-    - (Float near) = Přední strana frusta
-    - (Float far) = Zadní strana frusta
-  - CreatePerspektive = 
-    - (Int fov) = Úhel vodorovněho zobrazení ve stupních
-    - (Float aspectRatio) = Poměr stran zobrazení (šířka/výška)
-    - (Float near) = Přední strana dohledu (frusta)
-    - (Float far) = Zadní strana dohledu (frusta)
-  - CreateOrthographic = Identické s "CreateFrustum"
-  
-  - constructor 
-    - clone = -- žádný --
-    - inverse = -- žádný --
-    - multiply
-      - (Matrix4 m2) = Matice 4x4
-    - multiplyTranspose
-      - (Matrix4 m2) = Matice 4x4
-    - mutliplyVector4
-      - (Vector4 v) = Čtyřsložkový vektor
-    - rotateX
-      - (Float radians) = Úhel otočení v radiánech
-    - rotateY
-      - (Float radians) = Úhel otočení v radiánech
-    - rotateZ
-      - (Float radians) = Úhel otočení v radiánech
-    - scale
-      - (Float x) = Hodnota změny měřítka na ose X
-      - (Float y) = Hodnota změny měřítka na ose Y
-      - (Float z) = Hodnota změny měřítka na ose Z
-    - translate
-      - (Float x) = Hodnota posunu na ose X
-      - (Float y) = Hodnota posunu na ose Y
-      - (Float z) = Hodnota posunu na ose Z
-    - transpose = -- žádný --
-    - toString = -- žádný --
-*/
+/* >>>> Math.Matrix4 >>>> */
 N3D.Math.Matrix4 = function(a00,a04,a08,a12,
                             a01,a05,a09,a13,
                             a02,a06,a10,a14,
@@ -727,6 +619,65 @@ N3D.Math.Matrix4.prototype = {
     
     return this;  
   },
+  toQuaternion:function(){
+    var m = this.elements, 
+        m00 = m[0],  m04 = m[4],  m08 = m[8],
+        m01 = m[1],  m05 = m[5],  m09 = m[9],
+        m02 = m[2],  m06 = m[6],  m10 = m[10];
+    var max = Math.max, sqrt = Math.sqrt;
+    
+    return new N3D_M_Quaternion(
+      sqrt(max(0,1+m00-m05-m10))*0.5, //sqrt( max( 0, 1 + m00 - m11 - m22 ) ) / 2;
+      sqrt(max(0,1-m00+m05-m10))*0.5, //sqrt( max( 0, 1 - m00 + m11 - m22 ) ) / 2;
+      sqrt(max(0,1-m00-m05+m10))*0.5, //sqrt( max( 0, 1 - m00 - m11 + m22 ) ) / 2;
+      sqrt(max(0,1+m00+m05+m10))*0.5  //sqrt( max( 0, 1 + m00 + m11 + m22 ) ) / 2;
+    ); 
+    
+    /*    
+    var trace = m[0] + m[5] + m[10];
+    var s;
+    
+    if(trace>0){
+      s = 0.5/Math.sqrt(trace+1);
+
+      return new N3D_M_Vector4(
+        (m[9] - m[6]) * s,
+        (m[2] - m[8]) * s,
+        (m[4] - m[1]) * s,
+        0.25 / s
+      );
+    }else if((m00>m05) && (m00>m10)){
+      s = 0.5/Math.sqrt(1 + m00 - m05 - m10)
+
+      return new N3D_M_Vector4(
+        0.25 / s,
+        (m01 + m04) * s,
+        (m02 + m08) * s,
+        (m09 - m06) * s        
+      );
+      
+    }else if(m05 > m10){
+      s = 0.5/Math.sqrt(1 + m05 - m00 - m10);
+      
+      return new N3D_M_Vector4(
+        (m01 + m04) * s,
+        0.25 / s,
+        (m06 + m09) * s,
+        (m02 - m08) * s
+      );
+       
+    }
+    
+    
+    s = 0.5/Math.sqrt(1+m10 - m00 - m05);
+    return new N3D_M_Vector4(
+      (m02 + m08) * s,
+      (m06 + m09) * s,
+      0.25 / s,
+      (m04 - m01) * s
+    );
+    */    
+  },
   toString:function(){
     var e = this.elements;
     return '01: '+e[0].toFixed(3)+', 04: '+e[4].toFixed(3)+', 08: '+e[8].toFixed(3)+', 12: '+e[12].toFixed(3) + '\n' + 
@@ -1012,7 +963,7 @@ N3D.Math.Vector2.prototype = {
     
     return this;  
   },
-  multiplyScalar:function(n){
+  scale:function(n){
     this.x *= n;
     this.y *= n;
     
@@ -1041,12 +992,6 @@ N3D.Math.Vector2.prototype = {
     this.y /= v.y;
     
     return this;  
-  },
-  divideScalar:function(n){
-    this.x /= n;
-    this.y /= n;
-    
-    return this;
   },
   rotate:function(angle){
     var x = this.x, y = this.y;
@@ -1147,14 +1092,14 @@ N3D.Math.Vector3.prototype = {
     
     return this;
   },
-  scale:function(v){
+  multiply:function(v){
     this.x *= v.x;
     this.y *= v.y;
     this.z *= v.z;
     
     return this;
   },
-  multiplyScalar:function(n){
+  scale:function(n){
     this.x *= n;
     this.y *= n;
     this.z *= n;
@@ -1420,7 +1365,7 @@ N3D.Math.Vector4.prototype = {
     
     return this;
   },
-  multiplyScalar:function(n){
+  scale:function(n){
     this.x *= n;
     this.y *= n;
     this.z *= n;
@@ -1495,7 +1440,7 @@ N3D.Math.Vector4.prototype = {
     return false;
   },
   toString:function(){
-    return "N3D.Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
+    return "Vector4("+this.x+","+this.y+","+this.z+","+this.w+")";
   }
 };
 N3D.Math.Vector4.Identity = function(){
@@ -1562,9 +1507,129 @@ N3D.Math.Vector4.Projection = function(p,viewport){
 }; 
 /* <<<< Math.Vector4 <<<< */
 
+/* >>>> Math.Quaternion >>>> */
+N3D.Math.Quaternion = function(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+};
+N3D.Math.Quaternion.prototype = {
+  conjugate:function(){
+    this.x *= -1;
+    this.y *= -1;
+    this.z *= -1;
+    
+    return this;
+  },
+  scale:function(q){
+    this.x *= q.x;
+    this.y *= q.y;
+    this.z *= q.z;
+    this.w *= q.w;
+  },
+  multiply:function(q){
+    var q1x = this.x, q1y = this.y, q1z = this.z, q1w = this.w;
+    var q2x = q.x, q2y = q.y, q2z = q.z, q2w = q.w;
+    
+    this.x =  q1x * q2w + q1y * q2z - q1z * q2y + q1w * q2x;
+    this.y = -q1x * q2z + q1y * q2w + q1z * q2x + q1w * q2y;
+    this.z =  q1x * q2y - q1y * q2x + q1z * q2w + q1w * q2z;
+    this.w = -q1x * q2x - q1y * q2y - q1z * q2z + q1w * q2w;
+    
+    return this;
+  },
+  add:function(q){
+    this.x += q.x;
+    this.y += q.y;
+    this.z += q.z;
+    this.w += q.w;
+    
+    return this;
+  },
+  toMatrix4:function(){
+    var x = this.x, y = this.y, z = this.z, w = this.w;
+    
+    var xx = x*x, xy = x*y, xz = x*z, xw = x*w;
+    var yy = y*y, yz = y*z, yw = y*w;
+    var zz = z*z, zw = z*w;
+
+    
+    return new N3D_M_Matrix4(
+      1 - 2*yy - 2*zz,  2*xy - 2*zw,      2*xz + 2*yw,      0,
+      2*xy + 2*zw,      1 - 2*xx - 2*zz,  2*yz - 2*xw,      0,
+      2*xz - 2*yw,      2*yz + 2*xw,      1 - 2*xx - 2*yy,  0,
+      0,                0,                0,                1
+    );
+  },
+  toTransposedMatrix4:function(){
+    var x = this.x, y = this.y, z = this.z, w = this.w;
+    
+    var xx = x*x, xy = x*y, xz = x*z, xw = x*w;
+    var yy = y*y, yz = y*z, yw = y*w;
+    var zz = z*z, zw = z*w;
+    
+    return new N3D_M_Matrix4(
+      1 - 2*yy - 2*zz,  2*xy + 2*zw,      2*xz - 2*yw,        0,
+      2*xy - 2*zw,      1 - 2*xx - 2*zz,  2*yz + 2*xw,        0,
+      2*xz + 2*yw,      2*yz - 2*xw,      1 - 2*xx - 2*yy,    0,
+      0,                0,                0,                  1 
+    );
+  },
+  toString:function(){
+    return "Quaternion("+this.x+","+this.y+","+this.z+","+this.w+")";
+  }
+};
+N3D.Math.Quaternion.Equals = N3D.Math.Vector4.Equals;
+N3D.Math.Quaternion.prototype.inverse = N3D.Math.Quaternion.prototype.conjugate;
+N3D.Math.Quaternion.prototype.normalize = N3D.Math.Vector4.prototype.normalize;
+N3D.Math.Quaternion.CreateFromAngles = function(x,y,z){
+  var cos_z_2 = Math.cos(0.5*z),
+	    cos_y_2 = Math.cos(0.5*y),
+	    cos_x_2 = Math.cos(0.5*x),
+
+	    sin_z_2 = Math.sin(0.5*z),
+	    sin_y_2 = Math.sin(0.5*y),
+	    sin_x_2 = Math.sin(0.5*x);
+
+	var s = cos_z_2*cos_y_2*cos_x_2 + sin_z_2*sin_y_2*sin_x_2;
+  
+  return new N3D_M_Quaternion(
+    cos_z_2*cos_y_2*sin_x_2 - sin_z_2*sin_y_2*cos_x_2,
+    cos_z_2*sin_y_2*cos_x_2 + sin_z_2*cos_y_2*sin_x_2,
+    sin_z_2*cos_y_2*cos_x_2 - cos_z_2*sin_y_2*sin_x_2,
+    s
+  );
+};
+
+N3D.Math.Quaternion.CreateFromAngles2 = function(x,y,z){
+  var angle = x * 0.5;
+  var sr = Math.sin(angle), cr = Math.cos(angle);
+
+  angle = y * 0.5;
+  sp = Math.sin(angle), cp = Math.cos(angle);
+
+  angle = z * 0.5;
+  sy = Math.sin(angle), cy = Math.cos(angle);
+
+  var cpcy = cp * cy, spcy = sp * cy,
+      cpsy = cp * sy, spsy = sp * sy;
+
+
+  
+  return new N3D_M_Quaternion(
+    sr * cpcy - cr * spsy,
+    cr * spcy + sr * cpsy,
+    cr * cpsy - sr * spcy,
+    cr * cpcy + sr * spsy
+  );
+};
+
+
 N3D_M = N3D.Math;
 $M4 = N3D_M_Matrix4 = N3D.Math.Matrix4; 
 $M3 = N3D_M_Matrix3 = N3D.Math.Matrix3;
 $V2 = N3D_M_Vector2 = N3D.Math.Vector2;
 $V3 = N3D_M_Vector3 = N3D.Math.Vector3; 
-$V4 = N3D_M_Vector4 = N3D.Math.Vector4; 
+$V4 = N3D_M_Vector4 = N3D.Math.Vector4;
+N3D_M_Quaternion = N3D.Math.Quaternion; 
