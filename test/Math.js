@@ -1584,44 +1584,34 @@ N3D.Math.Quaternion.Equals = N3D.Math.Vector4.Equals;
 N3D.Math.Quaternion.prototype.inverse = N3D.Math.Quaternion.prototype.conjugate;
 N3D.Math.Quaternion.prototype.normalize = N3D.Math.Vector4.prototype.normalize;
 N3D.Math.Quaternion.CreateFromAngles = function(x,y,z){
-  var cos_z_2 = Math.cos(0.5*z),
-	    cos_y_2 = Math.cos(0.5*y),
-	    cos_x_2 = Math.cos(0.5*x),
-
-	    sin_z_2 = Math.sin(0.5*z),
-	    sin_y_2 = Math.sin(0.5*y),
-	    sin_x_2 = Math.sin(0.5*x);
-
-	var s = cos_z_2*cos_y_2*cos_x_2 + sin_z_2*sin_y_2*sin_x_2;
+  x *= 0.5, y *= 0.5, z *= 0.5;
+  var cos_x_2 = Math.cos(x), sin_x_2 = Math.sin(x),
+      cos_y_2 = Math.cos(y), sin_y_2 = Math.sin(y),
+      cos_z_2 = Math.cos(z), sin_z_2 = Math.sin(z);
   
   return new N3D_M_Quaternion(
     cos_z_2*cos_y_2*sin_x_2 - sin_z_2*sin_y_2*cos_x_2,
     cos_z_2*sin_y_2*cos_x_2 + sin_z_2*cos_y_2*sin_x_2,
     sin_z_2*cos_y_2*cos_x_2 - cos_z_2*sin_y_2*sin_x_2,
-    s
+    cos_z_2*cos_y_2*cos_x_2 + sin_z_2*sin_y_2*sin_x_2
   );
 };
 
 N3D.Math.Quaternion.CreateFromAngles2 = function(x,y,z){
-  var angle = x * 0.5;
-  var sr = Math.sin(angle), cr = Math.cos(angle);
-
-  angle = y * 0.5;
-  sp = Math.sin(angle), cp = Math.cos(angle);
-
-  angle = z * 0.5;
-  sy = Math.sin(angle), cy = Math.cos(angle);
-
-  var cpcy = cp * cy, spcy = sp * cy,
-      cpsy = cp * sy, spsy = sp * sy;
-
-
+  x *= 0.5, y *= 0.5, z *= 0.5;
+  
+  var sx = Math.sin(x), cx = Math.cos(x),
+      sy = Math.sin(y), cy = Math.cos(y),
+      sz = Math.sin(z), cz = Math.cos(z),
+      
+      cycz = cy * cz, sycz = sy * cz,
+      cysz = cy * sz, sysz= sy * sz;
   
   return new N3D_M_Quaternion(
-    sr * cpcy - cr * spsy,
-    cr * spcy + sr * cpsy,
-    cr * cpsy - sr * spcy,
-    cr * cpcy + sr * spsy
+    sx * cycz - cx * sysz,
+    cx * sycz + sx * cysz,
+    cx * cysz - sx * sycz,
+    cx * cycz + sx * sysz
   );
 };
 
