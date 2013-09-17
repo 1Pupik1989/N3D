@@ -780,9 +780,7 @@ N3D.Math.Matrix4.Multiply = function(m1,m2){
     m1_04*m2_03 + m1_05*m2_07 + m1_06*m2_11 + m1_07*m2_15,
     m1_08*m2_03 + m1_09*m2_07 + m1_10*m2_11 + m1_11*m2_15,
     m1_12*m2_03 + m1_13*m2_07 + m1_14*m2_11 + m1_15*m2_15
-    
-    
-   );   
+  );   
 };
 
 
@@ -825,10 +823,10 @@ N3D.Math.Matrix4.MultiplyTranspose = function(m1,m2){
 };
 
 N3D.Math.Matrix4.CreateLookAt = function(eye,target,up){
-  var f = N3D_M_Vector3.Sub(eye,target).normalize(),   //osa Z
-      s = N3D_M_Vector3.Cross(up,f).normalize(),   //osa X
-      u = N3D_M_Vector3.Cross(f,s);   //osa Y
-  
+  var f = N3D_M_Vector3.Sub(eye,target).normalize(),
+      s = N3D_M_Vector3.Cross(up,f).normalize(),
+      u = N3D_M_Vector3.Cross(f,s); 
+      
   return new N3D_M_Matrix4(
     s.x,  u.x,  f.x,  -eye.x,
     s.y,  u.y,  f.y,  -eye.y,
@@ -950,6 +948,33 @@ N3D.Math.Matrix4.CreateOrthographic = function(l,r,b,t,n,f){
     0,          0,          -2/fn,      0,
     -(l+r)/rl,  -(t+b)/tb,  -(f+n)/fn,  1
   );
+};
+
+N3D.Math.Matrix4.CreateFromQuaternion = function(q){
+  q.normalize();
+  
+  var x = q.x, y = q.y, z = q.z, w = 0;
+  
+  var xx = x*x, xy = x*y, xz = x*z, xw = x*w, 
+      yy = y*y, yz = y*z, yw = y*w,
+      zz = z*z, zw = z*w;
+  
+  return new N3D_M_Matrix4(
+    1 - 2*(yy+zz),  2*(xy-zw),    2*(xz+yw),    0,
+    2*(xy+zw),      1-2*(xx+zz),  2*(yz-xw),    0,
+    2*(xz-yw),      2*(yz+xw),    1-2*(xx+yy),  0,
+    0,              0,            0,            1 
+     
+  );
+  /*var xx2 = 2*x*x, yy2 = 2*y*y, zz2 = 2*z*z;
+  
+  return new N3D_M_Matrix4(
+    1-yy2 - zz2, 2*x*y - 2*z*w, 2*x*z + 2*y*w, 0,
+    2*x*y + 2*z*w, 1-xx2 - zz2, 2*y*z - 2*x*w, 0,
+    2*x*z - 2*y*w, 2*y*z + 2*x*w, 1-xx2 - yy2, 0,
+    0,0,0,1 
+  
+  ); */
 };
 /* <<<< Math.Matrix4 <<<< */
 
@@ -1103,7 +1128,7 @@ N3D.Math.Vector3 = function(x,y,z){
 N3D.Math.Vector3.prototype = {
   constructor:N3D.Math.Vector3,
   clone:function(){
-    return new $V3(this.x,this.y,this.z);
+    return new N3D_M_Vector3(this.x,this.y,this.z);
   },
   xyz:function(){
     return [this.x,this.y,this.z];
@@ -1155,11 +1180,11 @@ N3D.Math.Vector3.prototype = {
   },
   normalize:function(){
     var x = this.x,y = this.y,z = this.z;
-    var length = Math.sqrt(x*x + y*y + z*z);
+    var length = 1/Math.sqrt(x*x + y*y + z*z);
     
-    this.x /= length;
-    this.y /= length;
-    this.z /= length;
+    this.x *= length;
+    this.y *= length;
+    this.z *= length;
     
     return this; 
   },
@@ -1187,12 +1212,44 @@ N3D.Math.Vector3.prototype = {
     
     return this;
   },
+  toRotationMatrix:function(r){
+    var c = Math.cos(r), s = Math.sin(r);
+    
+    var x = this.x, y = this.y, z = this.z, t = 1-c,
+        xyt = x*y*t, xzt = x*z*t, yzt = y*z*t,
+        xs = x*s, ys = y*s, zs = z*s;
+
+
+    return new N3D_M_Matrix4(
+      c+x*x*t, xyt-zs,  xzt+ys,  0,
+      xyt+zs,  c+y*y*t,  yzt-xs,  0,
+      xzt-ys,  yzt+xs,  c+z*z*t,  0,
+      0,        0,        0,        1
+    );
+  },
   toVector4:function(n){
     return new N3D_M_Vector4(this.x,this.y,this.z,n);
   },
   toString:function(){
     return "N3D.Math.Vector3("+this.x+","+this.y+","+this.z+")";
   }
+};
+N3D.Math.Vector3.Perp = function(a,axis){
+  var x = a.x, y = a.y, z = a.z;
+  var par = N3D_M_Vector3.Parallel(a,axis);
+  return new N3D_M_Vector3(
+    x-par.x,
+    y-par.y,
+    z-par.z  
+  );
+};
+N3D.Math.Vector3.Parallel = function(a,axis){
+  var dot = N3D_M_Vector3.Dot(a,axis);
+  var p = axis.clone();
+  
+  return new N3D_M_Vector3(
+    axis.x*dot, axis.y*dot, axis.z*dot
+  ); 
 };
 N3D.Math.Vector3.Identity = function(){
   return new N3D_M_Vector3(0,0,0);
