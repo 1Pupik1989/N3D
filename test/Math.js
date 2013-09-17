@@ -1219,12 +1219,11 @@ N3D.Math.Vector3.prototype = {
         xyt = x*y*t, xzt = x*z*t, yzt = y*z*t,
         xs = x*s, ys = y*s, zs = z*s;
 
-
     return new N3D_M_Matrix4(
       c+x*x*t, xyt-zs,  xzt+ys,  0,
-      xyt+zs,  c+y*y*t,  yzt-xs,  0,
-      xzt-ys,  yzt+xs,  c+z*z*t,  0,
-      0,        0,        0,        1
+      xyt+zs,  c+y*y*t, yzt-xs,  0,
+      xzt-ys,  yzt+xs,  c+z*z*t, 0,
+      0,       0,       0,       1
     );
   },
   toVector4:function(n){
@@ -1564,8 +1563,8 @@ N3D.Math.Vector4.Projection = function(p,viewport){
 /* <<<< Math.Vector4 <<<< */
 
 N3D_M = N3D.Math;
-N3D_M_Matrix4 = N3D.Math.Matrix4; 
-N3D_M_Matrix3 = N3D.Math.Matrix3;
-N3D_M_Vector2 = N3D.Math.Vector2;
-N3D_M_Vector3 = N3D.Math.Vector3; 
-N3D_M_Vector4 = N3D.Math.Vector4; 
+$M4 = N3D_M_Matrix4 = N3D.Math.Matrix4; 
+$M3 = N3D_M_Matrix3 = N3D.Math.Matrix3;
+$V2 = N3D_M_Vector2 = N3D.Math.Vector2;
+$V3 = N3D_M_Vector3 = N3D.Math.Vector3; 
+$V4 = N3D_M_Vector4 = N3D.Math.Vector4; 
