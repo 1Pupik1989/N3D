@@ -1,12 +1,5 @@
 var N3D = {
-  Models:{},
-  GetPageSize:function(){
-    var d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0];  
-    return {
-      width:window.innerWidth || e.clientWidth || g.clientWidth,    
-      height:window.innerHeight|| e.clientHeight|| g.clientHeight
-    };
-  }
+  Models:{}  
 };
 N3D.Error = function(name,message) {
     this.name = name;
@@ -95,18 +88,19 @@ function load(urls,callbacks){
   var url = urls[0];
   urls.shift();
  
-  if(document.getElementById(url) != null){ loader(urls,callbacks); return false;}
+  if(document.getElementById(url) != null){ load(urls,callbacks); return;}
 
   var script = document.createElement('script');
   script.type = 'text/javascript';
   script.id = url;
   script.src = abs_path+url+'.js';
+  
   head.appendChild(script);
 
   script.onreadystatechange = function(){
     if(script.readyState == 'loaded' || script.readyState == 'complete'){
       this.onreadystatechange = null; 
-        
+ 
       load(urls,callbacks);        
     }
   };
@@ -123,6 +117,10 @@ function load(urls,callbacks){
   };
 };
 
+
+N3D.isLoadedLibrary = function(name){
+  return document.getElementById(name) !== null;
+};
 
 N3D.require = function(){
   var urls = Array.prototype.slice.call(arguments);
@@ -174,28 +172,5 @@ function getAttr(el, attr) {
     })
   
   }
-  
-  N3D.SaveModel = function(name){
-    var model = N3D.Models[name];
-    var text = '{"vp":[1,2,3,4],"f":[0,1,2,0,2,3]}';
-     
-    if(model instanceof N3D.Geometry.Shapes){
-      var a = document.createElement("a");
-          a.download = name+'.json';
-          a.href = 'data:text/javascript;charset=utf-8,'+text;
-          a.style.display = "none";
-          a.onclick = function(event){
-            var event = event || window.event;
-            var target = event.target || event.srcElement;
-            document.body.removeChild(event.target);
-          };
-		
-          document.body.appendChild(a);
-          a.click();
-      throw new N3D.Error('Model Exporter','export was successful');  
-    }else{
-      throw new N3D.Error('Model Exporter','Model "'+name+'" not found');
-    }
-  };
 
 })();
