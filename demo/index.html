@@ -26,7 +26,7 @@
       
       N3D.onsuccess = function(){
         this.init();
-        var model = new N3D.LoaderOBJ('models/ZombieDog.obj');
+        var model = new N3D.LoaderOBJ('model/ZombieDog.obj');
         this.scene.add(model);
 
         this.autoresize();
@@ -49,7 +49,7 @@
           N3D.count_triangles = 0;
         },1000);
         
-        model.addTexture('models/ZombieDog.jpg');
+        model.addTexture('model/ZombieDog.jpg');
         this.mainLoop();
       } 
       
