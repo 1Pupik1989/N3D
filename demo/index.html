@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style type="text/css">
+      body{
+        margin:0;
+      }
+      canvas{
+        background-color:blue;
+      }
+      #fps{
+        position:absolute;
+        left:0px;
+        top:0px;
+        padding:5px;
+      }
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Test Rendering 2</title>
+    <script type="text/javascript" src="build2/n3d.js"></script>
+  </head>
+  <body>
+    <div id=fps>test</div>
+    <script type="text/javascript">
+      N3D.require('Ajax','Math','Geometry','Loader','Graphics','BinaryStream');
+      
+      N3D.onsuccess = function(){
+        this.init();
+        var model = new N3D.LoaderOBJ('../models/ZombieDog.obj');
+        this.scene.add(model);
+
+        
+        this.autoresize();
+
+        var model_matrix = model.matrix;
+        model_matrix.translate(0,-1,7);
+        var fps = 0;
+        
+        this.update = function(){
+          model_matrix.rotateY(1 * Math.PI/180);
+          fps++;
+        };
+        
+        var fps_div = document.getElementById('fps');
+        
+        setInterval(function(){
+          
+          fps_div.innerHTML = fps+ 'fps<br>'+N3D.count_triangles+' triangles';
+          fps = 0;
+          N3D.count_triangles = 0;
+        },1000);
+        
+        model.addTexture('../models/ZombieDog.jpg');
+        this.mainLoop();
+      } 
+      
+      N3D.onerror = function(){
+        alert('error');
+      };
+
+    </script>
+  </body>
+</html>

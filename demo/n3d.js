@@ -92,9 +92,9 @@ N3D.mainLoop = function(){
   this.update();
   this.scene.update(this.render,this.camera);
   
-  /*timer(function(){
+  timer(function(){
     that.mainLoop();
-  });*/
+  });
 };
 
 })();
