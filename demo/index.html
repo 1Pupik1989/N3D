@@ -16,11 +16,11 @@
       }
     </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>Test Rendering 2</title>
+    <title>Test Rendering 1</title>
     <script type="text/javascript" src="n3d.js"></script>
   </head>
   <body>
-    <div id=fps>test</div>
+    <div id=fps></div>
     <script type="text/javascript">
       N3D.require('Ajax','Math','Geometry','Loader','Graphics','BinaryStream');
       
@@ -29,7 +29,6 @@
         var model = new N3D.LoaderOBJ('../models/ZombieDog.obj');
         this.scene.add(model);
 
-        
         this.autoresize();
 
         var model_matrix = model.matrix;
